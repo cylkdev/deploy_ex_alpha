@@ -1,3 +1,9 @@
+### GENERAL
+
+output "resource_group" {
+  value = var.resource_group
+}
+
 ### IAM
 
 output "aws_iam_policy_document_ec2_trust_policy" {
@@ -24,7 +30,7 @@ output "terraform_data_instance_replacement_triggered_by" {
   value = terraform_data.instance_replacement_triggered_by
 }
 
-output "aws_instance_ec2_instance" {
+output "aws_ec2_instance" {
   value = aws_instance.ec2_instance
 }
 
@@ -48,48 +54,48 @@ output "aws_eip_association_ec2_eip_association" {
   value = aws_eip_association.ec2_eip_association
 }
 
-### ELASTIC LOAD BALANCER
+# ### ELASTIC LOAD BALANCER
 
-output "aws_lb_target_group_ec2_lb_target_group" {
-  value = aws_lb_target_group.ec2_lb_target_group
-}
+# output "aws_lb_target_group_ec2_lb_target_group" {
+#   value = aws_lb_target_group.ec2_lb_target_group
+# }
 
-output "aws_lb_ec2_lb" {
-  value = aws_lb.ec2_lb
-}
+# output "aws_lb_ec2_lb" {
+#   value = aws_lb.ec2_lb
+# }
 
-output "aws_lb_target_group_attachment_ec2_lb_target_group_attachment" {
-  value = aws_lb_target_group_attachment.ec2_lb_target_group_attachment
-}
+# output "aws_lb_target_group_attachment_ec2_lb_target_group_attachment" {
+#   value = aws_lb_target_group_attachment.ec2_lb_target_group_attachment
+# }
 
-output "aws_lb_listener_ec2_lb_listener" {
-  value = aws_lb_listener.ec2_lb_listener
-}
+# output "aws_lb_listener_ec2_lb_listener" {
+#   value = aws_lb_listener.ec2_lb_listener
+# }
 
-### Simple Queue Service
+# ### Simple Queue Service
 
-output "aws_sqs_queue_ec2_sqs" {
-  value = aws_sqs_queue.ec2_sqs
-}
+# output "aws_sqs_queue_ec2_sqs" {
+#   value = aws_sqs_queue.ec2_sqs
+# }
 
-output "aws_sqs_queue_redrive_policy_ec2_sqs_redrive" {
-  value = aws_sqs_queue_redrive_policy.ec2_sqs_redrive
-}
+# output "aws_sqs_queue_redrive_policy_ec2_sqs_redrive" {
+#   value = aws_sqs_queue_redrive_policy.ec2_sqs_redrive
+# }
 
-output "aws_sqs_queue_ec2_sqs_dlq" {
-  value = aws_sqs_queue.ec2_sqs_dlq
-}
+# output "aws_sqs_queue_ec2_sqs_dlq" {
+#   value = aws_sqs_queue.ec2_sqs_dlq
+# }
 
-### AUTO SCALING
+# ### AUTO SCALING
 
-output "aws_launch_template_ec2_instance_template" {
-  value = aws_launch_template.ec2_instance_template
-}
+# output "aws_launch_template_ec2_instance_template" {
+#   value = aws_launch_template.ec2_instance_template
+# }
 
-output "aws_placement_group_ec2_placement_group" {
-  value = aws_placement_group.ec2_placement_group
-}
+# output "aws_placement_group_ec2_placement_group" {
+#   value = aws_placement_group.ec2_placement_group
+# }
 
-output "aws_autoscaling_group_ec2_autoscaling_group" {
-  value = aws_autoscaling_group.ec2_autoscaling_group
-}
+# output "aws_autoscaling_group_ec2_autoscaling_group" {
+#   value = aws_autoscaling_group.ec2_autoscaling_group
+# }

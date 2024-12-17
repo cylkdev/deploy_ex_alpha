@@ -10,6 +10,16 @@ variable "region" {
   nullable = false
 }
 
+variable "project_name" {
+  type     = string
+  nullable = false
+}
+
+variable "resource_group" {
+  type     = string
+  nullable = false
+}
+
 variable "tags" {
   type     = map(string)
   nullable = false
@@ -31,11 +41,6 @@ variable "vpc_id" {
 }
 
 ### EC2
-
-variable "resource_group" {
-  type     = string
-  nullable = false
-}
 
 variable "instance_name" {
   type     = string
@@ -201,15 +206,15 @@ variable "enable_elb" {
   default     = true
 }
 
-variable "elb_port" {
-  description = "Changes the load balancer port used in the loadbalancer url"
+variable "elb_listener_port" {
+  description = "The port that the load balancer will listen on for incoming traffic."
   type        = number
   nullable    = false
   default     = 80
 }
 
-variable "elb_instance_port" {
-  description = "Changes the application port targeted by the load balancer"
+variable "elb_target_group_port" {
+  description = "The port on which the load balancer should forward traffic to the targets (e.g. ec2 instances) that are registered in the target group."
   type        = number
   nullable    = false
   default     = 80
@@ -218,14 +223,14 @@ variable "elb_instance_port" {
 ### KEY PAIR
 
 variable "create_key_pair" {
-  description = "Creates a local key pair"
+  description = "If true, a key pair is created; if false, it is not."
   type        = bool
   nullable    = false
   default     = true
 }
 
 variable "key_pair_key_name" {
-  description = "Name of a EC2 key pair"
+  description = "Name of a EC2 key pair."
   type        = string
 }
 
@@ -259,7 +264,7 @@ variable "message_retention_seconds" {
   default = 86400
 }
 
-variable "receive_wait_time_seconds" {
+variable "sqs_receive_wait_time_seconds" {
   description = "..."
   type = number
   nullable = false

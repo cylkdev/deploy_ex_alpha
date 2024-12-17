@@ -76,7 +76,9 @@ module "ec2_instance" {
     format("%s_%s", "allow_all_traffic_ipv4_ip_protocol", module.vpc_instance.vpc_security_group_egress_rule_allow_all_traffic_ipv4_ip_protocol)
   ]
 
-  resource_group                       = var.resource_group
+  project_name                         = var.project_name
+  resource_group                       = each.key
+
   instance_name                        = each.value.instance_name
   instance_ami_id                      = try(each.value.instance_ami_id, null)
   instance_type                        = try(each.value.instance_type, null)
@@ -101,12 +103,35 @@ module "ec2_instance" {
   enable_resource_name_dns_a_record    = try(each.value.enable_resource_name_dns_a_record, null)
 
   enable_elb                           = try(each.value.enable_elb, null)
-  elb_port                             = try(each.value.elb_port, null)
-  elb_instance_port                    = try(each.value.elb_instance_port, null)
+  elb_listener_port                    = try(each.value.elb_listener_port, null)
+  elb_target_group_port                = try(each.value.elb_target_group_port, null)
 
   enable_sqs                           = try(each.value.enable_sqs, null)
   sqs_delay_seconds                    = try(each.value.sqs_delay_seconds, null)
   max_message_size                     = try(each.value.max_message_size, null)
   message_retention_seconds            = try(each.value.message_retention_seconds, null)
-  receive_wait_time_seconds            = try(each.value.receive_wait_time_seconds, null)
+  sqs_receive_wait_time_seconds        = try(each.value.sqs_receive_wait_time_seconds, null)
+}
+
+# --------------------------------
+# ANSIBLE
+# --------------------------------
+#
+# Generates an Ansible inventory with a list of hosts and groups.
+# Each group is named after the `resource_group` (the key of the
+# ec2 instances object) and contains the ip address of the EC2
+# instances.
+#
+resource "local_file" "ansible_inventory" {
+  filename = "${path.root}/ansible_terraform/aws_instance/inventory.yaml"
+
+  # This currently uses yamlencode however if more control
+  # is required you can use a templatefile.
+  content = yamlencode({
+    for module in module.ec2_instance : 
+      module.resource_group => {
+        "hosts": [for instance in module.aws_ec2_instance : instance.public_ip]
+      }
+  })
+  file_permission = 0400
 }

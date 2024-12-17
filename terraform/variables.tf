@@ -10,7 +10,7 @@ variable "region" {
   nullable = false
 }
 
-variable "resource_group" {
+variable "project_name" {
   description = "Value of the Group tag for all resources"
   type        = string
   nullable    = false
@@ -125,14 +125,14 @@ variable "ec2_instances" {
     enable_resource_name_dns_a_record = optional(bool)
 
     enable_elb                        = optional(bool)
-    elb_port                          = optional(number)
-    elb_instance_port                 = optional(number)
+    elb_listener_port                 = optional(number)
+    elb_target_group_port             = optional(number)
 
     enable_sqs                        = optional(bool)
     sqs_delay_seconds                 = optional(number)
     max_message_size                  = optional(number)
     message_retention_seconds         = optional(number)
-    receive_wait_time_seconds         = optional(number)
+    sqs_receive_wait_time_seconds     = optional(number)
   }))
   
   nullable = false

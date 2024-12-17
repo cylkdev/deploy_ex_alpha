@@ -94,7 +94,7 @@ variable "subnet_count" {
   description = "Number of subnets"
   type = number
   nullable = false
-  default = 2
+  default = 1
 }
 
 variable "subnet_cidrsubnet_newbits" {
@@ -112,5 +112,5 @@ variable "enable_dns_support" {
 variable "enable_dns_hostnames" {
   type = bool
   nullable = false
- default = true
+  default = true
 }
