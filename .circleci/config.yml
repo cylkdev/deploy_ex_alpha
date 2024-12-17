@@ -1,0 +1,27 @@
+version: 2.1
+
+orbs:
+  ansible-lint: orbss/ansible-lint@0.0.3
+  ansible-playbook: orbss/ansible-playbook@0.0.5
+
+executors:
+  python:
+    docker:
+      - image: circleci/python
+
+jobs:
+  ansible-lint:
+    executor: ansible-lint/default
+    steps:
+      - checkout
+      - ansible-lint/execute:
+          molecule-playbook-test: true
+          molecule-role-test: true
+  
+  ansible-playbook:
+
+workflows:
+  provision_and_deploy:
+    jobs:
+      - ansible-lint
+      - ansible-playbook

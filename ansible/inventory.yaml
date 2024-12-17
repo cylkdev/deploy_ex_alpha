@@ -1,0 +1,24 @@
+plugin: aws_ec2
+
+regions:
+  - us-west-2
+
+hostnames:
+  - tag:Name
+
+filters:
+  tag:Group: 'Test Deploy Ex'
+
+keyed_groups:
+  - key: tags['DatabaseKey']
+    prefix: "database"
+
+  - key: tags['MonitoringKey']
+    prefix: "monitoring"
+
+  - key: tags['InstanceGroup']
+    prefix: "group"
+
+compose:
+  ansible_host: public_ip_address
+
