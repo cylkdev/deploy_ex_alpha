@@ -10,8 +10,40 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: false # TODO: add flag for docker layer caching
 
+  terraform-plan:
+    docker:
+      - image: hashicorp/terraform:1.10
+    steps:
+      - checkout
+      - run:
+          name: Terraform Init
+          command: terraform init
+      - run:
+          name: Terraform Plan
+          command: |
+            terraform plan -var-file=./vars/development.tfvars -var "image_tag=${CIRCLE_SHA1}" -out development.tfplan
+
+  terraform-apply:
+    docker:
+      - image: hashicorp/terraform:1.10
+    steps:
+      - checkout
+       - run:
+          name: Terraform Apply
+          command: |
+            terraform apply ./development.tfplan
+            terraform apply -auto-approve -destroy -var-file=./vars/development.tfvars
+
 workflows:
   deploy:
     jobs:
-      # The ansible control node is started asynchronously and must be awaited on.
+      # The ansible control node must be awaited on.
       - ansible-control-node
+      - terraform-plan:
+          requires:
+            - ansible-control-node
+      - terraform-apply-approval:
+          type: approval
+          requires:
+            - terraform-plan
+      - terraform-apply
