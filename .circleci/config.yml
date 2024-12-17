@@ -29,10 +29,10 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Terraform Apply
-        command: |
-          terraform apply ./development.tfplan
-          terraform apply -auto-approve -destroy -var-file=./vars/development.tfvars
+          name: Terraform Apply
+          command: |
+            terraform apply ./development.tfplan
+            terraform apply -auto-approve -destroy -var-file=./vars/development.tfvars
 
 workflows:
   deploy:
