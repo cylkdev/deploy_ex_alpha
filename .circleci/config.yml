@@ -10,6 +10,10 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: false # TODO: add flag for docker layer caching
       - run:
+          name: Install Dependencies
+          command: |
+            apk add --update --no-cache docker
+      - run:
           name: Start Ansible
           command: |
             docker run -ti --rm -v ~/.ssh:/root/.ssh -v ~/.aws:/root/.aws -v $(pwd):/apps -w /apps alpine/ansible
