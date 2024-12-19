@@ -57,6 +57,6 @@ jobs:
 workflows:
   deploy:
     jobs:
-      - setup
-        context:
-          - aws_deploy
+      - setup:
+          context:
+            - aws_deploy
