@@ -31,8 +31,17 @@ jobs:
             apk del .deps
       - run:
           name: Terraform Version
+          command: terraform -v
+      - run:
+          name: Initialize Terraform
+          command: terraform init
+      - run:
+          name: List Directory
+          command: ls .
+      - run:
+          name: Terraform Plan
           command: |
-            terraform -v
+            terraform plan -var-file=./vars/development.tfvars -var "image_tag=${CIRCLE_SHA1}" -out development.tfplan
 
 workflows:
   deploy:
