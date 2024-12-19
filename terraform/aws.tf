@@ -123,15 +123,18 @@ module "ec2_instance" {
 # instances.
 #
 resource "local_file" "ansible_inventory" {
-  filename = "${path.root}/ansible_terraform/aws_instance/inventory.yaml"
+  filename = "${path.root}/ansible_terraform/inventory.yaml"
 
-  # This currently uses yamlencode however if more control
-  # is required you can use a templatefile.
   content = yamlencode({
     for module in module.ec2_instance : 
       module.resource_group => {
         "hosts": [for instance in module.aws_ec2_instance : instance.public_ip]
       }
   })
+  
   file_permission = 0400
+
+  provisioner "local-exec" {
+    command = "ansible --inventory ansible_terraform/inventory.yaml"
+  }
 }

@@ -1,6 +1,9 @@
 version: 2.1
 
 jobs:
+  # The setup job builds an image with Ansible and Terraform.
+  # Terraform is used to execute the ansible playbook
+  # command for the ec2 instances.
   setup:
     docker:
       - image: alpine:3
@@ -41,7 +44,15 @@ jobs:
       - run:
           name: Terraform Plan
           command: |
-            terraform -chdir="terraform" plan -var-file=./vars/development.tfvars -var "image_tag=${CIRCLE_SHA1}" -out development.tfplan
+            terraform -chdir="terraform" plan -var-file=./vars/development.tfvars -out development.tfplan
+      - run:
+          name: Terraform Apply
+          command: |
+            terraform -chdir="terraform" apply
+      - run:
+          name: Terraform Destroy
+          command: |
+            terraform -chdir="terraform" apply -destroy -var-file="vars/development.tfvars"
 
 workflows:
   deploy:
