@@ -4,7 +4,7 @@ jobs:
   # Run ansible and ansible-playbook in docker.
   ansible-docker:
     docker:
-      - image: alpine/ansible:2.17.0
+      - image: alpine:3
     steps:
       - checkout
       - setup_remote_docker:
@@ -12,13 +12,11 @@ jobs:
       - run:
           name: Install Dependencies
           command: |
-            apk add --update --no-cache docker
+            apk add --update --no-cache ansible bash openssh sshpass
       - run:
-          name: Start Ansible
+          name: Print Ansible Version
           command: |
-            docker run -ti --rm -v ~/.ssh:/root/.ssh -v ~/.aws:/root/.aws -v $(pwd):/apps -w /apps alpine/ansible
-            apps -w /apps alpine/ansible ansible"
-            ansible -v
+            ansible --version
 
   terraform-plan:
     docker:
