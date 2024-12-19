@@ -2,17 +2,24 @@ version: 2.1
 
 jobs:
   # Run ansible and ansible-playbook in docker.
-  ansible-control-node:
+  ansible-docker:
     docker:
       - image: alpine/ansible:2.17.0
     steps:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: false # TODO: add flag for docker layer caching
+      - run:
+          name: Start Ansible
+          command: |
+            docker run -ti --rm -v ~/.ssh:/root/.ssh -v ~/.aws:/root/.aws -v $(pwd):/apps -w /apps alpine/ansible
+            apps -w /apps alpine/ansible ansible"
+            ansible -v
 
   terraform-plan:
     docker:
       - image: hashicorp/terraform:1.10
+    working_directory: ~/requis_backend_umbrella
     steps:
       - checkout
       - run:
@@ -38,10 +45,10 @@ workflows:
   deploy:
     jobs:
       # The ansible control node must be awaited on.
-      - ansible-control-node
+      - ansible-docker
       - terraform-plan:
           requires:
-            - ansible-control-node
+            - ansible-docker
       - terraform-apply-approval:
           type: approval
           requires:
