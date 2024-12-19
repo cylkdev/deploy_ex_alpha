@@ -3,19 +3,37 @@ version: 2.1
 jobs:
   setup:
     docker:
-      - image: alpine/ansible:2.17.0
-      - image: hashicorp/terraform:1.10
+      - image: alpine:3
     steps:
       - checkout
       - run:
-          name: Terraform Version
+          name: Install Ansible
           command: |
-            terraform -v
+            apk add --update --no-cache ansible bash openssh sshpass
       - run:
           name: Ansible Version
           command: |
             ansible --version
-            
+      - run:
+          name: Install Terraform
+          command: |
+            apk add --update --virtual .deps --no-cache gnupg && \
+            cd /tmp && \
+            wget https://releases.hashicorp.com/terraform/1.9.6/terraform_1.9.6_linux_amd64.zip && \
+            wget https://releases.hashicorp.com/terraform/1.9.6/terraform_1.9.6_SHA256SUMS && \
+            wget https://releases.hashicorp.com/terraform/1.9.6/terraform_1.9.6_SHA256SUMS.sig && \
+            wget -qO- https://www.hashicorp.com/.well-known/pgp-key.txt | gpg --import && \
+            gpg --verify terraform_1.9.6_SHA256SUMS.sig terraform_1.9.6_SHA256SUMS && \
+            grep terraform_1.9.6_linux_amd64.zip terraform_1.9.6_SHA256SUMS | sha256sum -c && \
+            unzip /tmp/terraform_1.9.6_linux_amd64.zip -d /tmp && \
+            mv /tmp/terraform /usr/local/bin/terraform && \
+            rm -f /tmp/terraform_1.9.6_linux_amd64.zip terraform_1.9.6_SHA256SUMS 1.9.6/terraform_1.9.6_SHA256SUMS.sig && \
+            apk del .deps
+      - run:
+          name: Terraform Version
+          command: |
+            terraform -v
+
 workflows:
   deploy:
     jobs:
