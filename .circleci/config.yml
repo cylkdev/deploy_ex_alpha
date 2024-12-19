@@ -33,15 +33,15 @@ jobs:
           name: Terraform Version
           command: terraform -v
       - run:
-          name: Initialize Terraform
-          command: terraform -chdir="~/terraform" init
-      - run:
           name: List Directory
           command: ls .
       - run:
+          name: Initialize Terraform
+          command: terraform -chdir="terraform" init
+      - run:
           name: Terraform Plan
           command: |
-            terraform -chdir="~/terraform" plan -var-file=./vars/development.tfvars -var "image_tag=${CIRCLE_SHA1}" -out development.tfplan
+            terraform -chdir="terraform" plan -var-file=./vars/development.tfvars -var "image_tag=${CIRCLE_SHA1}" -out development.tfplan
 
 workflows:
   deploy:
