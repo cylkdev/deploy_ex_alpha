@@ -1,43 +1,24 @@
 version: 2.1
 
 jobs:
-  ansible:
+  ansible-terraform:
     docker:
       - image: alpine/ansible:2.17.0
+      - image: hashicorp/terraform:1.10
     steps:
       - checkout
       - run:
           name: Ansible Version
           command: |
             ansible --version
-      # Generate an ssh key and persist to the workspace so that
-      # the terraform container can ssh into the ansible
-      # container.
-      - persist_to_workspace:
-          root: ~/.ssh
-          paths:
-            - id_rsa
-            - id_rsa.pub
-    
-  terraform-plan:
-    docker:
-      - image: hashicorp/terraform:1.10
-    steps:
-      - checkout
-      - attach_workspace:
-          at: /workspace
       - run:
-          name: Connect to Job B
+          name: Terraform Version
           command: |
-            ssh -i ~/.ssh/id_rsa -o "StrictHostKeyChecking=no" user@job-b-container-ip
-            
+            terraform --version
 
 workflows:
   deploy:
     jobs:
-      - ansible:
-          context:
-            - aws_deploy
-      - terraform-plan:
+      - ansible-terraform:
           context:
             - aws_deploy
