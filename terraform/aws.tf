@@ -133,8 +133,4 @@ resource "local_file" "ansible_inventory" {
   })
   
   file_permission = 0400
-
-  provisioner "local-exec" {
-    command = "ansible --inventory ansible_terraform/inventory.yaml"
-  }
 }

@@ -24,7 +24,6 @@ ec2_instances = {
     enable_ebs                = true
     instance_ebs_size         = 20
 
-    enable_eip                = true
     enable_elb                = true
     enable_sqs                = true
   }

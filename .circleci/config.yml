@@ -1,62 +1,54 @@
 version: 2.1
 
 jobs:
-  # The setup job builds an image with Ansible and Terraform.
-  # Terraform is used to execute the ansible playbook
-  # command for the ec2 instances.
-  setup:
+  ansible:
     docker:
-      - image: alpine:3
+      - image: alpine/ansible:2.17.0
     steps:
       - checkout
-      - run:
-          name: Install Ansible
-          command: |
-            apk add --update --no-cache ansible bash openssh sshpass
       - run:
           name: Ansible Version
           command: |
             ansible --version
+      # Generate an ssh key and persist to the workspace so that
+      # the terraform container can ssh into the ansible
+      # container.
       - run:
-          name: Install Terraform
+          name: Generate SSH Key
+          command: ssh-keygen -t rsa -b 4096 -C "job-a-to-job-b" -f ~/.ssh/id_rsa -N ""
+      - persist_to_workspace:
+          root: ~/.ssh
+          paths:
+            - id_rsa
+            - id_rsa.pub
+    
+  terraform-plan:
+    docker:
+      - image: hashicorp/terraform:1.10
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /workspace
+      - run:
+          name: Setup SSH Server
           command: |
-            apk add --update --virtual .deps --no-cache gnupg && \
-            cd /tmp && \
-            wget https://releases.hashicorp.com/terraform/1.9.6/terraform_1.9.6_linux_amd64.zip && \
-            wget https://releases.hashicorp.com/terraform/1.9.6/terraform_1.9.6_SHA256SUMS && \
-            wget https://releases.hashicorp.com/terraform/1.9.6/terraform_1.9.6_SHA256SUMS.sig && \
-            wget -qO- https://www.hashicorp.com/.well-known/pgp-key.txt | gpg --import && \
-            gpg --verify terraform_1.9.6_SHA256SUMS.sig terraform_1.9.6_SHA256SUMS && \
-            grep terraform_1.9.6_linux_amd64.zip terraform_1.9.6_SHA256SUMS | sha256sum -c && \
-            unzip /tmp/terraform_1.9.6_linux_amd64.zip -d /tmp && \
-            mv /tmp/terraform /usr/local/bin/terraform && \
-            rm -f /tmp/terraform_1.9.6_linux_amd64.zip terraform_1.9.6_SHA256SUMS 1.9.6/terraform_1.9.6_SHA256SUMS.sig && \
-            apk del .deps
+            apt-get update && apt-get install -y openssh-server
+            mkdir -p ~/.ssh
+            mv /workspace/id_rsa.pub ~/.ssh/authorized_keys
+            chmod 600 ~/.ssh/authorized_keys
+            /usr/sbin/sshd
       - run:
           name: Terraform Version
-          command: terraform -v
-      - run:
-          name: List Directory
-          command: ls .
-      - run:
-          name: Initialize Terraform
-          command: terraform -chdir="terraform" init
-      - run:
-          name: Terraform Plan
           command: |
-            terraform -chdir="terraform" plan -var-file=./vars/development.tfvars -out development.tfplan
-      - run:
-          name: Terraform Apply
-          command: |
-            terraform -chdir="terraform" apply development.tfplan
-      - run:
-          name: Terraform Destroy
-          command: |
-            terraform -chdir="terraform" apply -destroy -var-file="vars/development.tfvars"
+            terraform --version
+            
 
 workflows:
   deploy:
     jobs:
-      - setup:
+      - ansible:
+          context:
+            - aws_deploy
+      - terraform-plan:
           context:
             - aws_deploy
