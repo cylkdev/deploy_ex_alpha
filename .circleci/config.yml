@@ -13,9 +13,6 @@ jobs:
       # Generate an ssh key and persist to the workspace so that
       # the terraform container can ssh into the ansible
       # container.
-      - run:
-          name: Generate SSH Key
-          command: ssh-keygen -t rsa -b 4096 -C "job-a-to-job-b" -f ~/.ssh/id_rsa -N ""
       - persist_to_workspace:
           root: ~/.ssh
           paths:
@@ -30,17 +27,9 @@ jobs:
       - attach_workspace:
           at: /workspace
       - run:
-          name: Setup SSH Server
+          name: Connect to Job B
           command: |
-            apt-get update && apt-get install -y openssh-server
-            mkdir -p ~/.ssh
-            mv /workspace/id_rsa.pub ~/.ssh/authorized_keys
-            chmod 600 ~/.ssh/authorized_keys
-            /usr/sbin/sshd
-      - run:
-          name: Terraform Version
-          command: |
-            terraform --version
+            ssh -i ~/.ssh/id_rsa -o "StrictHostKeyChecking=no" user@job-b-container-ip
             
 
 workflows:
