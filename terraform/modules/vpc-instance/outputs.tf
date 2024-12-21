@@ -63,20 +63,33 @@ output "vpc_security_group_egress_rule_allow_all_traffic_ipv4_ip_protocol" {
 
 ### SUBNET (PRIVATE)
 
-output "aws_subnet_private_subnet" {
+output "aws_private_subnet" {
   value = aws_subnet.private_subnet
 }
 
-output "private_subnet_ids" {
-  value = [ for subnet in aws_subnet.private_subnet : subnet.id ]
+# ---
+#
+# Returns a map with details about each subnet.
+# This output is used by the `aws-instance` module. 
+output "available_private_subnets" {
+  value = {
+    for key, subnet in aws_subnet.private_subnet : 
+      key => {
+        availability_zone    = subnet.availability_zone
+        availability_zone_id = subnet.availability_zone_id
+        cidr_block           = subnet.cidr_block
+        id                   = subnet.id
+        ipv6_cidr_block      = subnet.ipv6_cidr_block
+      }
+  }
 }
 
-output "aws_route_table_private_route" {
-  value = aws_route_table.private_route
+output "aws_private_route_table" {
+  value = aws_route_table.private_route_table
 }
 
-output "aws_route_table_association_private_route" {
-  value = aws_route_table_association.private_route
+output "aws_private_route_table_association" {
+  value = aws_route_table_association.private_route_table
 }
 
 ### SUBNET (PUBLIC)
@@ -85,18 +98,31 @@ output "aws_subnet_public_subnet" {
   value = aws_subnet.public_subnet
 }
 
-output "public_subnet_ids" {
-  value = [ for subnet in aws_subnet.public_subnet : subnet.id ]
+# ---
+#
+# Returns a map with details about each subnet.
+# This output is used by the `aws-instance` module. 
+output "available_public_subnets" {
+  value = {
+    for key, subnet in aws_subnet.public_subnet : 
+      key => {
+        availability_zone    = subnet.availability_zone
+        availability_zone_id = subnet.availability_zone_id
+        cidr_block           = subnet.cidr_block
+        id                   = subnet.id
+        ipv6_cidr_block      = subnet.ipv6_cidr_block
+      }
+  }
 }
 
-output "aws_internet_gateway_public_internet_gateway" {
+output "aws_public_route_internet_gateway" {
   value = aws_internet_gateway.public_internet_gateway
 }
 
-output "aws_route_table_public_route" {
-  value = aws_route_table.public_route
+output "aws_public_route_table" {
+  value = aws_route_table.public_route_table
 }
 
-output "aws_route_table_association_public_route" {
-  value = aws_route_table_association.public_route
+output "aws_public_route_table_association" {
+  value = aws_route_table_association.public_route_table
 }

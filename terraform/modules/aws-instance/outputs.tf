@@ -1,22 +1,22 @@
 ### GENERAL
 
-output "resource_group" {
-  value = var.resource_group
+output "deployment_group" {
+  value = var.deployment_group
 }
 
 ### IAM
 
-output "aws_iam_policy_document_ec2_trust_policy" {
-  value = data.aws_iam_policy_document.ec2_trust_policy
+output "aws_iam_policy_document_trust_policy" {
+  value = data.aws_iam_policy_document.trust_policy
 }
 
-output "aws_iam_role_ec2_instance_role" {
-  value = aws_iam_role.ec2_instance_role
+output "aws_iam_role_instance_role" {
+  value = aws_iam_role.instance_role
 }
 
 ### SUBNETS
 
-output "aws_subnet_private_subnet" {
+output "aws_private_subnet" {
   value = data.aws_subnet.private_subnet
 }
 
@@ -26,8 +26,8 @@ output "aws_subnet_public_subnet" {
 
 ### EC2
 
-output "terraform_data_instance_replacement_triggered_by" {
-  value = terraform_data.instance_replacement_triggered_by
+output "terraform_data_replace_triggered_by_data" {
+  value = terraform_data.replace_triggered_by_data
 }
 
 output "aws_ec2_instance" {

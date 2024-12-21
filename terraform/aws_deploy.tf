@@ -43,8 +43,8 @@ module "ec2_instance" {
   # `availability-zone-instance` module.
   availability_zone_names = length(coalesce(var.availability_zone_names, [])) > 0 ? var.availability_zone_names : module.availability_zone_instance.availability_zone_names
 
-  public_subnet_ids       = module.vpc_instance.public_subnet_ids
-  private_subnet_ids      = module.vpc_instance.private_subnet_ids
+  available_public_subnets  = module.vpc_instance.available_public_subnets
+  available_private_subnets = module.vpc_instance.available_private_subnets
 
   # Allows SSH and TLS traffic.
   security_group_ids = [
@@ -52,32 +52,32 @@ module "ec2_instance" {
     module.vpc_instance.aws_security_group_allow_tls.id
   ]
 
-  # The EC2 instance will be replaced if any of the configuration
-  # values specified below is changed. This ensures instances can
-  # be destroyed if any of the resources are changed.
-  instance_replacement_triggered_by = [
-    # SECURITY GROUP SSH
+  # The EC2 instance will be replaced if any of the given values change.
+  # This can be used to ensure that dependent resources are destroyed
+  # before trying to destroy the instance.
+  replace_triggered_by_data = [
+    # Tracks the SSH security group id.
     module.vpc_instance.aws_security_group_allow_ssh.id,
 
-    # SECURITY GROUP TLS
+    # Tracks the HTTP traffic security group id.
     module.vpc_instance.aws_security_group_allow_tls.id,
 
-    # SECURITY GROUP INGRESS SSH
+    # Tracks SSH ingress configuration.
     format("%s_%s", "allow_ssh_ipv4_cidr_ipv4", module.vpc_instance.vpc_security_group_ingress_rule_allow_ssh_ipv4_cidr_ipv4),
     format("%s_%s", "allow_ssh_ipv4_ip_protocol", module.vpc_instance.vpc_security_group_ingress_rule_allow_ssh_ipv4_ip_protocol),
 
-    # SECURITY GROUP INGRESS IPV4
+    # Tracks IPv4 ingress configuration.
     format("%s_%s", "allow_tls_ipv4_from_port", module.vpc_instance.vpc_security_group_ingress_rule_allow_tls_ipv4_from_port),
     format("%s_%s", "allow_tls_ipv4_ip_protocol", module.vpc_instance.vpc_security_group_ingress_rule_allow_tls_ipv4_ip_protocol),
     format("%s_%s", "allow_tls_ipv4_to_port", module.vpc_instance.vpc_security_group_ingress_rule_allow_tls_ipv4_to_port),
 
-    # SECURITY GROUP EGRESS IPV4
+    # Tracks IPv4 egress configuration.
     format("%s_%s", "allow_all_traffic_ipv4_cidr_ipv4", module.vpc_instance.vpc_security_group_egress_rule_allow_all_traffic_ipv4_cidr_ipv4),
     format("%s_%s", "allow_all_traffic_ipv4_ip_protocol", module.vpc_instance.vpc_security_group_egress_rule_allow_all_traffic_ipv4_ip_protocol)
   ]
 
-  project_name                         = var.project_name
-  resource_group                       = each.key
+  # TODO: set this on the object so that this can be isolated
+  deployment_group                     = var.deployment_group
 
   instance_name                        = each.value.instance_name
   instance_ami_id                      = try(each.value.instance_ami_id, null)
@@ -113,24 +113,24 @@ module "ec2_instance" {
   sqs_receive_wait_time_seconds        = try(each.value.sqs_receive_wait_time_seconds, null)
 }
 
-# --------------------------------
-# ANSIBLE
-# --------------------------------
-#
-# Generates an Ansible inventory with a list of hosts and groups.
-# Each group is named after the `resource_group` (the key of the
-# ec2 instances object) and contains the ip address of the EC2
-# instances.
-#
-resource "local_file" "ansible_inventory" {
-  filename = "${path.root}/ansible_terraform/inventory.yaml"
+# # --------------------------------
+# # ANSIBLE
+# # --------------------------------
+# #
+# # Generates an Ansible inventory with a list of hosts and groups.
+# # Each group is named after the `deployment_group` (the key of the
+# # ec2 instances object) and contains the ip address of the EC2
+# # instances.
+# #
+# resource "local_file" "ansible_inventory" {
+#   filename = "../${path.root}/ansible_terraform/aws_instance_inventory.yaml"
 
-  content = yamlencode({
-    for module in module.ec2_instance : 
-      module.resource_group => {
-        "hosts": [for instance in module.aws_ec2_instance : instance.public_ip]
-      }
-  })
+#   content = yamlencode({
+#     for module in module.ec2_instance : 
+#       module.deployment_group => {
+#         "hosts": [for instance in module.aws_ec2_instance : instance.public_ip]
+#       }
+#   })
   
-  file_permission = 0400
-}
+#   file_permission = 0400
+# }

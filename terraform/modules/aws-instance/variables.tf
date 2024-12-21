@@ -10,12 +10,7 @@ variable "region" {
   nullable = false
 }
 
-variable "project_name" {
-  type     = string
-  nullable = false
-}
-
-variable "resource_group" {
+variable "deployment_group" {
   type     = string
   nullable = false
 }
@@ -59,7 +54,7 @@ variable "instance_type" {
   default = "t3.micro"
 }
 
-variable "instance_replacement_triggered_by" {
+variable "replace_triggered_by_data" {
   type     = list(string)
   nullable = false
 }
@@ -152,16 +147,28 @@ variable "enable_public_instance" {
   default  = true
 }
 
-variable "public_subnet_ids" {
-  type     = list(string)
+variable "available_public_subnets" {
+  type = map(object({
+    availability_zone    = string
+    availability_zone_id = string
+    cidr_block           = string
+    id                   = string
+    ipv6_cidr_block      = string
+  }))
+
   nullable = false
-  default  = []
 }
 
-variable "private_subnet_ids" {
-  type     = list(string)
+variable "available_private_subnets" {
+  type = map(object({
+    availability_zone    = string
+    availability_zone_id = string
+    cidr_block           = string
+    id                   = string
+    ipv6_cidr_block      = string
+  }))
+
   nullable = false
-  default  = []
 }
 
 ### SECURITY GROUP

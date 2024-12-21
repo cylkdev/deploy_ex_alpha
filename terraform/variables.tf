@@ -10,7 +10,7 @@ variable "region" {
   nullable = false
 }
 
-variable "project_name" {
+variable "deployment_group" {
   description = "Value of the Group tag for all resources"
   type        = string
   nullable    = false

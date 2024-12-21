@@ -32,13 +32,14 @@ variable "vpc_name" {
 variable "vpc_security_group_ingress_rule_allow_ssh_ipv4_cidr_ipv4" {
   type = string
   nullable = false
+  # Rules with source of 0.0.0.0/0 or ::/0 allow all IP addresses to access your instance. 
   default = "0.0.0.0/0"
 }
 
 variable "vpc_security_group_ingress_rule_allow_ssh_ipv4_ip_protocol" {
   type = string
   nullable = false
-  default = "22"
+  default = "tcp"
 }
 
 variable "vpc_security_group_ingress_rule_allow_tls_ipv4_from_port" {

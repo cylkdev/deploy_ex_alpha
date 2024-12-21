@@ -1,0 +1,10 @@
+# An Ansible playbook is like a set of instructions or a
+# "recipe" for automating tasks on computers. It tells
+# Ansible what to do, step by step, such as installing
+# specific versions of software, configuring settings
+# such as environment variables, or updating systems.
+- name: Deploy Elixir Release
+  hosts: group_requis_backend
+  remote_user: ec2-user
+  roles:
+    - elixir_release

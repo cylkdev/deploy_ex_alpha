@@ -1,3 +1,6 @@
+# module: availability-zone-instance
+# version: 0.1.0
+
 data "aws_availability_zones" "available" {
   count = var.enable_availability_zones ? 1 : 0
   
