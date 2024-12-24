@@ -22,6 +22,10 @@ jobs:
           command: |
             terraform --version
       - run:
+          name: Install Docker
+          command: |
+            apk add docker
+      - run:
           name: Ansible Controller
           command: |
             docker inspect -f ‘{{range.NetworkSettings. Networks}}{{.IPAddress}}{{end}}’ ansible”
