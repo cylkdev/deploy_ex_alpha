@@ -74,6 +74,7 @@ workflows:
       - terraform_provision_ec2:
           context:
             - aws_deploy
+          environment: development
 
       - ansible_playbook:
           context:
