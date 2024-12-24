@@ -1,5 +1,5 @@
 module "availability_zone_instance" {
-  source = "./modules/availability-zone-instance"
+  source = "./modules/availability-zone"
 
   region                    = var.region
   availability_zone_count   = var.availability_zone_count
@@ -40,7 +40,7 @@ module "ec2_instance" {
 
   # Use the specified available zone names if set otherwise
   # the availability zones names exported by the
-  # `availability-zone-instance` module.
+  # `availability-zone` module.
   availability_zone_names = length(coalesce(var.availability_zone_names, [])) > 0 ? var.availability_zone_names : module.availability_zone_instance.availability_zone_names
 
   available_public_subnets  = module.vpc_instance.available_public_subnets

@@ -1,4 +1,4 @@
-# module: availability-zone-instance
+# module: availability-zone
 # version: 0.1.0
 
 data "aws_availability_zones" "available" {
