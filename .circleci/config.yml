@@ -11,16 +11,12 @@ executors:
         name: ansible
 
 jobs:
-  terraform_init:
+  terraform_provision_ec2:
     executor: terraform
     working_directory: ~/project/terraform
     steps:
       - checkout:
           path: ~/project
-      - run:
-          name: List Directory contents
-          command: |
-            ls -R --color
       - run:
           name: Terraform Version
           command: |
@@ -29,26 +25,10 @@ jobs:
           name: Terraform Init
           command: |
             terraform init
-
-  terraform_plan_provision_ec2:
-    executor: terraform
-    working_directory: ~/project/terraform
-    parameters:
-      environment:
-        type: string
-    steps:
       - run:
           name: Terraform Plan
           command: |
             terraform plan -var-file="vars/<< parameters.environment >>.tfvars" -var='enable_elb=false' -out << parameters.environment >>.tfplan
-  
-  terraform_provision_ec2:
-    executor: terraform
-    working_directory: ~/project/terraform
-    parameters:
-      environment:
-        type: string
-    steps:
       - run:
           name: Apply Terraform EC2 Resources
           command: terraform apply << parameters.environment >>.tfplan
@@ -62,18 +42,6 @@ jobs:
           command: |
             ansible-playbook -i inventory/aws_ec2.yaml playbooks/health_check.yaml
 
-  terraform_plan_provision_autoscaling:
-    executor: terraform
-    working_directory: ~/project/terraform
-    parameters:
-      environment:
-        type: string
-    steps:
-      - run:
-          name: Terraform Plan
-          command: |
-            terraform plan -var-file="vars/<< parameters.environment >>.tfvars" -var='enable_elb=true' -out << parameters.environment >>.tfplan
-
   terraform_provision_autoscaling:
     executor: terraform
     working_directory: ~/project/terraform
@@ -81,6 +49,20 @@ jobs:
       environment:
         type: string
     steps:
+      - checkout:
+          path: ~/project
+      - run:
+          name: Terraform Version
+          command: |
+            terraform --version
+      - run:
+          name: Terraform Init
+          command: |
+            terraform init
+      - run:
+          name: Terraform Plan
+          command: |
+            terraform plan -var-file="vars/<< parameters.environment >>.tfvars" -var='enable_elb=true' -out << parameters.environment >>.tfplan
       - run:
           name: Apply Terraform EC2 Resources
           command: |
@@ -89,26 +71,9 @@ jobs:
 workflows:
   deploy:
     jobs:
-      - terraform_init:
-          context:
-            - aws_deploy
-
-      - terraform_plan_provision_ec2:
-          context:
-            - aws_deploy
-          requires:
-            - terraform_init
-          environment: development
-
-      - approve_deploy:
-          type: approval
-          requires:
-            - terraform_plan_provision_ec2
-
       - terraform_provision_ec2:
-          type: approval
-          requires:
-            - approve_deploy
+          context:
+            - aws_deploy
 
       - ansible_playbook:
           context:
@@ -116,16 +81,9 @@ workflows:
           requires:
             - terraform_provision_ec2
 
-      - terraform_plan_provision_autoscaling:
-          context:
-            - aws_deploy
-          requires:
-            - ansible_playbook
-          environment: development
-
       - terraform_provision_autoscaling:
           context:
             - aws_deploy
           requires:
-            - terraform_plan_provision_autoscaling
+            - ansible_playbook
           environment: development
