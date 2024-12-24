@@ -18,7 +18,12 @@ jobs:
       environment:
         type: string
     steps:
-      - checkout
+      - checkout:
+          path: ~/project
+      - run:
+          name: Terraform Version
+          command: |
+            terraform --version
       - run:
           name: List Directory contents
           command: |
@@ -35,7 +40,8 @@ jobs:
       environment:
         type: string
     steps:
-      - checkout
+      - checkout:
+          path: ~/project
       - run:
           name: List Directory contents
           command: |
@@ -48,11 +54,16 @@ jobs:
     executor: ansible
     working_directory: ~/project/ansible
     steps:
-      - checkout
+      - checkout:
+          path: ~/project
       - run:
           name: List Directory contents
           command: |
             ls -R --color
+      - run:
+          name: Ansible Version
+          command: |
+            ansible --version
       - run:
           name: Run Ansible Playbook
           command: |
@@ -65,7 +76,8 @@ jobs:
       environment:
         type: string
     steps:
-      - checkout
+      - checkout:
+          path: ~/project
       - run:
           name: List Directory contents
           command: |
