@@ -47,7 +47,7 @@ module "ec2_instance" {
   available_private_subnets = module.vpc_instance.available_private_subnets
 
   # Allows SSH and TLS traffic.
-  security_group_ids = [
+  vpc_security_group_ids = [
     module.vpc_instance.aws_security_group_allow_ssh.id,
     module.vpc_instance.aws_security_group_allow_tls.id
   ]
@@ -55,7 +55,7 @@ module "ec2_instance" {
   # The EC2 instance will be replaced if any of the given values change.
   # This can be used to ensure that dependent resources are destroyed
   # before trying to destroy the instance.
-  replace_triggered_by_data = [
+  replace_triggered_by = [
     # Tracks the SSH security group id.
     module.vpc_instance.aws_security_group_allow_ssh.id,
 
@@ -67,9 +67,9 @@ module "ec2_instance" {
     format("%s_%s", "allow_ssh_ipv4_ip_protocol", module.vpc_instance.vpc_security_group_ingress_rule_allow_ssh_ipv4_ip_protocol),
 
     # Tracks IPv4 ingress configuration.
-    format("%s_%s", "allow_tls_ipv4_from_port", module.vpc_instance.vpc_security_group_ingress_rule_allow_tls_ipv4_from_port),
-    format("%s_%s", "allow_tls_ipv4_ip_protocol", module.vpc_instance.vpc_security_group_ingress_rule_allow_tls_ipv4_ip_protocol),
-    format("%s_%s", "allow_tls_ipv4_to_port", module.vpc_instance.vpc_security_group_ingress_rule_allow_tls_ipv4_to_port),
+    format("%s_%s", "allow_https_ipv4_from_port", module.vpc_instance.vpc_security_group_ingress_rule_allow_https_ipv4_from_port),
+    format("%s_%s", "allow_https_ipv4_ip_protocol", module.vpc_instance.vpc_security_group_ingress_rule_allow_https_ipv4_ip_protocol),
+    format("%s_%s", "allow_https_ipv4_to_port", module.vpc_instance.vpc_security_group_ingress_rule_allow_https_ipv4_to_port),
 
     # Tracks IPv4 egress configuration.
     format("%s_%s", "allow_all_traffic_ipv4_cidr_ipv4", module.vpc_instance.vpc_security_group_egress_rule_allow_all_traffic_ipv4_cidr_ipv4),
@@ -79,14 +79,14 @@ module "ec2_instance" {
   # TODO: set this on the object so that this can be isolated
   deployment_group                     = var.deployment_group
 
-  instance_name                        = each.value.instance_name
+  instance_group                        = each.value.instance_group
   instance_ami_id                      = try(each.value.instance_ami_id, null)
   instance_type                        = try(each.value.instance_type, null)
 
   create_key_pair                      = try(each.value.create_key_pair, null)
   key_pair_key_name                    = try(each.value.key_pair_key_name, null)
             
-  desired_instance_count               = try(each.value.desired_instance_count, null)
+  desired_count               = try(each.value.desired_count, null)
   enable_user_data                     = try(each.value.enable_user_data, null)
   user_data                            = try(each.value.user_data, null)
 
@@ -96,7 +96,7 @@ module "ec2_instance" {
   minimum_instance_count               = try(each.value.minimum_instance_count, null)
   
   enable_ebs                           = try(each.value.enable_ebs, null)
-  instance_ebs_size                    = try(each.value.instance_ebs_size, null)
+  ebs_volume_size                    = try(each.value.ebs_volume_size, null)
 
   associate_public_ip_address          = try(each.value.associate_public_ip_address, null)
   enable_eip                           = try(each.value.enable_eip, null)
@@ -123,7 +123,7 @@ module "ec2_instance" {
 # # instances.
 # #
 # resource "local_file" "ansible_inventory" {
-#   filename = "../${path.root}/ansible_terraform/aws_instance_inventory.yaml"
+#   filename = "../${path.root}/terraform_exports/aws_instance_inventory.yaml"
 
 #   content = yamlencode({
 #     for module in module.ec2_instance : 

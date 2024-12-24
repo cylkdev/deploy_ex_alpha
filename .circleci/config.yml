@@ -1,24 +1,39 @@
 version: 2.1
 
 jobs:
-  ansible-terraform:
+  ansible:
     docker:
       - image: alpine/ansible:2.17.0
-      - image: hashicorp/terraform:1.10
+        name: ansible
     steps:
       - checkout
       - run:
           name: Ansible Version
           command: |
             ansible --version
+  terraform:
+    docker:
+      - image: hashicorp/terraform:1.10
+        name: terraform
+    steps:
+      - checkout
       - run:
           name: Terraform Version
           command: |
             terraform --version
+      - run:
+          name: Ansible Controller
+          command: |
+            docker inspect -f ‘{{range.NetworkSettings. Networks}}{{.IPAddress}}{{end}}’ ansible”
 
 workflows:
   deploy:
     jobs:
-      - ansible-terraform:
+      - ansible:
           context:
             - aws_deploy
+      - terraform:
+          context:
+            - aws_deploy
+          requires:
+            - ansible

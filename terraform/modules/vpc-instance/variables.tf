@@ -32,7 +32,7 @@ variable "vpc_name" {
 variable "vpc_security_group_ingress_rule_allow_ssh_ipv4_cidr_ipv4" {
   type = string
   nullable = false
-  # Rules with source of 0.0.0.0/0 or ::/0 allow all IP addresses to access your instance. 
+  # Rule 0.0.0.0/0 and ::/0 allow any ip to access the instance. 
   default = "0.0.0.0/0"
 }
 
@@ -42,19 +42,26 @@ variable "vpc_security_group_ingress_rule_allow_ssh_ipv4_ip_protocol" {
   default = "tcp"
 }
 
-variable "vpc_security_group_ingress_rule_allow_tls_ipv4_from_port" {
+variable "vpc_security_group_ingress_rule_allow_https_ipv4_cidr" {
+  type = string
+  nullable = false
+  # Rule 0.0.0.0/0 and ::/0 allow any ip to access the instance. 
+  default = "0.0.0.0/0"
+}
+
+variable "vpc_security_group_ingress_rule_allow_https_ipv4_from_port" {
   type = number
   nullable = false
   default = 443
 }
 
-variable "vpc_security_group_ingress_rule_allow_tls_ipv4_ip_protocol" {
+variable "vpc_security_group_ingress_rule_allow_https_ipv4_ip_protocol" {
   type = string
   nullable = false
   default = "tcp"
 }
 
-variable "vpc_security_group_ingress_rule_allow_tls_ipv4_to_port" {
+variable "vpc_security_group_ingress_rule_allow_https_ipv4_to_port" {
   type = number
   nullable = false
   default = 443

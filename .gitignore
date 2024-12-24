@@ -30,4 +30,5 @@ override.tf.json
 terraform.rc
 
 # Ignore SSH keys
+terraform_exports/*
 *.pem

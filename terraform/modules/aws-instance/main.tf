@@ -2,8 +2,8 @@
 # version: 0.1.0
 
 locals {
-  instance_name_kebab_case = lower(replace(var.instance_name, " ", "-"))
-  instance_name_snake_case = lower(replace(var.instance_name, " ", "_"))
+  instance_group_kebab_case = lower(replace(var.instance_group, " ", "-"))
+  instance_group_snake_case = lower(replace(var.instance_group, " ", "_"))
 }
 
 ################################################################
@@ -21,6 +21,7 @@ locals {
 # Creates a TLS private key.
 #
 # *** IMPORTANT ***
+#
 # Do not output this resource as it will save the result in
 # plaintext to the terraform state which is a security risk.
 resource "tls_private_key" "ssh_key" {
@@ -35,12 +36,13 @@ resource "tls_private_key" "ssh_key" {
 # Creates a tls private key.
 #
 # *** IMPORTANT ***
+#
 # Do not output this resource as it will save the result in
 # plaintext to the terraform state which is a security risk.
 resource "aws_key_pair" "key_pair" {
   count = var.create_key_pair && (var.key_pair_key_name == null) ? 1 : 0
 
-  key_name   = "${local.instance_name_kebab_case}-key-pair"
+  key_name   = "${local.instance_group_kebab_case}-key-pair"
   public_key = tls_private_key.ssh_key[0].public_key_openssh
 }
 
@@ -50,7 +52,7 @@ resource "aws_key_pair" "key_pair" {
 resource "local_file" "ssh_key" {
   count = var.create_key_pair && (var.key_pair_key_name == null) ? 1 : 0
 
-  filename        = "../${path.root}/ssh/aws_instance/${aws_key_pair.key_pair[0].key_name}.pem"
+  filename        = "../${path.root}/terraform_exports/aws_instance/ssh/${aws_key_pair.key_pair[0].key_name}.pem"
   content         = tls_private_key.ssh_key[0].private_key_pem
   file_permission = 0400
 }
@@ -59,13 +61,11 @@ resource "local_file" "ssh_key" {
 # IAM (Identity and Access Management)
 ################################################################
 #
-#
-# *** IMPORTANT ***
-# The metadata service is used to securely provide temporary
-# credentials. Any changes to this section may disrupt other
-# components. See the documentation below for information on
-# the behavior.
-#
+# > *** IMPORTANT ***
+# > The metadata service is used to securely provide temporary
+# > credentials. Any changes to this section may disrupt other
+# > components. See the documentation below for information on
+# > the behavior.
 #
 # An IAM role is a virtual identity that grants access to AWS
 # resources. The role itself doesn’t define permissions and
@@ -143,15 +143,13 @@ data "aws_iam_policy_document" "trust_policy" {
 # Creates a IAM role that defines the permissions available
 # to the ec2 instance at runtime.
 resource "aws_iam_role" "instance_role" {
-  # <instance_name>-<environment>-role
-  name = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "role")
+  name = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "role")
 
   assume_role_policy = data.aws_iam_policy_document.trust_policy.json
 
   tags = merge({
-    # <instance_name>-<environment>-role
-    Name          = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "role")
-    InstanceGroup = local.instance_name_snake_case
+    Name          = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "role")
+    InstanceGroup = local.instance_group_snake_case
     Group         = var.deployment_group
     Environment   = var.environment
     Vendor        = "Self"
@@ -161,15 +159,14 @@ resource "aws_iam_role" "instance_role" {
 
 # ---
 #
-# Creates a IAM Instance Profile which the ec2 instance
-# will use to automatically assume the IAM role at runtime.
-resource "aws_iam_instance_profile" "instance_profile" {
-  # *** IMPORTANT ***
+# Creates a IAM instance profile that the EC2 instance will
+# assume on launch.
+resource "aws_iam_instance_profile" "ec2_instance_profile" {
   # The name attribute must always be unique. This means that even
   # if you have different role or path values, duplicating an
   # existing instance profile name will lead to an
   # EntityAlreadyExists error.
-  name = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "profile")
+  name = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "profile")
 
   role = aws_iam_role.instance_role.name
 }
@@ -209,10 +206,8 @@ data "aws_iam_policy_document" "role_policy" {
 #
 # Creates a IAM role policy which defines what the role can do,
 # as well as the actions and resources the role can access.
-#
-# See the IAM policy document for the permissions.
 resource "aws_iam_role_policy" "role_policy" {
-  name = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "policy")
+  name = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "policy")
   role = aws_iam_role.instance_role.id
   policy = data.aws_iam_policy_document.role_policy.json
 }
@@ -220,146 +215,145 @@ resource "aws_iam_role_policy" "role_policy" {
 ################################################################
 # SUBNET
 ################################################################
-#
-# This module only retrieves details about existing subnets.
-# This is done by parsing a list of objects exported from
-# the module `vpc-instance`.
-#
-# Keys
-#
-#   * availability_zone - Name of the availability zone.
-#
-#   * availability_zone_id - The id of `availability_zone`.
-#
-#   * cidr_block - An IPv4 CIDR block.
-#
-#   * id - The subnet id.
-#
-#   * ipv6_cidr_block - An IPv6 CIDR block.
-#
-################################################################
 
 # ---
+# Creates a subnet
 #
-# Retrieves details for the subnet.
-# 
-# Note: This does not create the subnet resource. See the
+# This does not create the subnet resource. See the
 # module `vpc-instance` for more information on creating
 # subnets.
 data "aws_subnet" "private_subnet" {
-  for_each = var.available_private_subnets
+  count = length(var.available_private_subnets)
 
-  availability_zone = each.value.availability_zone
-  id                = each.value.id
+  availability_zone = var.available_private_subnets[count.index].availability_zone
+  id = var.available_private_subnets[count.index].id
 }
 
 # ---
+# Creates a subnet
 #
-# Retrieves details for the subnet.
-# 
-# Note: This does not create the subnet resource. See the
+# This does not create the subnet resource. See the
 # module `vpc-instance` for more information on creating
 # subnets.
 data "aws_subnet" "public_subnet" {
-  for_each = var.available_public_subnets
+  count = length(var.available_public_subnets)
 
-  availability_zone = each.value.availability_zone
-  id                = each.value.id
+  availability_zone = var.available_public_subnets[count.index].availability_zone
+  id = var.available_public_subnets[count.index].id
 }
 
-### EC2 INSTANCE
+################################################################
+# AWS INSTANCE (EC2)
+################################################################
 
-resource "terraform_data" "replace_triggered_by_data" {
-  input = var.replace_triggered_by_data
+resource "terraform_data" "replace_triggered_by" {
+  # Resources cannot be passed across modules which means
+  # you cannot track resources directly to detect changes that
+  # would require another resource to be destroyed before the
+  # instance.
+  input = var.replace_triggered_by
 }
 
 resource "aws_instance" "ec2_instance" {
-  count = var.desired_instance_count
+  count = var.desired_count
 
-  availability_zone           = element(var.availability_zone_names, count.index % length(var.availability_zone_names))
-  ami                         = var.instance_ami_id
-  instance_type               = var.instance_type
-  user_data                   = var.enable_user_data ? (var.user_data == null ? file("${path.module}/user_data.sh") : file(var.user_data)) : ""
-  key_name                    = var.create_key_pair && (var.key_pair_key_name == null) ? aws_key_pair.key_pair[0].key_name : var.key_pair_key_name
+  ami               = var.instance_ami_id
+  availability_zone = element(var.availability_zone_names, count.index % length(var.availability_zone_names))
+  instance_type     = var.instance_type
+
+  # After attaching an Amazon EBS volume to an EC2 instance,
+  # the disk needs to be prepared before it can be used. This is
+  # done by the default `user_data.sh` file.
+  user_data = (
+    var.enable_user_data ?
+    (
+      var.user_data == null ?
+      file("${path.module}/files/user_data.sh") :
+      var.user_data
+    ) :
+    ""
+  )
+
+  key_name = (
+    var.create_key_pair && (var.key_pair_key_name == null) ?
+    aws_key_pair.key_pair[0].key_name :
+    var.key_pair_key_name
+  )
 
   # The IAM instance profile is required to use the instance
   # metadata service. This profile is loaded at runtime with
   # the permissions defined by the IAM role.
-  iam_instance_profile = aws_iam_instance_profile.instance_profile.name
+  #
+  # This functionality is utilized by other services to get
+  # temporary credentials and changing this field may break
+  # things.
+  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
 
-  vpc_security_group_ids = var.security_group_ids
+  vpc_security_group_ids = var.vpc_security_group_ids
 
   associate_public_ip_address = var.associate_public_ip_address
 
-  # If `enable_public_instance` is `true` the instance is
-  # placed in a public subnet, otherwise if `false` the
-  # instance is placed in a private subnet and cannot be
-  # accessed directly from the web.
-  #
-  # The instance cannot be accessed on the private subnet
-  # because the route table does not include a route to
-  # an Internet Gateway (IGW), which is required for
-  # direct internet access.
-  #
-  # If the instance is on a private subnet and needs 
-  # direct access to the internet consider using a
-  # NAT Gateway or VPC endpoint.
-  subnet_id = (var.enable_public_instance ?
-    element(values(data.aws_subnet.public_subnet), count.index).id :
-    element(values(data.aws_subnet.private_subnet), count.index).id
+  subnet_id = (
+    var.enable_public_subnet ?
+    element(
+      lookup(
+        { for subnet in var.available_public_subnets : subnet.availability_zone => subnet... },
+        element(var.availability_zone_names, count.index % length(var.availability_zone_names))
+      ),
+      count.index % length(var.availability_zone_names)
+    ).id :
+    element(
+      lookup(
+        { for subnet in var.available_private_subnets : subnet.availability_zone => subnet... },
+        element(var.availability_zone_names, count.index % length(var.availability_zone_names))
+      ),
+      count.index % length(var.availability_zone_names)
+    ).id
   )
 
   cpu_options {
-    core_count       = var.cpu_core_count
+    core_count = var.cpu_core_count
     threads_per_core = var.cpu_threads_per_core
   }
 
   private_dns_name_options {
-    hostname_type                     = "resource-name"
+    hostname_type = var.hostname_type
     enable_resource_name_dns_a_record = var.enable_resource_name_dns_a_record
   }
 
-  # Resources cannot be passed across modules which can affect
-  # terraform's ability to detect changes that would require
-  # another resource to be destroyed before the instance, for
-  # example a security group.
-  #
-  # To allow resource changes to be tracked we use a terraform
-  # data resource that accepts a list of values as strings.
-  #
-  # To use this you must define the change you wish to track
-  # as a variable and pass that value to the resource as well
-  # as the `replace_triggered_by_data` option of this module.
   lifecycle {
-    replace_triggered_by = [ terraform_data.replace_triggered_by_data ]
+    replace_triggered_by = [ terraform_data.replace_triggered_by ]
   }
 
   tags = merge({
     AvailabilityZone = element(var.availability_zone_names, count.index % length(var.availability_zone_names))
     Environment      = var.environment
     Group            = var.deployment_group
-    InstanceGroup    = local.instance_name_snake_case
-    Name             = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, count.index)
+    InstanceGroup    = local.instance_group_snake_case
+    Name             = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, count.index)
     Region           = var.region
     Vendor           = "Self"
     Type             = "Self Made"
   }, var.tags)
 }
 
-### EBS VOLUME
+################################################################
+# Amazon Elastic Block Store (EBS)
+################################################################
 
 resource "aws_ebs_volume" "ec2_ebs" {
-  count = var.enable_ebs ? var.desired_instance_count : 0
+  count = var.desired_count
 
-  availability_zone  = var.availability_zone_names[count.index % length(var.availability_zone_names)]
-  size               = var.instance_ebs_size
+  availability_zone  = element(var.availability_zone_names, count.index % length(var.availability_zone_names))
+
+  size               = var.ebs_volume_size
 
   tags = merge({
-    AvailabilityZone = var.availability_zone_names[count.index % length(var.availability_zone_names)]
+    AvailabilityZone = element(var.availability_zone_names, count.index % length(var.availability_zone_names))
     Environment      = var.environment
-    InstanceGroup    = local.instance_name_snake_case
+    InstanceGroup    = local.instance_group_snake_case
     Group            = var.deployment_group
-    Name             = format("%s-%s-%s-%s", local.instance_name_kebab_case, var.environment, "ebs", count.index)
+    Name             = format("%s-%s-%s-%s", local.instance_group_kebab_case, var.environment, "ebs", count.index)
     Region           = var.region
     Vendor           = "Self"
     Type             = "Self Made"
@@ -367,7 +361,7 @@ resource "aws_ebs_volume" "ec2_ebs" {
 }
 
 resource "aws_volume_attachment" "ec2_ebs_association" {
-  count = var.enable_ebs ? var.desired_instance_count : 0
+  count = var.desired_count
 
   device_name = "/dev/sdh"
   volume_id   = aws_ebs_volume.ec2_ebs[count.index].id
@@ -377,15 +371,15 @@ resource "aws_volume_attachment" "ec2_ebs_association" {
 ### ELASTIC IP
 
 resource "aws_eip" "ec2_eip" {
-  count = var.enable_eip ? var.desired_instance_count : 0
+  count = var.enable_eip ? var.desired_count : 0
 
   domain = "vpc"
 
   tags = merge({
     Environment      = var.environment
     Group            = var.deployment_group
-    InstanceGroup    = local.instance_name_snake_case
-    Name             = format("%s-%s-%s-%s", local.instance_name_kebab_case, var.environment, "eip", count.index)
+    InstanceGroup    = local.instance_group_snake_case
+    Name             = format("%s-%s-%s-%s", local.instance_group_kebab_case, var.environment, "eip", count.index)
     Region           = var.region
     Vendor           = "Self"
     Type             = "Self Made"
@@ -393,19 +387,20 @@ resource "aws_eip" "ec2_eip" {
 }
 
 resource "aws_eip_association" "ec2_eip_association" {
-  count = var.enable_eip ? var.desired_instance_count : 0
+  count = var.enable_eip ? var.desired_count : 0
 
   instance_id   = aws_instance.ec2_instance[count.index].id
+  
   allocation_id = aws_eip.ec2_eip[count.index].id
 }
 
 # ### ELASTIC LOAD BALANCER
 
 # resource "aws_lb_target_group" "ec2_lb_target_group" {
-#   count = var.enable_elb && var.desired_instance_count > 1 ? 1 : 0
+#   count = var.enable_elb && var.desired_count > 1 ? 1 : 0
 
 #   # The name is truncated because it cannot be longer than 32 characters.
-#   name  = substr(format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "lb-tg"), 0, 32)
+#   name  = substr(format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb-tg"), 0, 32)
 
 #   vpc_id             = var.vpc_id
 #   protocol           = "HTTP"
@@ -414,8 +409,8 @@ resource "aws_eip_association" "ec2_eip_association" {
 #   tags = merge({
 #     Environment      = var.environment
 #     Group            = var.deployment_group
-#     InstanceGroup    = local.instance_name_snake_case
-#     Name             = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "lb-tg")
+#     InstanceGroup    = local.instance_group_snake_case
+#     Name             = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb-tg")
 #     Region           = var.region
 #     Vendor           = "Self"
 #     Type             = "Self Made"
@@ -423,18 +418,18 @@ resource "aws_eip_association" "ec2_eip_association" {
 # }
 
 # resource "aws_lb" "ec2_lb" {
-#   count = var.enable_elb && var.desired_instance_count > 1 ? 1 : 0
+#   count = var.enable_elb && var.desired_count > 1 ? 1 : 0
 
-#   name                = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "lb")
+#   name                = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb")
 #   load_balancer_type  = "application"
 #   subnets             = [ for subnet in data.aws_subnet.public_subnet : subnet.id ]
 #   security_groups     = var.security_group_ids
 
 #   tags = merge({
 #     Environment   = var.environment
-#     InstanceGroup = local.instance_name_snake_case
+#     InstanceGroup = local.instance_group_snake_case
 #     Group         = var.deployment_group
-#     Name          = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "lb")
+#     Name          = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb")
 #     Region        = var.region
 #     Vendor        = "Self"
 #     Type          = "Self Made"
@@ -443,7 +438,7 @@ resource "aws_eip_association" "ec2_eip_association" {
 
 # # Attach each ec2 instance to the target group
 # resource "aws_lb_target_group_attachment" "ec2_lb_target_group_attachment" {
-#   count = var.enable_elb ? var.desired_instance_count : 0
+#   count = var.enable_elb ? var.desired_count : 0
 
 #   target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
 #   target_id        = aws_instance.ec2_instance[count.index].id
@@ -467,7 +462,7 @@ resource "aws_eip_association" "ec2_eip_association" {
 # server certificate on the listener.
 
 # resource "aws_lb_listener" "ec2_lb_listener" {
-#   count = var.enable_elb && var.desired_instance_count > 1 ? 1 : 0 
+#   count = var.enable_elb && var.desired_count > 1 ? 1 : 0 
 
 #   load_balancer_arn = aws_lb.ec2_lb[0].arn
 #   port              = var.elb_listener_port
@@ -482,17 +477,17 @@ resource "aws_eip_association" "ec2_eip_association" {
 # ### Simple Queue Service
 
 # resource "aws_sqs_queue" "ec2_sqs" {
-#   count                     = (var.enable_sqs && var.desired_instance_count > 1) ? 1 : 0
+#   count                     = (var.enable_sqs && var.desired_count > 1) ? 1 : 0
 
-#   name                      = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "sqs")
+#   name                      = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "sqs")
 #   delay_seconds             = var.sqs_delay_seconds
 #   max_message_size          = var.max_message_size
 #   message_retention_seconds = var.message_retention_seconds
 #   receive_wait_time_seconds = var.sqs_receive_wait_time_seconds
 
 #   tags = merge({
-#     Name          = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "sqs")
-#     InstanceGroup = local.instance_name_snake_case
+#     Name          = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "sqs")
+#     InstanceGroup = local.instance_group_snake_case
 #     Group         = var.deployment_group
 #     Environment   = var.environment
 #     Vendor        = "Self"
@@ -502,7 +497,7 @@ resource "aws_eip_association" "ec2_eip_association" {
 
 # # Attach redrive policy for sqs queue
 # resource "aws_sqs_queue_redrive_policy" "ec2_sqs_redrive" {
-#   count                 = (var.enable_sqs && var.desired_instance_count > 1) ? 1 : 0
+#   count                 = (var.enable_sqs && var.desired_count > 1) ? 1 : 0
 
 #   queue_url             = aws_sqs_queue.ec2_sqs[0].id
 
@@ -514,9 +509,9 @@ resource "aws_eip_association" "ec2_eip_association" {
 
 # # Create SQS dead letter queue
 # resource "aws_sqs_queue" "ec2_sqs_dlq" {
-#   count = (var.enable_sqs && var.desired_instance_count > 1) ? 1 : 0
+#   count = (var.enable_sqs && var.desired_count > 1) ? 1 : 0
 
-#   name = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "sqs-dlq")
+#   name = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "sqs-dlq")
 
 #   redrive_allow_policy = jsonencode({
 #     redrivePermission  = "byQueue",
@@ -527,28 +522,28 @@ resource "aws_eip_association" "ec2_eip_association" {
 # ### AUTO SCALING
 
 # resource "aws_launch_template" "ec2_instance_template" {
-#   count = (var.enable_auto_scaling && var.desired_instance_count > 1) ? 1 : 0
+#   count = (var.enable_auto_scaling && var.desired_count > 1) ? 1 : 0
 
-#   # <instance_name>-<environment>-lt
-#   name_prefix   = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "lt")
+#   # <instance_group>-<environment>-lt
+#   name_prefix   = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lt")
 #   image_id      = var.instance_ami_id
 #   instance_type = var.instance_type
 # }
 
 # resource "aws_placement_group" "ec2_placement_group" {
-#   count = (var.enable_auto_scaling && var.desired_instance_count > 1) ? length(var.availability_zone_names) : 0
+#   count = (var.enable_auto_scaling && var.desired_count > 1) ? length(var.availability_zone_names) : 0
 
-#   # <instance_name>-<environment>-pg
-#   name     = format("%s-%s-%s-%s", local.instance_name_kebab_case, var.environment, "pg", count.index)
+#   # <instance_group>-<environment>-pg
+#   name     = format("%s-%s-%s-%s", local.instance_group_kebab_case, var.environment, "pg", count.index)
 #   strategy = var.placement_group_strategy
 # }
 
 # resource "aws_autoscaling_group" "ec2_autoscaling_group" {
-#   count = (var.enable_auto_scaling && var.desired_instance_count > 1) ? length(var.availability_zone_names) : 0
+#   count = (var.enable_auto_scaling && var.desired_count > 1) ? length(var.availability_zone_names) : 0
   
-#   name                      = format("%s-%s-%s-%s", local.instance_name_kebab_case, var.environment, "asg", count.index)
+#   name                      = format("%s-%s-%s-%s", local.instance_group_kebab_case, var.environment, "asg", count.index)
 #   placement_group           = aws_placement_group.ec2_placement_group[count.index].id
-#   desired_capacity          = var.desired_instance_count
+#   desired_capacity          = var.desired_count
 #   min_size                  = var.minimum_instance_count
 #   max_size                  = var.maximum_instance_count
 #   health_check_grace_period = 300
@@ -556,7 +551,7 @@ resource "aws_eip_association" "ec2_eip_association" {
 #   force_delete              = true
 
 #   vpc_zone_identifier       = (
-#     var.enable_public_instance ?
+#     var.enable_public_subnet ?
 #     flatten([ for subnet in data.aws_subnet.public_subnet : subnet.availability_zone == element(var.availability_zone_names, count.index) ? [subnet.id] : [] ]) :
 #     flatten([ for subnet in data.aws_subnet.private_subnet : subnet.availability_zone == element(var.availability_zone_names, count.index) ? [subnet.id] : [] ])
 #   )
@@ -572,7 +567,7 @@ resource "aws_eip_association" "ec2_eip_association" {
 #   }
 
 #   initial_lifecycle_hook {
-#     name                 = format("%s-%s-%s-%s", local.instance_name_kebab_case, var.environment, "lck", count.index)
+#     name                 = format("%s-%s-%s-%s", local.instance_group_kebab_case, var.environment, "lck", count.index)
 #     default_result       = "CONTINUE"
 #     heartbeat_timeout    = 2000
 #     lifecycle_transition = "autoscaling:EC2_INSTANCE_LAUNCHING"
@@ -583,8 +578,8 @@ resource "aws_eip_association" "ec2_eip_association" {
 #                   AvailabilityZone = element(var.availability_zone_names, count.index % length(var.availability_zone_names))
 #                   Environment      = var.environment
 #                   Group            = var.deployment_group
-#                   InstanceGroup    = local.instance_name_snake_case
-#                   Name             = format("%s-%s-%s-%s", local.instance_name_kebab_case, var.environment, "asg", count.index)
+#                   InstanceGroup    = local.instance_group_snake_case
+#                   Name             = format("%s-%s-%s-%s", local.instance_group_kebab_case, var.environment, "asg", count.index)
 #                   Region           = var.region
 #                   Vendor           = "Self"
 #                   Type             = "Self Made"
@@ -604,8 +599,8 @@ resource "aws_eip_association" "ec2_eip_association" {
 #       AvailabilityZone = element(var.availability_zone_names, count.index % length(var.availability_zone_names))
 #       Environment      = var.environment
 #       Group            = var.deployment_group
-#       InstanceGroup    = local.instance_name_snake_case
-#       Name             = format("%s-%s-%s-%s", local.instance_name_kebab_case, var.environment, "asg", count.index)
+#       InstanceGroup    = local.instance_group_snake_case
+#       Name             = format("%s-%s-%s-%s", local.instance_group_kebab_case, var.environment, "asg", count.index)
 #       Region           = var.region
 #       Vendor           = "Self"
 #       Type             = "Self Made"

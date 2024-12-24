@@ -6,13 +6,13 @@
 
 #   instances = {
 #     sentry = {
-#       instance_name             = "Sentry"
+#       instance_group             = "Sentry"
 #       placement_group_strategy  = "cluster"
 
 #       create_key_pair           = true
 
 #       enable_auto_scaling       = true
-#       desired_instance_count    = 1
+#       desired_count    = 1
 #       minimum_instance_count    = 1
 #       maximum_instance_count    = 1
 
@@ -25,7 +25,7 @@
 #       # - 20 GB Free Disk Space
 #       #
 #       # https://develop.sentry.dev/self-hosted/#required-minimum-system-resources
-#       instance_ebs_size         = 20
+#       ebs_volume_size         = 20
 
 #       enable_elb                = true
 #       enable_sqs                = true
@@ -44,18 +44,18 @@ vpc_name                  = "TestDeployEx"
 
 ec2_instances = {
   health = {
-    instance_name             = "Health"
+    instance_group             = "Health"
     placement_group_strategy  = "cluster"
 
     create_key_pair           = true
 
     enable_auto_scaling       = true
-    desired_instance_count    = 1
+    desired_count    = 1
     minimum_instance_count    = 1
     maximum_instance_count    = 1
 
     enable_ebs                = true
-    instance_ebs_size         = 20
+    ebs_volume_size         = 20
 
     enable_elb                = true
     enable_sqs                = true

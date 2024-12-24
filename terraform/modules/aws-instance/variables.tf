@@ -37,7 +37,7 @@ variable "vpc_id" {
 
 ### EC2
 
-variable "instance_name" {
+variable "instance_group" {
   type     = string
   nullable = false
 }
@@ -54,21 +54,47 @@ variable "instance_type" {
   default = "t3.micro"
 }
 
-variable "replace_triggered_by_data" {
+variable "replace_triggered_by" {
   type     = list(string)
-  nullable = false
+
+  description = <<EOF
+  Replaces the instance when any of the given values change.
+
+  Note: Resources cannot be passed across modules which means
+  you cannot track resources directly to detect changes that
+  would require another resource to be destroyed before the
+  instance.
+  EOF
 }
 
 variable "associate_public_ip_address" {
   type = bool
+
   nullable = false
+
   default = true
+
+  description = <<EOF
+  When `true` the instance will be assigned a public IP
+  address that can be used to communicate with the internet
+  directly, otherwise if `false` the instance will only have
+  a private IP address.
+  EOF
 }
 
 variable "cpu_core_count" {
-  type     = number
+  type = number
+
   nullable = false
-  default  = 1
+
+  default = 1
+
+  description = <<EOF
+  Sets the number of CPU cores for the instance.
+
+  This option is only supported on creation of instance type
+  that support CPU Options.
+  EOF
 }
 
 variable "cpu_threads_per_core" {
@@ -77,26 +103,89 @@ variable "cpu_threads_per_core" {
   default  = 2
 }
 
-variable "enable_resource_name_dns_a_record" {
-  type = bool
+variable "hostname_type" {
+  type = string
+
   nullable = false
-  default = true
+
+  default = "resource-name"
+
+  description = <<EOF
+  AWS EC2 instances are automatically assigned a Private DNS Name
+  when they are launched. This private DNS name is used for
+  internal communication within the same VPC or connected
+  environments, such as peered VPCs, VPNs, or AWS Direct Connect. 
+
+  When `hostname_type` is `resource-name` the private DNS name of
+  the instance will include its resource name (instance ID) as
+  part of the hostname.
+   
+  For example:
+  
+  ```
+  <instance-id>.<region>.compute.internal
+  ```
+  
+  When `hostname_type` is `ip-name` the private DNS name of the
+  instance is based on the instance's private IP address.
+   
+  For example:
+  
+  ```
+  ip-<private-ip-address>.<region>.compute.internal
+  ```
+  EOF
 }
 
-variable "desired_instance_count" {
-  type     = number
+variable "enable_resource_name_dns_a_record" {
+  type = bool
+
   nullable = false
+
+  default = true
+
+  description = <<EOF
+  When `true` a DNS A record is created in your VPC's private
+  DNS when an EC2 instance has the hostname type set to
+  `resource-name` otherwise when `false` a DNS A record is
+  not created.
+
+  The DNS A record maps the domain name (e.g. <instance-id>.<region>.compute.internal)
+  to the instance's private IP address.
+  EOF
+}
+
+variable "desired_count" {
+  type     = number
+
+  nullable = false
+
   default = 1
+
+  description = "The number of instances to launch."
 }
 
 variable "enable_user_data" {
   type = bool
+
   nullable = false
+
   default = false
+
+  description = <<EOF
+  When `true` and the `user_data` option is not set the
+  default `user_data.sh` is used.
+
+  When `true` and the `user_data` option is set the
+  value of the option is used.
+
+  When `false` the `user_data` is an empty string.
+  EOF
 }
 
 variable "user_data" {
   type = string
+  default = ""
 }
 
 ### AUTO SCALING
@@ -141,14 +230,53 @@ variable "max_healthy_percentage" {
 
 ### SUBNET
 
-variable "enable_public_instance" {
+variable "enable_public_subnet" {
   type     = bool
+
   nullable = false
+
   default  = true
+
+  description = <<EOF
+  When `true` the instance is placed in a public subnet,
+  otherwise if `false` the instance is placed in a
+  private subnet.
+
+  Instances launched in a private subnet cannot be accessed
+  directly from the web. A private subnet by definition is
+  isolated from direct internet access and therefore does
+  not have a route to an Internet Gateway (IGW), which is
+  required for direct internet access.
+  
+  An Internet Gateway allows incoming and outgoing traffic.
+  If the instance is on a private subnet and needs access
+  to the internet consider using a NAT Gateway or VPC
+  endpoint which only allows outgoing traffic to the web.
+
+  A NAT Gateway is designed exclusively for outgoing traffic
+  from private subnets to the internet while maintaining the
+  privacy of the resources within those subnets. NAT Gateway
+  replaces the private IP addresses of the instances in the
+  private subnet with the NAT Gateway's Elastic IP when
+  traffic goes out to the internet. No traffic can originate
+  from the internet to instances in the private subnet via
+  the NAT Gateway.
+
+  Use Case: A database server in a private subnet fetching
+  updates from a software repository on the internet.
+
+  A VPC Endpoint allows private subnets to communicate with
+  AWS services like S3. The method does not involve the
+  internet at all and communication is restricted to
+  specific AWS services over the AWS network.
+
+  Use Case: A private subnet instance uploads files to S3
+  using an S3 VPC endpoint.
+  EOF
 }
 
 variable "available_public_subnets" {
-  type = map(object({
+  type = list(object({
     availability_zone    = string
     availability_zone_id = string
     cidr_block           = string
@@ -160,7 +288,7 @@ variable "available_public_subnets" {
 }
 
 variable "available_private_subnets" {
-  type = map(object({
+  type = list(object({
     availability_zone    = string
     availability_zone_id = string
     cidr_block           = string
@@ -173,10 +301,18 @@ variable "available_private_subnets" {
 
 ### SECURITY GROUP
 
-variable "security_group_ids" {
+variable "vpc_security_group_ids" {
   type = list(string)
+
   nullable = false
+
   default = []
+
+  description = <<EOF
+  The list of security group IDs to associate with the instance.
+  This defines the firewall rules for things like HTTP/HTTPS
+  and SSH traffic.
+  EOF
 }
 
 ### ELASTIC CLOUD BLOCK STORAGE
@@ -188,7 +324,7 @@ variable "enable_ebs" {
   default     = false
 }
 
-variable "instance_ebs_size" {
+variable "ebs_volume_size" {
   description = "EBS size, default 16GB"
   type        = number
   nullable    = false

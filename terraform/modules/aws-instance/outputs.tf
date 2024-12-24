@@ -26,8 +26,8 @@ output "aws_subnet_public_subnet" {
 
 ### EC2
 
-output "terraform_data_replace_triggered_by_data" {
-  value = terraform_data.replace_triggered_by_data
+output "terraform_data_replace_triggered_by" {
+  value = terraform_data.replace_triggered_by
 }
 
 output "aws_ec2_instance" {

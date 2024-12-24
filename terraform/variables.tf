@@ -1,3 +1,118 @@
+# variable "deployments" {
+#   type = list(object({
+#     # GENERAL
+#     environment = string
+#     region      = string
+#     group       = string
+#     tags        = map()
+
+#     # VPC
+#     vpc_name = string
+#     cidr_block = string
+#     cidrsubnet_newbits = number
+#     cidrsubnet_netnum = number
+
+#     # AVAILABILITY ZONE
+#     all_availability_zones = bool
+#     availability_zone_count = optional(number)
+
+#     availability_zone_names = optional(list(string))
+#     exclude_availability_zone_names = optional(list(string))
+
+#     availability_zone_ids = optional(list(string))
+#     exclude_availability_zone_ids = optional(list(string))
+
+#     # SUBNET
+#     subnet_count = number
+#     subnet_cidrsubnet_newbits = number
+
+#     # DNS
+#     enable_dns_support = bool
+#     enable_dns_hostnames = bool
+
+#     instances = map(object({
+#       instance_group            = string
+#       placement_group_strategy  = string
+
+#       create_key_pair           = bool
+
+#       enable_auto_scaling       = bool
+#       desired_count             = number
+#       minimum_instance_count    = number
+#       maximum_instance_count    = number
+
+#       enable_ebs                = bool
+#       ebs_volume_size           = number
+
+#       enable_elb                = bool
+#       enable_sqs                = bool
+#     }))
+#   }))
+
+#   default = [
+#     {
+#       # GENERAL
+#       environment = "development"
+#       region = "us-west-1"
+#       group = "Learn Elixir Backend"
+#       tags = {}
+
+#       # VPC
+#       vpc_name = "Learn Elixir Backend"
+#       cidr_block = "10.16.0.0/16"
+#       cidrsubnet_newbits = 4
+#       cidrsubnet_netnum = 4
+
+#       # AVAILABILITY ZONE
+#       all_availability_zones = true
+#       availability_zone_count = 2
+      
+#       availability_zone_names = [ "us-west-1a", "us-west-1b" ]
+#       exclude_availability_zone_names = [ "us-west-1a" ]
+
+#       availability_zone_ids = [ "us-west-1a", "us-west-1b" ]
+#       exclude_availability_zone_ids = [ "us-west-1a" ]
+
+#       # SUBNET
+#       subnet_count = 4
+#       subnet_cidrsubnet_newbits = 4
+
+#       # DNS
+#       enable_dns_support = true
+#       enable_dns_hostnames = true
+
+#       # EC2
+#       instances = {
+#         sentry = {
+#           instance_group            = "Sentry"
+#           placement_group_strategy  = "cluster"
+
+#           create_key_pair           = true
+
+#           enable_auto_scaling       = true
+#           desired_count             = 1
+#           minimum_instance_count    = 1
+#           maximum_instance_count    = 1
+
+#           enable_ebs                = true
+
+#           # The minimum requirements are:
+#           #
+#           # - 4 CPU Cores
+#           # - 16 GB RAM
+#           # - 20 GB Free Disk Space
+#           #
+#           # https://develop.sentry.dev/self-hosted/#required-minimum-system-resources
+#           ebs_volume_size         = 20
+
+#           enable_elb                = true
+#           enable_sqs                = true
+#         }
+#       }
+#     }
+#   ]
+# }
+
 ### GENERAL
 
 variable "environment" {
@@ -100,7 +215,7 @@ variable "enable_dns_hostnames" {
 
 variable "ec2_instances" {
   type = map(object({
-    instance_name                     = string
+    instance_group                     = string
     instance_ami_id                   = optional(string)
     instance_type                     = optional(string)
 
@@ -110,7 +225,7 @@ variable "ec2_instances" {
     enable_user_data                  = optional(bool)
     user_data                         = optional(string)
 
-    desired_instance_count            = number
+    desired_count            = number
 
     enable_auto_scaling               = optional(bool)
     placement_group_strategy          = optional(string)
@@ -118,7 +233,7 @@ variable "ec2_instances" {
     minimum_instance_count            = optional(number)
 
     enable_ebs                        = optional(bool)
-    instance_ebs_size                 = optional(number)
+    ebs_volume_size                 = optional(number)
 
     associate_public_ip_address       = optional(bool)
     enable_eip                        = optional(bool)

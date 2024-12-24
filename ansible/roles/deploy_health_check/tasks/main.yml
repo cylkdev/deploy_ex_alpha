@@ -1,0 +1,74 @@
+---
+# tasks file for deploy_health_app
+
+- name: Deploy Health Check Application
+  become: True
+  block:
+    - name: Check whoami
+      ansible.builtin.command: whoami
+      register: whoami
+
+    - name: Display whoami
+      ansible.builtin.debug:
+        msg: "The effective user is {{ whoami.stdout }}"
+
+    - name: Get stats for directory '/srv'
+      ansible.builtin.stat:
+        path: /srv
+      register: cwd_stat
+    
+    - name: Print message if directory exists
+      ansible.builtin.debug:
+        msg: "Directory '/srv' exists."
+      when: cwd_stat.stat.exists
+
+    - name: Fail if directory not found
+      ansible.builtin.fail:
+        msg: "Directory '/srv' not found."
+      when: not cwd_stat.stat.exists
+    
+    - name: Create the app directory
+      ansible.builtin.file:
+        path: /srv/{{ app_name }}
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+      register: app_dir_result
+
+    - name: Check if the app directory was created
+      ansible.builtin.debug:
+        msg: "Created app directory."
+      when: app_dir_result is succeeded
+
+    - name: Report failure if the app directory does not exist
+      ansible.builtin.fail:
+        msg: "Failed to create app directory."
+      when: app_dir_result is failed
+
+    - name: Copy server python script
+      ansible.builtin.copy:
+        src: ../files/http_server.py
+        dest: /srv/{{ app_name }}/http_server.py
+        owner: root
+        group: root
+        mode: 0755
+      register: copy_result
+
+    - name: Check if the copy task was successful
+      ansible.builtin.debug:
+        msg: "Copied file to: /srv/{{ app_name }}/http_server.py"
+      when: copy_result is succeeded
+
+    - name: Report failure if copy task failed
+      ansible.builtin.fail:
+        msg: "The copy task failed."
+      when: copy_result is failed
+
+    - name: Start HTTP Service
+      ansible.builtin.include_role:
+        name: systemd-service
+      vars:
+        service_name: health-check
+        exec_start: /usr/bin/python3 http_server.py
+        working_directory: "/srv/{{ app_name }}"

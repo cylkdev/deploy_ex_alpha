@@ -3,8 +3,9 @@
 # Ansible what to do, step by step, such as installing
 # specific versions of software, configuring settings
 # such as environment variables, or updating systems.
-- name: Deploy Elixir Release
+- name: Setup Health App
   hosts: group_requis_backend
-  remote_user: ec2-user
+  vars:
+    app_name: health_check
   roles:
-    - elixir_release
+    - deploy_health_check

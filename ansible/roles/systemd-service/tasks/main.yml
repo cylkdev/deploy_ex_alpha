@@ -1,0 +1,57 @@
+---
+# tasks file for systemd-service
+
+- name: Systemd Service
+  become: True
+  block:
+    - name: Create service file
+      ansible.builtin.template:
+        src: ../templates/systemd.service.j2
+        dest: /etc/systemd/system/{{ service_name }}.service
+        owner: root
+        group: root
+        mode: 0644
+      vars:
+        service_exec_start: "{{ service_exec_start }}"
+        service_working_directory: "{{ service_working_directory }}"
+
+    - name: Get service file stats
+      ansible.builtin.stat:
+        path: /etc/systemd/system/{{ service_name }}.service
+      register: template_file
+    
+    - name: Check if service file exists
+      ansible.builtin.debug:
+        msg: "Successfully created service {{ service_name }} file."
+      when: template_file.stat.exists
+
+    - name: Fail if the service file does not exist
+      ansible.builtin.fail:
+        msg: "Failed to write service {{ service_name }} file."
+      when: not template_file.stat.exists
+
+    - name: Reload systemd configuration to recognize the new service
+      ansible.builtin.command: systemctl daemon-reload
+
+    - name: Start systemd service
+      ansible.builtin.systemd:
+        name: "{{ service_name }}"
+        state: started
+        enabled: true
+      register: systemd_result
+
+    - name: Get the status of the service
+      ansible.builtin.systemd:
+        name: "{{ service_name }}"
+        state: started
+      register: systemd_result
+
+    - name: Print message if service is running
+      ansible.builtin.debug:
+        msg: "Started service {{ service_name }}."
+      when: systemd_result.state == 'started'
+
+    - name: Fail if the service is not running
+      ansible.builtin.fail:
+        msg: "Service {{ service_name }} not running."
+      when: systemd_result.state != 'started'

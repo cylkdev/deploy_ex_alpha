@@ -1,979 +1,517 @@
-2024-12-20 13:20:13,754 p=76976 u=kurthogarth n=ansible | {
-    "_meta": {
-        "hostvars": {}
-    },
-    "all": {
-        "children": [
-            "ungrouped",
-            "group_name"
-        ]
-    },
-    "group_name": {
-        "hosts": [
-            "54.183.4.152 50.18.246.144"
-        ]
-    }
+2024-12-23 10:53:09,426 p=82250 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-23 10:53:10,560 p=82250 u=kurthogarth n=ansible | PLAY [Setup Health App] **********************************************************************************************************
+2024-12-23 10:53:10,567 p=82250 u=kurthogarth n=ansible | TASK [Gathering Facts] ***********************************************************************************************************
+2024-12-23 10:53:12,349 p=82250 u=kurthogarth n=ansible |  [ERROR]: User interrupted execution
+
+2024-12-23 10:53:18,372 p=82275 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-23 10:53:19,173 p=82275 u=kurthogarth n=ansible | PLAY [Setup Health App] **********************************************************************************************************
+2024-12-23 10:53:19,180 p=82275 u=kurthogarth n=ansible | TASK [Gathering Facts] ***********************************************************************************************************
+2024-12-23 10:53:31,144 p=82275 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 10:53:31,149 p=82275 u=kurthogarth n=ansible | TASK [deploy_health_app : Check whoami] ******************************************************************************************
+2024-12-23 10:53:42,039 p=82275 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 10:53:42,048 p=82275 u=kurthogarth n=ansible | TASK [deploy_health_app : Display whoami] ****************************************************************************************
+2024-12-23 10:53:42,068 p=82275 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "The effective user is root"
 }
-2024-12-20 13:20:28,407 p=77008 u=kurthogarth n=ansible | {
-    "_meta": {
-        "hostvars": {}
-    },
-    "all": {
-        "children": [
-            "ungrouped",
-            "group_name"
-        ]
-    },
-    "group_name": {
-        "hosts": [
-            "54.183.4.152",
-            "50.18.246.144"
-        ]
-    }
+2024-12-23 10:53:42,073 p=82275 u=kurthogarth n=ansible | TASK [deploy_health_app : Get stats for directory '/srv'] ************************************************************************
+2024-12-23 10:53:54,216 p=82275 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 10:53:54,225 p=82275 u=kurthogarth n=ansible | TASK [deploy_health_app : Print message if directory exists] *********************************************************************
+2024-12-23 10:53:54,245 p=82275 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Directory '/srv' exists."
 }
-2024-12-20 18:00:35,848 p=83744 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 18:00:37,748 p=83744 u=kurthogarth n=ansible | [WARNING]: Could not match supplied host pattern, ignoring: group_example
-
-2024-12-20 18:00:37,748 p=83744 u=kurthogarth n=ansible | PLAY [Print Hello World] *************************************************************************************************************
-2024-12-20 18:00:37,748 p=83744 u=kurthogarth n=ansible | skipping: no hosts matched
-2024-12-20 18:00:37,748 p=83744 u=kurthogarth n=ansible | PLAY RECAP ***************************************************************************************************************************
-2024-12-20 18:01:59,005 p=83817 u=kurthogarth n=ansible | {
-    "_meta": {
-        "hostvars": {}
-    },
-    "all": {
-        "children": [
-            "ungrouped",
-            "example"
-        ]
-    },
-    "example": {
-        "hosts": [
-            "54.183.4.152",
-            "50.18.246.144"
-        ]
-    }
+2024-12-23 10:53:54,251 p=82275 u=kurthogarth n=ansible | TASK [deploy_health_app : Fail if directory not found] ***************************************************************************
+2024-12-23 10:53:54,263 p=82275 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 10:53:54,267 p=82275 u=kurthogarth n=ansible | TASK [deploy_health_app : Create the app directory] ******************************************************************************
+2024-12-23 10:54:05,222 p=82275 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 10:54:05,234 p=82275 u=kurthogarth n=ansible | TASK [deploy_health_app : Check if the app directory was created] ****************************************************************
+2024-12-23 10:54:05,262 p=82275 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Created app directory."
 }
-2024-12-20 18:12:51,210 p=84150 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 18:12:52,149 p=84150 u=kurthogarth n=ansible | PLAY [Print Hello World] *************************************************************************************************************
-2024-12-20 18:12:52,315 p=84150 u=kurthogarth n=ansible | TASK [Gathering Facts] ***************************************************************************************************************
-2024-12-20 18:12:54,615 p=84150 u=kurthogarth n=ansible |  [ERROR]: User interrupted execution
-
-2024-12-20 18:13:03,551 p=84171 u=kurthogarth n=ansible | PLAY [Print Hello World] *************************************************************************************************************
-2024-12-20 18:13:03,577 p=84171 u=kurthogarth n=ansible | TASK [Gathering Facts] ***************************************************************************************************************
-2024-12-20 18:13:33,726 p=84171 u=kurthogarth n=ansible | fatal: [54.183.4.152]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: ssh: connect to host 54.183.4.152 port 22: Operation timed out", "unreachable": true}
-2024-12-20 18:13:33,727 p=84171 u=kurthogarth n=ansible | fatal: [50.18.246.144]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: ssh: connect to host 50.18.246.144 port 22: Operation timed out", "unreachable": true}
-2024-12-20 18:13:33,727 p=84171 u=kurthogarth n=ansible | PLAY RECAP ***************************************************************************************************************************
-2024-12-20 18:13:33,728 p=84171 u=kurthogarth n=ansible | 50.18.246.144              : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 18:13:33,728 p=84171 u=kurthogarth n=ansible | 54.183.4.152               : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 18:33:12,701 p=84838 u=kurthogarth n=ansible | PLAY [Example Playbook] *****************************************************************************************
-2024-12-20 18:33:12,732 p=84838 u=kurthogarth n=ansible | TASK [Gathering Facts] ******************************************************************************************
-2024-12-20 18:33:42,878 p=84838 u=kurthogarth n=ansible | fatal: [50.18.246.144]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: ssh: connect to host 50.18.246.144 port 22: Operation timed out", "unreachable": true}
-2024-12-20 18:33:42,879 p=84838 u=kurthogarth n=ansible | fatal: [54.183.4.152]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: ssh: connect to host 54.183.4.152 port 22: Operation timed out", "unreachable": true}
-2024-12-20 18:33:42,880 p=84838 u=kurthogarth n=ansible | PLAY RECAP ******************************************************************************************************
-2024-12-20 18:33:42,880 p=84838 u=kurthogarth n=ansible | 50.18.246.144              : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 18:33:42,880 p=84838 u=kurthogarth n=ansible | 54.183.4.152               : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 18:38:21,118 p=84993 u=kurthogarth n=ansible | PLAY [Example Playbook] ****************************************************************************************************
-2024-12-20 18:38:21,145 p=84993 u=kurthogarth n=ansible | TASK [Gathering Facts] *****************************************************************************************************
-2024-12-20 18:38:51,306 p=84993 u=kurthogarth n=ansible | fatal: [50.18.246.144]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: ssh: connect to host 50.18.246.144 port 22: Operation timed out", "unreachable": true}
-2024-12-20 18:38:51,307 p=84993 u=kurthogarth n=ansible | fatal: [54.183.4.152]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: ssh: connect to host 54.183.4.152 port 22: Operation timed out", "unreachable": true}
-2024-12-20 18:38:51,308 p=84993 u=kurthogarth n=ansible | PLAY RECAP *****************************************************************************************************************
-2024-12-20 18:38:51,308 p=84993 u=kurthogarth n=ansible | 50.18.246.144              : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 18:38:51,308 p=84993 u=kurthogarth n=ansible | 54.183.4.152               : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 18:49:56,009 p=85329 u=kurthogarth n=ansible | PLAY [Example Playbook] ****************************************************************************************************
-2024-12-20 18:49:56,036 p=85329 u=kurthogarth n=ansible | TASK [Gathering Facts] *****************************************************************************************************
-2024-12-20 18:50:26,189 p=85329 u=kurthogarth n=ansible | fatal: [50.18.246.144]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: ssh: connect to host 50.18.246.144 port 22: Operation timed out", "unreachable": true}
-2024-12-20 18:50:26,191 p=85329 u=kurthogarth n=ansible | fatal: [54.183.4.152]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: ssh: connect to host 54.183.4.152 port 22: Operation timed out", "unreachable": true}
-2024-12-20 18:50:26,191 p=85329 u=kurthogarth n=ansible | PLAY RECAP *****************************************************************************************************************
-2024-12-20 18:50:26,191 p=85329 u=kurthogarth n=ansible | 50.18.246.144              : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 18:50:26,192 p=85329 u=kurthogarth n=ansible | 54.183.4.152               : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 18:50:56,526 p=85366 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 18:50:57,435 p=85366 u=kurthogarth n=ansible | [WARNING]: Could not match supplied host pattern, ignoring: group_example
-
-2024-12-20 18:50:57,435 p=85366 u=kurthogarth n=ansible | PLAY [Example Playbook] ****************************************************************************************************
-2024-12-20 18:50:57,435 p=85366 u=kurthogarth n=ansible | skipping: no hosts matched
-2024-12-20 18:50:57,435 p=85366 u=kurthogarth n=ansible | PLAY RECAP *****************************************************************************************************************
-2024-12-20 18:51:15,055 p=85387 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 18:51:15,793 p=85387 u=kurthogarth n=ansible | {
-    "_meta": {
-        "hostvars": {
-            "exampleinstance-development-0": {
-                "ami_launch_index": 0,
-                "ansible_host": "54.183.4.152",
-                "architecture": "x86_64",
-                "aws_credentials": {
-                    "AWS_ACCESS_KEY_ID": "<AWS_ACCESS_KEY_ID>",
-                    "AWS_SECRET_ACCESS_KEY": "<AWS_SECRET_ACCESS_KEY>"
-                },
-                "block_device_mappings": [
-                    {
-                        "device_name": "/dev/xvda",
-                        "ebs": {
-                            "attach_time": "2024-12-20T03:27:56+00:00",
-                            "delete_on_termination": true,
-                            "status": "attached",
-                            "volume_id": "vol-051449bb4c54249fe"
-                        }
-                    },
-                    {
-                        "device_name": "/dev/sdh",
-                        "ebs": {
-                            "attach_time": "2024-12-20T03:28:19+00:00",
-                            "delete_on_termination": false,
-                            "status": "attached",
-                            "volume_id": "vol-0757650834e970ac6"
-                        }
-                    }
-                ],
-                "boot_mode": "uefi-preferred",
-                "capacity_reservation_specification": {
-                    "capacity_reservation_preference": "open"
-                },
-                "client_token": "terraform-20241220032754711800000002",
-                "cpu_options": {
-                    "core_count": 1,
-                    "threads_per_core": 2
-                },
-                "current_instance_boot_mode": "uefi",
-                "ebs_optimized": false,
-                "ena_support": true,
-                "enclave_options": {
-                    "enabled": false
-                },
-                "hibernation_options": {
-                    "configured": false
-                },
-                "hypervisor": "xen",
-                "image_id": "ami-047d7c33f6e7b4bc4",
-                "instance_id": "i-083c83168145ef2b8",
-                "instance_type": "t3.micro",
-                "key_name": "ExampleInstance-key-pair",
-                "launch_time": "2024-12-20T03:27:56+00:00",
-                "maintenance_options": {
-                    "auto_recovery": "default"
-                },
-                "metadata_options": {
-                    "http_endpoint": "enabled",
-                    "http_protocol_ipv6": "disabled",
-                    "http_put_response_hop_limit": 2,
-                    "http_tokens": "required",
-                    "instance_metadata_tags": "disabled",
-                    "state": "applied"
-                },
-                "monitoring": {
-                    "state": "disabled"
-                },
-                "network_interfaces": [
-                    {
-                        "association": {
-                            "ip_owner_id": "amazon",
-                            "public_dns_name": "ec2-54-183-4-152.us-west-1.compute.amazonaws.com",
-                            "public_ip": "54.183.4.152"
-                        },
-                        "attachment": {
-                            "attach_time": "2024-12-20T03:27:56+00:00",
-                            "attachment_id": "eni-attach-01275b2e8874b501a",
-                            "delete_on_termination": true,
-                            "device_index": 0,
-                            "network_card_index": 0,
-                            "status": "attached"
-                        },
-                        "description": "",
-                        "groups": [
-                            {
-                                "group_id": "sg-05b47daa884d16f8e",
-                                "group_name": "testdeployex_allow_tls"
-                            },
-                            {
-                                "group_id": "sg-0ff0e05a7db1bb3ed",
-                                "group_name": "testdeployex_allow_ssh"
-                            }
-                        ],
-                        "interface_type": "interface",
-                        "ipv6_addresses": [],
-                        "mac_address": "06:1e:94:28:6e:d5",
-                        "network_interface_id": "eni-026e086fa60ca82ad",
-                        "owner_id": "750872578221",
-                        "private_dns_name": "i-083c83168145ef2b8.us-west-1.compute.internal",
-                        "private_ip_address": "10.16.64.45",
-                        "private_ip_addresses": [
-                            {
-                                "association": {
-                                    "ip_owner_id": "amazon",
-                                    "public_dns_name": "ec2-54-183-4-152.us-west-1.compute.amazonaws.com",
-                                    "public_ip": "54.183.4.152"
-                                },
-                                "primary": true,
-                                "private_dns_name": "i-083c83168145ef2b8.us-west-1.compute.internal",
-                                "private_ip_address": "10.16.64.45"
-                            }
-                        ],
-                        "source_dest_check": true,
-                        "status": "in-use",
-                        "subnet_id": "subnet-002b8ed6e40cd9929",
-                        "vpc_id": "vpc-0c182a2be5a83a4d9"
-                    }
-                ],
-                "owner_id": "750872578221",
-                "placement": {
-                    "availability_zone": "us-west-1a",
-                    "group_name": "",
-                    "region": "us-west-1",
-                    "tenancy": "default"
-                },
-                "platform_details": "Linux/UNIX",
-                "private_dns_name": "i-083c83168145ef2b8.us-west-1.compute.internal",
-                "private_dns_name_options": {
-                    "enable_resource_name_dns_a_record": true,
-                    "enable_resource_name_dns_aaaa_record": false,
-                    "hostname_type": "resource-name"
-                },
-                "private_ip_address": "10.16.64.45",
-                "product_codes": [],
-                "public_dns_name": "ec2-54-183-4-152.us-west-1.compute.amazonaws.com",
-                "public_ip_address": "54.183.4.152",
-                "requester_id": "",
-                "reservation_id": "r-0c58d2d0d540bdb09",
-                "root_device_name": "/dev/xvda",
-                "root_device_type": "ebs",
-                "security_groups": [
-                    {
-                        "group_id": "sg-05b47daa884d16f8e",
-                        "group_name": "testdeployex_allow_tls"
-                    },
-                    {
-                        "group_id": "sg-0ff0e05a7db1bb3ed",
-                        "group_name": "testdeployex_allow_ssh"
-                    }
-                ],
-                "source_dest_check": true,
-                "state": {
-                    "code": 16,
-                    "name": "running"
-                },
-                "state_transition_reason": "",
-                "subnet_id": "subnet-002b8ed6e40cd9929",
-                "tags": {
-                    "AvailabilityZone": "us-west-1a",
-                    "Environment": "development",
-                    "Group": "group_name",
-                    "InstanceGroup": "exampleinstance",
-                    "Name": "exampleinstance-development-0",
-                    "ProjectName": "ExampleProject",
-                    "Region": "us-west-1",
-                    "Type": "Self Made",
-                    "Vendor": "Self"
-                },
-                "usage_operation": "RunInstances",
-                "usage_operation_update_time": "2024-12-20T03:27:55+00:00",
-                "virtualization_type": "hvm",
-                "vpc_id": "vpc-0c182a2be5a83a4d9"
-            },
-            "exampleinstance-development-1": {
-                "ami_launch_index": 0,
-                "ansible_host": "50.18.246.144",
-                "architecture": "x86_64",
-                "aws_credentials": {
-                    "AWS_ACCESS_KEY_ID": "<AWS_ACCESS_KEY_ID>",
-                    "AWS_SECRET_ACCESS_KEY": "<AWS_SECRET_ACCESS_KEY>"
-                },
-                "block_device_mappings": [
-                    {
-                        "device_name": "/dev/xvda",
-                        "ebs": {
-                            "attach_time": "2024-12-20T03:27:56+00:00",
-                            "delete_on_termination": true,
-                            "status": "attached",
-                            "volume_id": "vol-0b075018c2623fb09"
-                        }
-                    },
-                    {
-                        "device_name": "/dev/sdh",
-                        "ebs": {
-                            "attach_time": "2024-12-20T03:28:19+00:00",
-                            "delete_on_termination": false,
-                            "status": "attached",
-                            "volume_id": "vol-01addb6d95f2af371"
-                        }
-                    }
-                ],
-                "boot_mode": "uefi-preferred",
-                "capacity_reservation_specification": {
-                    "capacity_reservation_preference": "open"
-                },
-                "client_token": "terraform-20241220032754711700000001",
-                "cpu_options": {
-                    "core_count": 1,
-                    "threads_per_core": 2
-                },
-                "current_instance_boot_mode": "uefi",
-                "ebs_optimized": false,
-                "ena_support": true,
-                "enclave_options": {
-                    "enabled": false
-                },
-                "hibernation_options": {
-                    "configured": false
-                },
-                "hypervisor": "xen",
-                "image_id": "ami-047d7c33f6e7b4bc4",
-                "instance_id": "i-02f7693e8cfd3f0b9",
-                "instance_type": "t3.micro",
-                "key_name": "ExampleInstance-key-pair",
-                "launch_time": "2024-12-20T03:27:55+00:00",
-                "maintenance_options": {
-                    "auto_recovery": "default"
-                },
-                "metadata_options": {
-                    "http_endpoint": "enabled",
-                    "http_protocol_ipv6": "disabled",
-                    "http_put_response_hop_limit": 2,
-                    "http_tokens": "required",
-                    "instance_metadata_tags": "disabled",
-                    "state": "applied"
-                },
-                "monitoring": {
-                    "state": "disabled"
-                },
-                "network_interfaces": [
-                    {
-                        "association": {
-                            "ip_owner_id": "amazon",
-                            "public_dns_name": "ec2-50-18-246-144.us-west-1.compute.amazonaws.com",
-                            "public_ip": "50.18.246.144"
-                        },
-                        "attachment": {
-                            "attach_time": "2024-12-20T03:27:55+00:00",
-                            "attachment_id": "eni-attach-023d948e10f9c245e",
-                            "delete_on_termination": true,
-                            "device_index": 0,
-                            "network_card_index": 0,
-                            "status": "attached"
-                        },
-                        "description": "",
-                        "groups": [
-                            {
-                                "group_id": "sg-05b47daa884d16f8e",
-                                "group_name": "testdeployex_allow_tls"
-                            },
-                            {
-                                "group_id": "sg-0ff0e05a7db1bb3ed",
-                                "group_name": "testdeployex_allow_ssh"
-                            }
-                        ],
-                        "interface_type": "interface",
-                        "ipv6_addresses": [],
-                        "mac_address": "06:d8:f4:9d:7e:45",
-                        "network_interface_id": "eni-05e8271e40b13427d",
-                        "owner_id": "750872578221",
-                        "private_dns_name": "i-02f7693e8cfd3f0b9.us-west-1.compute.internal",
-                        "private_ip_address": "10.16.64.38",
-                        "private_ip_addresses": [
-                            {
-                                "association": {
-                                    "ip_owner_id": "amazon",
-                                    "public_dns_name": "ec2-50-18-246-144.us-west-1.compute.amazonaws.com",
-                                    "public_ip": "50.18.246.144"
-                                },
-                                "primary": true,
-                                "private_dns_name": "i-02f7693e8cfd3f0b9.us-west-1.compute.internal",
-                                "private_ip_address": "10.16.64.38"
-                            }
-                        ],
-                        "source_dest_check": true,
-                        "status": "in-use",
-                        "subnet_id": "subnet-002b8ed6e40cd9929",
-                        "vpc_id": "vpc-0c182a2be5a83a4d9"
-                    }
-                ],
-                "owner_id": "750872578221",
-                "placement": {
-                    "availability_zone": "us-west-1a",
-                    "group_name": "",
-                    "region": "us-west-1",
-                    "tenancy": "default"
-                },
-                "platform_details": "Linux/UNIX",
-                "private_dns_name": "i-02f7693e8cfd3f0b9.us-west-1.compute.internal",
-                "private_dns_name_options": {
-                    "enable_resource_name_dns_a_record": true,
-                    "enable_resource_name_dns_aaaa_record": false,
-                    "hostname_type": "resource-name"
-                },
-                "private_ip_address": "10.16.64.38",
-                "product_codes": [],
-                "public_dns_name": "ec2-50-18-246-144.us-west-1.compute.amazonaws.com",
-                "public_ip_address": "50.18.246.144",
-                "requester_id": "",
-                "reservation_id": "r-07ef3aaeb3a22a65d",
-                "root_device_name": "/dev/xvda",
-                "root_device_type": "ebs",
-                "security_groups": [
-                    {
-                        "group_id": "sg-05b47daa884d16f8e",
-                        "group_name": "testdeployex_allow_tls"
-                    },
-                    {
-                        "group_id": "sg-0ff0e05a7db1bb3ed",
-                        "group_name": "testdeployex_allow_ssh"
-                    }
-                ],
-                "source_dest_check": true,
-                "state": {
-                    "code": 16,
-                    "name": "running"
-                },
-                "state_transition_reason": "",
-                "subnet_id": "subnet-002b8ed6e40cd9929",
-                "tags": {
-                    "AvailabilityZone": "us-west-1a",
-                    "Environment": "development",
-                    "Group": "group_name",
-                    "InstanceGroup": "exampleinstance",
-                    "Name": "exampleinstance-development-1",
-                    "ProjectName": "ExampleProject",
-                    "Region": "us-west-1",
-                    "Type": "Self Made",
-                    "Vendor": "Self"
-                },
-                "usage_operation": "RunInstances",
-                "usage_operation_update_time": "2024-12-20T03:27:55+00:00",
-                "virtualization_type": "hvm",
-                "vpc_id": "vpc-0c182a2be5a83a4d9"
-            }
-        }
-    },
-    "all": {
-        "children": [
-            "ungrouped",
-            "aws_ec2",
-            "group_exampleinstance"
-        ]
-    },
-    "aws_ec2": {
-        "hosts": [
-            "exampleinstance-development-1",
-            "exampleinstance-development-0"
-        ]
-    },
-    "group_exampleinstance": {
-        "hosts": [
-            "exampleinstance-development-1",
-            "exampleinstance-development-0"
-        ]
-    }
+2024-12-23 10:54:05,268 p=82275 u=kurthogarth n=ansible | TASK [deploy_health_app : Report failure if the app directory does not exist] ****************************************************
+2024-12-23 10:54:05,279 p=82275 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 10:54:05,284 p=82275 u=kurthogarth n=ansible | TASK [deploy_health_app : Copy files to app directory] ***************************************************************************
+2024-12-23 10:54:27,125 p=82275 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 10:54:27,137 p=82275 u=kurthogarth n=ansible | TASK [deploy_health_app : Check if the copy task was successful] *****************************************************************
+2024-12-23 10:54:27,165 p=82275 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Files successfully copied: /srv/health_check/http_server.py."
 }
-2024-12-20 18:56:09,648 p=85564 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 18:56:10,573 p=85564 u=kurthogarth n=ansible | PLAY [Example Playbook] **************************************************************************************************************
-2024-12-20 18:56:10,598 p=85564 u=kurthogarth n=ansible | TASK [Gathering Facts] ***************************************************************************************************************
-2024-12-20 18:56:40,759 p=85564 u=kurthogarth n=ansible | fatal: [exampleinstance-development-0]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: ssh: connect to host 54.183.4.152 port 22: Operation timed out", "unreachable": true}
-2024-12-20 18:56:40,761 p=85564 u=kurthogarth n=ansible | fatal: [exampleinstance-development-1]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: ssh: connect to host 50.18.246.144 port 22: Operation timed out", "unreachable": true}
-2024-12-20 18:56:40,762 p=85564 u=kurthogarth n=ansible | PLAY RECAP ***************************************************************************************************************************
-2024-12-20 18:56:40,763 p=85564 u=kurthogarth n=ansible | exampleinstance-development-0 : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 18:56:40,763 p=85564 u=kurthogarth n=ansible | exampleinstance-development-1 : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:11:53,185 p=86125 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 19:11:54,189 p=86125 u=kurthogarth n=ansible | PLAY [Example Playbook] **************************************************************************************************************
-2024-12-20 19:11:54,215 p=86125 u=kurthogarth n=ansible | TASK [Gathering Facts] ***************************************************************************************************************
-2024-12-20 19:12:05,711 p=86125 u=kurthogarth n=ansible | [WARNING]: Unhandled error in Python interpreter discovery for host exampleinstance-development-0: unexpected output from Python
-interpreter discovery
-
-2024-12-20 19:12:06,010 p=86125 u=kurthogarth n=ansible | [WARNING]: Unhandled error in Python interpreter discovery for host exampleinstance-development-1: unexpected output from Python
-interpreter discovery
-
-2024-12-20 19:12:17,015 p=86125 u=kurthogarth n=ansible | fatal: [exampleinstance-development-0]: FAILED! => {"ansible_facts": {}, "changed": false, "failed_modules": {"ansible.legacy.setup": {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"}, "failed": true, "module_stderr": "", "module_stdout": "Please login as the user \"ec2-user\" rather than the user \"root\".\n\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 142, "warnings": ["Platform unknown on host exampleinstance-development-0 is using the discovered Python interpreter at /usr/bin/python3, but future installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-core/2.17/reference_appendices/interpreter_discovery.html for more information."]}}, "msg": "The following modules failed to execute: ansible.legacy.setup\n"}
-2024-12-20 19:12:17,265 p=86125 u=kurthogarth n=ansible | fatal: [exampleinstance-development-1]: FAILED! => {"ansible_facts": {}, "changed": false, "failed_modules": {"ansible.legacy.setup": {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"}, "failed": true, "module_stderr": "", "module_stdout": "Please login as the user \"ec2-user\" rather than the user \"root\".\n\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 142, "warnings": ["Platform unknown on host exampleinstance-development-1 is using the discovered Python interpreter at /usr/bin/python3, but future installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-core/2.17/reference_appendices/interpreter_discovery.html for more information."]}}, "msg": "The following modules failed to execute: ansible.legacy.setup\n"}
-2024-12-20 19:12:17,266 p=86125 u=kurthogarth n=ansible | PLAY RECAP ***************************************************************************************************************************
-2024-12-20 19:12:17,267 p=86125 u=kurthogarth n=ansible | exampleinstance-development-0 : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:12:17,267 p=86125 u=kurthogarth n=ansible | exampleinstance-development-1 : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:14:37,812 p=86265 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 19:14:38,758 p=86265 u=kurthogarth n=ansible | PLAY [Example Playbook] **************************************************************************************************************
-2024-12-20 19:14:38,786 p=86265 u=kurthogarth n=ansible | TASK [Gathering Facts] ***************************************************************************************************************
-2024-12-20 19:14:50,470 p=86265 u=kurthogarth n=ansible | [WARNING]: Unhandled error in Python interpreter discovery for host exampleinstance-development-0: unexpected output from Python
-interpreter discovery
-
-2024-12-20 19:14:50,603 p=86265 u=kurthogarth n=ansible | [WARNING]: Unhandled error in Python interpreter discovery for host exampleinstance-development-1: unexpected output from Python
-interpreter discovery
-
-2024-12-20 19:15:01,775 p=86265 u=kurthogarth n=ansible | fatal: [exampleinstance-development-0]: FAILED! => {"ansible_facts": {}, "changed": false, "failed_modules": {"ansible.legacy.setup": {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"}, "failed": true, "module_stderr": "", "module_stdout": "Please login as the user \"ec2-user\" rather than the user \"root\".\n\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 142, "warnings": ["Platform unknown on host exampleinstance-development-0 is using the discovered Python interpreter at /usr/bin/python3, but future installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-core/2.17/reference_appendices/interpreter_discovery.html for more information."]}}, "msg": "The following modules failed to execute: ansible.legacy.setup\n"}
-2024-12-20 19:15:01,872 p=86265 u=kurthogarth n=ansible | fatal: [exampleinstance-development-1]: FAILED! => {"ansible_facts": {}, "changed": false, "failed_modules": {"ansible.legacy.setup": {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"}, "failed": true, "module_stderr": "", "module_stdout": "Please login as the user \"ec2-user\" rather than the user \"root\".\n\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 142, "warnings": ["Platform unknown on host exampleinstance-development-1 is using the discovered Python interpreter at /usr/bin/python3, but future installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-core/2.17/reference_appendices/interpreter_discovery.html for more information."]}}, "msg": "The following modules failed to execute: ansible.legacy.setup\n"}
-2024-12-20 19:15:01,874 p=86265 u=kurthogarth n=ansible | PLAY RECAP ***************************************************************************************************************************
-2024-12-20 19:15:01,875 p=86265 u=kurthogarth n=ansible | exampleinstance-development-0 : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:15:01,875 p=86265 u=kurthogarth n=ansible | exampleinstance-development-1 : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:17:31,480 p=86383 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 19:17:32,467 p=86383 u=kurthogarth n=ansible | PLAY [Example Playbook] **************************************************************************************************************
-2024-12-20 19:17:32,492 p=86383 u=kurthogarth n=ansible | TASK [Gathering Facts] ***************************************************************************************************************
-2024-12-20 19:17:44,027 p=86383 u=kurthogarth n=ansible | [WARNING]: Unhandled error in Python interpreter discovery for host exampleinstance-development-1: unexpected output from Python
-interpreter discovery
-
-2024-12-20 19:17:44,045 p=86383 u=kurthogarth n=ansible | [WARNING]: Unhandled error in Python interpreter discovery for host exampleinstance-development-0: unexpected output from Python
-interpreter discovery
-
-2024-12-20 19:17:55,379 p=86383 u=kurthogarth n=ansible | fatal: [exampleinstance-development-0]: FAILED! => {"ansible_facts": {}, "changed": false, "failed_modules": {"ansible.legacy.setup": {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"}, "failed": true, "module_stderr": "", "module_stdout": "Please login as the user \"ec2-user\" rather than the user \"root\".\n\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 142, "warnings": ["Platform unknown on host exampleinstance-development-0 is using the discovered Python interpreter at /usr/bin/python3, but future installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-core/2.17/reference_appendices/interpreter_discovery.html for more information."]}}, "msg": "The following modules failed to execute: ansible.legacy.setup\n"}
-2024-12-20 19:17:55,380 p=86383 u=kurthogarth n=ansible | fatal: [exampleinstance-development-1]: FAILED! => {"ansible_facts": {}, "changed": false, "failed_modules": {"ansible.legacy.setup": {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"}, "failed": true, "module_stderr": "", "module_stdout": "Please login as the user \"ec2-user\" rather than the user \"root\".\n\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 142, "warnings": ["Platform unknown on host exampleinstance-development-1 is using the discovered Python interpreter at /usr/bin/python3, but future installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-core/2.17/reference_appendices/interpreter_discovery.html for more information."]}}, "msg": "The following modules failed to execute: ansible.legacy.setup\n"}
-2024-12-20 19:17:55,381 p=86383 u=kurthogarth n=ansible | PLAY RECAP ***************************************************************************************************************************
-2024-12-20 19:17:55,381 p=86383 u=kurthogarth n=ansible | exampleinstance-development-0 : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:17:55,381 p=86383 u=kurthogarth n=ansible | exampleinstance-development-1 : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:20:29,966 p=86539 u=kurthogarth n=ansible | ERROR! the playbook: playbooks/instance.yaml could not be found
-2024-12-20 19:20:36,247 p=86551 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 19:20:37,216 p=86551 u=kurthogarth n=ansible | PLAY [Example Playbook] **************************************************************************************************************
-2024-12-20 19:20:37,221 p=86551 u=kurthogarth n=ansible | TASK [Gathering Facts] ***************************************************************************************************************
-2024-12-20 19:20:48,804 p=86551 u=kurthogarth n=ansible | [WARNING]: Unhandled error in Python interpreter discovery for host exampleinstance-development-1: unexpected output from Python
-interpreter discovery
-
-2024-12-20 19:20:48,875 p=86551 u=kurthogarth n=ansible | [WARNING]: Unhandled error in Python interpreter discovery for host exampleinstance-development-0: unexpected output from Python
-interpreter discovery
-
-2024-12-20 19:21:00,193 p=86551 u=kurthogarth n=ansible | fatal: [exampleinstance-development-1]: FAILED! => {"ansible_facts": {}, "changed": false, "failed_modules": {"ansible.legacy.setup": {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"}, "failed": true, "module_stderr": "", "module_stdout": "Please login as the user \"ec2-user\" rather than the user \"root\".\n\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 142, "warnings": ["Platform unknown on host exampleinstance-development-1 is using the discovered Python interpreter at /usr/bin/python3, but future installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-core/2.17/reference_appendices/interpreter_discovery.html for more information."]}}, "msg": "The following modules failed to execute: ansible.legacy.setup\n"}
-2024-12-20 19:21:00,194 p=86551 u=kurthogarth n=ansible | fatal: [exampleinstance-development-0]: FAILED! => {"ansible_facts": {}, "changed": false, "failed_modules": {"ansible.legacy.setup": {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"}, "failed": true, "module_stderr": "", "module_stdout": "Please login as the user \"ec2-user\" rather than the user \"root\".\n\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 142, "warnings": ["Platform unknown on host exampleinstance-development-0 is using the discovered Python interpreter at /usr/bin/python3, but future installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-core/2.17/reference_appendices/interpreter_discovery.html for more information."]}}, "msg": "The following modules failed to execute: ansible.legacy.setup\n"}
-2024-12-20 19:21:00,195 p=86551 u=kurthogarth n=ansible | PLAY RECAP ***************************************************************************************************************************
-2024-12-20 19:21:00,195 p=86551 u=kurthogarth n=ansible | exampleinstance-development-0 : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:21:00,195 p=86551 u=kurthogarth n=ansible | exampleinstance-development-1 : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:40:13,523 p=88687 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 19:40:14,571 p=88687 u=kurthogarth n=ansible | [WARNING]: Could not match supplied host pattern, ignoring: group_exampleinstance
-
-2024-12-20 19:40:14,572 p=88687 u=kurthogarth n=ansible | PLAY [Example Playbook] *****************************************************************************************************************
-2024-12-20 19:40:14,572 p=88687 u=kurthogarth n=ansible | skipping: no hosts matched
-2024-12-20 19:40:14,572 p=88687 u=kurthogarth n=ansible | PLAY RECAP ******************************************************************************************************************************
-2024-12-20 19:40:34,992 p=88723 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 19:40:35,814 p=88723 u=kurthogarth n=ansible | PLAY [Example Playbook] *****************************************************************************************************************
-2024-12-20 19:40:35,821 p=88723 u=kurthogarth n=ansible | TASK [Gathering Facts] ******************************************************************************************************************
-2024-12-20 19:40:47,639 p=88723 u=kurthogarth n=ansible | [WARNING]: Unhandled error in Python interpreter discovery for host example-instance-development-1: unexpected output from Python
-interpreter discovery
-
-2024-12-20 19:40:47,639 p=88723 u=kurthogarth n=ansible | [WARNING]: Unhandled error in Python interpreter discovery for host example-instance-development-0: unexpected output from Python
-interpreter discovery
-
-2024-12-20 19:40:59,015 p=88723 u=kurthogarth n=ansible | fatal: [example-instance-development-0]: FAILED! => {"ansible_facts": {}, "changed": false, "failed_modules": {"ansible.legacy.setup": {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"}, "failed": true, "module_stderr": "hostfile_replace_entries: link /Users/kurthogarth/.ssh/known_hosts to /Users/kurthogarth/.ssh/known_hosts.old: File exists\r\nupdate_known_hosts: hostfile_replace_entries failed for /Users/kurthogarth/.ssh/known_hosts: File exists\r\n", "module_stdout": "Please login as the user \"ec2-user\" rather than the user \"root\".\n\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 142, "warnings": ["Platform unknown on host example-instance-development-0 is using the discovered Python interpreter at /usr/bin/python3, but future installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-core/2.17/reference_appendices/interpreter_discovery.html for more information."]}}, "msg": "The following modules failed to execute: ansible.legacy.setup\n"}
-2024-12-20 19:40:59,016 p=88723 u=kurthogarth n=ansible | fatal: [example-instance-development-1]: FAILED! => {"ansible_facts": {}, "changed": false, "failed_modules": {"ansible.legacy.setup": {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"}, "failed": true, "module_stderr": "", "module_stdout": "Please login as the user \"ec2-user\" rather than the user \"root\".\n\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 142, "warnings": ["Platform unknown on host example-instance-development-1 is using the discovered Python interpreter at /usr/bin/python3, but future installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-core/2.17/reference_appendices/interpreter_discovery.html for more information."]}}, "msg": "The following modules failed to execute: ansible.legacy.setup\n"}
-2024-12-20 19:40:59,017 p=88723 u=kurthogarth n=ansible | PLAY RECAP ******************************************************************************************************************************
-2024-12-20 19:40:59,018 p=88723 u=kurthogarth n=ansible | example-instance-development-0 : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:40:59,018 p=88723 u=kurthogarth n=ansible | example-instance-development-1 : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:44:07,256 p=88836 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 19:44:08,241 p=88836 u=kurthogarth n=ansible | PLAY [Example Playbook] *****************************************************************************************************************
-2024-12-20 19:44:08,246 p=88836 u=kurthogarth n=ansible | TASK [Gathering Facts] ******************************************************************************************************************
-2024-12-20 19:44:20,025 p=88836 u=kurthogarth n=ansible | [WARNING]: Unhandled error in Python interpreter discovery for host example-instance-development-0: unexpected output from Python
-interpreter discovery
-
-2024-12-20 19:44:20,026 p=88836 u=kurthogarth n=ansible | [WARNING]: Unhandled error in Python interpreter discovery for host example-instance-development-1: unexpected output from Python
-interpreter discovery
-
-2024-12-20 19:44:31,262 p=88836 u=kurthogarth n=ansible | fatal: [example-instance-development-1]: FAILED! => {"ansible_facts": {}, "changed": false, "failed_modules": {"ansible.legacy.setup": {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"}, "failed": true, "module_stderr": "", "module_stdout": "Please login as the user \"ec2-user\" rather than the user \"root\".\n\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 142, "warnings": ["Platform unknown on host example-instance-development-1 is using the discovered Python interpreter at /usr/bin/python3, but future installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-core/2.17/reference_appendices/interpreter_discovery.html for more information."]}}, "msg": "The following modules failed to execute: ansible.legacy.setup\n"}
-2024-12-20 19:44:31,320 p=88836 u=kurthogarth n=ansible | fatal: [example-instance-development-0]: FAILED! => {"ansible_facts": {}, "changed": false, "failed_modules": {"ansible.legacy.setup": {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"}, "failed": true, "module_stderr": "", "module_stdout": "Please login as the user \"ec2-user\" rather than the user \"root\".\n\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 142, "warnings": ["Platform unknown on host example-instance-development-0 is using the discovered Python interpreter at /usr/bin/python3, but future installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-core/2.17/reference_appendices/interpreter_discovery.html for more information."]}}, "msg": "The following modules failed to execute: ansible.legacy.setup\n"}
-2024-12-20 19:44:31,321 p=88836 u=kurthogarth n=ansible | PLAY RECAP ******************************************************************************************************************************
-2024-12-20 19:44:31,321 p=88836 u=kurthogarth n=ansible | example-instance-development-0 : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:44:31,321 p=88836 u=kurthogarth n=ansible | example-instance-development-1 : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:46:06,795 p=88908 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 19:46:07,719 p=88908 u=kurthogarth n=ansible | PLAY [Example Playbook] *****************************************************************************************************************
-2024-12-20 19:46:07,725 p=88908 u=kurthogarth n=ansible | TASK [Gathering Facts] ******************************************************************************************************************
-2024-12-20 19:46:19,320 p=88908 u=kurthogarth n=ansible | fatal: [example-instance-development-1]: FAILED! => {"ansible_facts": {}, "changed": false, "failed_modules": {"ansible.legacy.setup": {"failed": true, "module_stderr": "", "module_stdout": "Please login as the user \"ec2-user\" rather than the user \"root\".\n\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 142}}, "msg": "The following modules failed to execute: ansible.legacy.setup\n"}
-2024-12-20 19:46:19,427 p=88908 u=kurthogarth n=ansible | fatal: [example-instance-development-0]: FAILED! => {"ansible_facts": {}, "changed": false, "failed_modules": {"ansible.legacy.setup": {"failed": true, "module_stderr": "", "module_stdout": "Please login as the user \"ec2-user\" rather than the user \"root\".\n\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 142}}, "msg": "The following modules failed to execute: ansible.legacy.setup\n"}
-2024-12-20 19:46:19,428 p=88908 u=kurthogarth n=ansible | PLAY RECAP ******************************************************************************************************************************
-2024-12-20 19:46:19,429 p=88908 u=kurthogarth n=ansible | example-instance-development-0 : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:46:19,429 p=88908 u=kurthogarth n=ansible | example-instance-development-1 : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:48:51,966 p=89009 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 19:48:52,955 p=89009 u=kurthogarth n=ansible | PLAY [Example Playbook] *****************************************************************************************************************
-2024-12-20 19:48:52,961 p=89009 u=kurthogarth n=ansible | TASK [Gathering Facts] ******************************************************************************************************************
-2024-12-20 19:48:56,203 p=89009 u=kurthogarth n=ansible |  [ERROR]: User interrupted execution
-
-2024-12-20 19:49:09,388 p=89047 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 19:49:10,202 p=89047 u=kurthogarth n=ansible | PLAY [Example Playbook] *****************************************************************************************************************
-2024-12-20 19:49:10,208 p=89047 u=kurthogarth n=ansible | TASK [Gathering Facts] ******************************************************************************************************************
-2024-12-20 19:49:13,305 p=89047 u=kurthogarth n=ansible | ok: [example-instance-development-1]
-2024-12-20 19:49:13,628 p=89047 u=kurthogarth n=ansible | ok: [example-instance-development-0]
-2024-12-20 19:49:13,637 p=89047 u=kurthogarth n=ansible | TASK [pip3 : Check if pip3 is installed] ************************************************************************************************
-2024-12-20 19:49:15,556 p=89047 u=kurthogarth n=ansible | ok: [example-instance-development-1]
-2024-12-20 19:49:15,570 p=89047 u=kurthogarth n=ansible | ok: [example-instance-development-0]
-2024-12-20 19:49:15,578 p=89047 u=kurthogarth n=ansible | TASK [pip3 : Install pip3] **************************************************************************************************************
-2024-12-20 19:49:17,810 p=89047 u=kurthogarth n=ansible | fatal: [example-instance-development-0]: FAILED! => {"changed": false, "msg": "python3-apt must be installed to use check mode. If run normally this module can auto-install it."}
-2024-12-20 19:49:17,811 p=89047 u=kurthogarth n=ansible | fatal: [example-instance-development-1]: FAILED! => {"changed": false, "msg": "python3-apt must be installed to use check mode. If run normally this module can auto-install it."}
-2024-12-20 19:49:17,812 p=89047 u=kurthogarth n=ansible | PLAY RECAP ******************************************************************************************************************************
-2024-12-20 19:49:17,812 p=89047 u=kurthogarth n=ansible | example-instance-development-0 : ok=2    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:49:17,812 p=89047 u=kurthogarth n=ansible | example-instance-development-1 : ok=2    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:51:00,240 p=89137 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 19:51:01,239 p=89137 u=kurthogarth n=ansible | PLAY [Example Playbook] *****************************************************************************************************************
-2024-12-20 19:51:01,246 p=89137 u=kurthogarth n=ansible | TASK [Gathering Facts] ******************************************************************************************************************
-2024-12-20 19:51:04,312 p=89137 u=kurthogarth n=ansible | ok: [example-instance-development-1]
-2024-12-20 19:51:04,518 p=89137 u=kurthogarth n=ansible | ok: [example-instance-development-0]
-2024-12-20 19:51:04,533 p=89137 u=kurthogarth n=ansible | TASK [pip3 : Check if pip3 is installed] ************************************************************************************************
-2024-12-20 19:51:06,499 p=89137 u=kurthogarth n=ansible | ok: [example-instance-development-0]
-2024-12-20 19:51:06,524 p=89137 u=kurthogarth n=ansible | ok: [example-instance-development-1]
-2024-12-20 19:51:06,528 p=89137 u=kurthogarth n=ansible | TASK [pip3 : Install pip3] **************************************************************************************************************
-2024-12-20 19:51:08,706 p=89137 u=kurthogarth n=ansible | [WARNING]: Updating cache and auto-installing missing dependency: python3-apt
-
-2024-12-20 19:51:08,707 p=89137 u=kurthogarth n=ansible | fatal: [example-instance-development-0]: FAILED! => {"changed": false, "cmd": "update", "msg": "[Errno 2] No such file or directory: b'update'", "rc": 2, "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
-2024-12-20 19:51:08,717 p=89137 u=kurthogarth n=ansible | fatal: [example-instance-development-1]: FAILED! => {"changed": false, "cmd": "update", "msg": "[Errno 2] No such file or directory: b'update'", "rc": 2, "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
-2024-12-20 19:51:08,719 p=89137 u=kurthogarth n=ansible | PLAY RECAP ******************************************************************************************************************************
-2024-12-20 19:51:08,719 p=89137 u=kurthogarth n=ansible | example-instance-development-0 : ok=2    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:51:08,719 p=89137 u=kurthogarth n=ansible | example-instance-development-1 : ok=2    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:53:32,582 p=89234 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 19:53:33,541 p=89234 u=kurthogarth n=ansible | PLAY [Example Playbook] *****************************************************************************************************************
-2024-12-20 19:53:33,548 p=89234 u=kurthogarth n=ansible | TASK [Gathering Facts] ******************************************************************************************************************
-2024-12-20 19:53:36,487 p=89234 u=kurthogarth n=ansible | ok: [example-instance-development-0]
-2024-12-20 19:53:36,661 p=89234 u=kurthogarth n=ansible | ok: [example-instance-development-1]
-2024-12-20 19:53:36,676 p=89234 u=kurthogarth n=ansible | TASK [pip3 : Check if pip3 is installed] ************************************************************************************************
-2024-12-20 19:53:38,621 p=89234 u=kurthogarth n=ansible | ok: [example-instance-development-1]
-2024-12-20 19:53:38,688 p=89234 u=kurthogarth n=ansible | ok: [example-instance-development-0]
-2024-12-20 19:53:38,693 p=89234 u=kurthogarth n=ansible | TASK [pip3 : Install pip3] **************************************************************************************************************
-2024-12-20 19:53:40,870 p=89234 u=kurthogarth n=ansible | [WARNING]: Updating cache and auto-installing missing dependency: python3-apt
-
-2024-12-20 19:53:40,872 p=89234 u=kurthogarth n=ansible | fatal: [example-instance-development-0]: FAILED! => {"changed": false, "cmd": "update", "msg": "[Errno 2] No such file or directory: b'update'", "rc": 2, "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
-2024-12-20 19:53:40,884 p=89234 u=kurthogarth n=ansible | fatal: [example-instance-development-1]: FAILED! => {"changed": false, "cmd": "update", "msg": "[Errno 2] No such file or directory: b'update'", "rc": 2, "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
-2024-12-20 19:53:40,885 p=89234 u=kurthogarth n=ansible | PLAY RECAP ******************************************************************************************************************************
-2024-12-20 19:53:40,886 p=89234 u=kurthogarth n=ansible | example-instance-development-0 : ok=2    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 19:53:40,886 p=89234 u=kurthogarth n=ansible | example-instance-development-1 : ok=2    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 20:51:51,515 p=91443 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 20:51:52,667 p=91443 u=kurthogarth n=ansible | PLAY [Example Playbook] *******************************************************************************************************
-2024-12-20 20:51:52,675 p=91443 u=kurthogarth n=ansible | TASK [Gathering Facts] ********************************************************************************************************
-2024-12-20 20:51:56,152 p=91443 u=kurthogarth n=ansible | ok: [example-instance-development-0]
-2024-12-20 20:51:56,651 p=91443 u=kurthogarth n=ansible | ok: [example-instance-development-1]
-2024-12-20 20:51:56,664 p=91443 u=kurthogarth n=ansible | TASK [pip3 : Check if pip3 is installed] **************************************************************************************
-2024-12-20 20:51:58,887 p=91443 u=kurthogarth n=ansible | ok: [example-instance-development-0]
-2024-12-20 20:51:59,055 p=91443 u=kurthogarth n=ansible | ok: [example-instance-development-1]
-2024-12-20 20:51:59,063 p=91443 u=kurthogarth n=ansible | TASK [pip3 : Install pip3] ****************************************************************************************************
-2024-12-20 20:52:01,998 p=91443 u=kurthogarth n=ansible | [WARNING]: Updating cache and auto-installing missing dependency: python3-apt
-
-2024-12-20 20:52:01,999 p=91443 u=kurthogarth n=ansible | fatal: [example-instance-development-0]: FAILED! => {"changed": false, "cmd": "update", "msg": "[Errno 2] No such file or directory: b'update'", "rc": 2, "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
-2024-12-20 20:52:02,522 p=91443 u=kurthogarth n=ansible | fatal: [example-instance-development-1]: FAILED! => {"changed": false, "cmd": "update", "msg": "[Errno 2] No such file or directory: b'update'", "rc": 2, "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
-2024-12-20 20:52:02,525 p=91443 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 20:52:02,525 p=91443 u=kurthogarth n=ansible | example-instance-development-0 : ok=2    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 20:52:02,525 p=91443 u=kurthogarth n=ansible | example-instance-development-1 : ok=2    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
-2024-12-20 20:52:39,707 p=91490 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 20:52:40,683 p=91490 u=kurthogarth n=ansible | PLAY [Example Playbook] *******************************************************************************************************
-2024-12-20 20:52:40,710 p=91490 u=kurthogarth n=ansible | TASK [Gathering Facts] ********************************************************************************************************
-2024-12-20 20:52:44,160 p=91490 u=kurthogarth n=ansible | ok: [example-instance-development-1]
-2024-12-20 20:52:44,288 p=91490 u=kurthogarth n=ansible | ok: [example-instance-development-0]
-2024-12-20 20:52:44,298 p=91490 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 20:52:44,298 p=91490 u=kurthogarth n=ansible | example-instance-development-0 : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 20:52:44,298 p=91490 u=kurthogarth n=ansible | example-instance-development-1 : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 21:32:24,192 p=93294 u=kurthogarth n=ansible | ERROR! the playbook: playbooks/instance.yaml could not be found
-2024-12-20 21:32:31,551 p=93305 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 21:32:32,182 p=93305 u=kurthogarth n=ansible | [WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit localhost does not match 'all'
-
-2024-12-20 21:32:32,360 p=93305 u=kurthogarth n=ansible | [WARNING]: Could not match supplied host pattern, ignoring: group_health
-
-2024-12-20 21:32:32,360 p=93305 u=kurthogarth n=ansible | PLAY [Health Check] ***********************************************************************************************************
-2024-12-20 21:32:32,360 p=93305 u=kurthogarth n=ansible | skipping: no hosts matched
-2024-12-20 21:32:32,360 p=93305 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 21:33:01,224 p=93331 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 21:33:01,796 p=93331 u=kurthogarth n=ansible | {
-    "_meta": {
-        "hostvars": {}
-    },
-    "all": {
-        "children": [
-            "ungrouped",
-            "aws_ec2"
-        ]
-    }
+2024-12-23 10:54:27,170 p=82275 u=kurthogarth n=ansible | TASK [deploy_health_app : Report failure if copy task failed] ********************************************************************
+2024-12-23 10:54:27,183 p=82275 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 10:54:27,223 p=82275 u=kurthogarth n=ansible | PLAY RECAP ***********************************************************************************************************************
+2024-12-23 10:54:27,223 p=82275 u=kurthogarth n=ansible | health-development-0       : ok=9    changed=3    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0   
+2024-12-23 10:56:22,320 p=82438 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-23 10:56:23,211 p=82438 u=kurthogarth n=ansible | PLAY [Setup Health App] **********************************************************************************************************
+2024-12-23 10:56:23,219 p=82438 u=kurthogarth n=ansible | TASK [Gathering Facts] ***********************************************************************************************************
+2024-12-23 10:56:35,993 p=82438 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 10:56:35,996 p=82438 u=kurthogarth n=ansible | TASK [deploy_health_app : Check whoami] ******************************************************************************************
+2024-12-23 10:56:47,129 p=82438 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 10:56:47,134 p=82438 u=kurthogarth n=ansible | TASK [deploy_health_app : Display whoami] ****************************************************************************************
+2024-12-23 10:56:47,148 p=82438 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "The effective user is root"
 }
-2024-12-20 21:44:46,711 p=94750 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 21:44:47,824 p=94750 u=kurthogarth n=ansible | PLAY [Health Check] ***********************************************************************************************************
-2024-12-20 21:44:47,829 p=94750 u=kurthogarth n=ansible | TASK [Gathering Facts] ********************************************************************************************************
-2024-12-20 21:44:49,039 p=94750 u=kurthogarth n=ansible | fatal: [health-development-1]: UNREACHABLE! => {"changed": false, "msg": "Data could not be sent to remote host \"3.101.139.32\". Make sure this host can be reached over ssh: Warning: Permanently added '3.101.139.32' (ED25519) to the list of known hosts.\r\nno such identity: /Users/kurthogarth/Documents/GitHub/requis_deploy/ssh/aws_instance/example-instance-key-pair.pem: No such file or directory\r\nec2-user@3.101.139.32: Permission denied (publickey,gssapi-keyex,gssapi-with-mic).\r\n", "unreachable": true}
-2024-12-20 21:44:49,040 p=94750 u=kurthogarth n=ansible | fatal: [health-development-0]: UNREACHABLE! => {"changed": false, "msg": "Data could not be sent to remote host \"3.101.26.214\". Make sure this host can be reached over ssh: Warning: Permanently added '3.101.26.214' (ED25519) to the list of known hosts.\r\nno such identity: /Users/kurthogarth/Documents/GitHub/requis_deploy/ssh/aws_instance/example-instance-key-pair.pem: No such file or directory\r\nec2-user@3.101.26.214: Permission denied (publickey,gssapi-keyex,gssapi-with-mic).\r\n", "unreachable": true}
-2024-12-20 21:44:49,040 p=94750 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 21:44:49,040 p=94750 u=kurthogarth n=ansible | health-development-0       : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 21:44:49,041 p=94750 u=kurthogarth n=ansible | health-development-1       : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 21:45:05,562 p=94774 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 21:45:06,648 p=94774 u=kurthogarth n=ansible | PLAY [Health Check] ***********************************************************************************************************
-2024-12-20 21:45:06,655 p=94774 u=kurthogarth n=ansible | TASK [Gathering Facts] ********************************************************************************************************
-2024-12-20 21:45:07,994 p=94774 u=kurthogarth n=ansible | fatal: [health-development-0]: UNREACHABLE! => {"changed": false, "msg": "Data could not be sent to remote host \"3.101.26.214\". Make sure this host can be reached over ssh: no such identity: /Users/kurthogarth/Documents/GitHub/requis_deploy/ssh/aws_instance/example-instance-key-pair.pem: No such file or directory\r\nec2-user@3.101.26.214: Permission denied (publickey,gssapi-keyex,gssapi-with-mic).\r\n", "unreachable": true}
-2024-12-20 21:45:07,995 p=94774 u=kurthogarth n=ansible | fatal: [health-development-1]: UNREACHABLE! => {"changed": false, "msg": "Data could not be sent to remote host \"3.101.139.32\". Make sure this host can be reached over ssh: no such identity: /Users/kurthogarth/Documents/GitHub/requis_deploy/ssh/aws_instance/example-instance-key-pair.pem: No such file or directory\r\nec2-user@3.101.139.32: Permission denied (publickey,gssapi-keyex,gssapi-with-mic).\r\n", "unreachable": true}
-2024-12-20 21:45:07,996 p=94774 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 21:45:07,996 p=94774 u=kurthogarth n=ansible | health-development-0       : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 21:45:07,996 p=94774 u=kurthogarth n=ansible | health-development-1       : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 21:52:57,605 p=95157 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 21:52:58,561 p=95157 u=kurthogarth n=ansible | PLAY [Health Check] ***********************************************************************************************************
-2024-12-20 21:52:58,567 p=95157 u=kurthogarth n=ansible | TASK [Gathering Facts] ********************************************************************************************************
-2024-12-20 21:52:59,592 p=95157 u=kurthogarth n=ansible | fatal: [health-development-0]: UNREACHABLE! => {"changed": false, "msg": "Data could not be sent to remote host \"3.101.26.214\". Make sure this host can be reached over ssh: no such identity: /Users/kurthogarth/Documents/GitHub/requis_deploy/ssh/aws_instance.pem: No such file or directory\r\nec2-user@3.101.26.214: Permission denied (publickey,gssapi-keyex,gssapi-with-mic).\r\n", "unreachable": true}
-2024-12-20 21:52:59,593 p=95157 u=kurthogarth n=ansible | fatal: [health-development-1]: UNREACHABLE! => {"changed": false, "msg": "Data could not be sent to remote host \"3.101.139.32\". Make sure this host can be reached over ssh: no such identity: /Users/kurthogarth/Documents/GitHub/requis_deploy/ssh/aws_instance.pem: No such file or directory\r\nec2-user@3.101.139.32: Permission denied (publickey,gssapi-keyex,gssapi-with-mic).\r\n", "unreachable": true}
-2024-12-20 21:52:59,593 p=95157 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 21:52:59,594 p=95157 u=kurthogarth n=ansible | health-development-0       : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 21:52:59,594 p=95157 u=kurthogarth n=ansible | health-development-1       : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 21:55:24,802 p=95281 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 21:55:26,148 p=95281 u=kurthogarth n=ansible | PLAY [Health Check] ***********************************************************************************************************
-2024-12-20 21:55:26,153 p=95281 u=kurthogarth n=ansible | TASK [Gathering Facts] ********************************************************************************************************
-2024-12-20 21:55:27,180 p=95281 u=kurthogarth n=ansible | fatal: [health-development-1]: UNREACHABLE! => {"changed": false, "msg": "Data could not be sent to remote host \"3.101.139.32\". Make sure this host can be reached over ssh: no such identity: /Users/kurthogarth/Documents/GitHub/requis_deploy/ssh/aws_instance.pem: No such file or directory\r\nec2-user@3.101.139.32: Permission denied (publickey,gssapi-keyex,gssapi-with-mic).\r\n", "unreachable": true}
-2024-12-20 21:55:27,181 p=95281 u=kurthogarth n=ansible | fatal: [health-development-0]: UNREACHABLE! => {"changed": false, "msg": "Data could not be sent to remote host \"3.101.26.214\". Make sure this host can be reached over ssh: no such identity: /Users/kurthogarth/Documents/GitHub/requis_deploy/ssh/aws_instance.pem: No such file or directory\r\nec2-user@3.101.26.214: Permission denied (publickey,gssapi-keyex,gssapi-with-mic).\r\n", "unreachable": true}
-2024-12-20 21:55:27,182 p=95281 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 21:55:27,182 p=95281 u=kurthogarth n=ansible | health-development-0       : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 21:55:27,182 p=95281 u=kurthogarth n=ansible | health-development-1       : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 21:56:08,479 p=95328 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 21:56:09,370 p=95328 u=kurthogarth n=ansible | PLAY [Health Check] ***********************************************************************************************************
-2024-12-20 21:56:09,376 p=95328 u=kurthogarth n=ansible | TASK [Gathering Facts] ********************************************************************************************************
-2024-12-20 21:56:10,994 p=95328 u=kurthogarth n=ansible | fatal: [health-development-1]: UNREACHABLE! => {"changed": false, "msg": "Data could not be sent to remote host \"3.101.139.32\". Make sure this host can be reached over ssh: ec2-user@3.101.139.32: Permission denied (publickey,gssapi-keyex,gssapi-with-mic).\r\n", "unreachable": true}
-2024-12-20 21:56:10,994 p=95328 u=kurthogarth n=ansible | fatal: [health-development-0]: UNREACHABLE! => {"changed": false, "msg": "Data could not be sent to remote host \"3.101.26.214\". Make sure this host can be reached over ssh: ec2-user@3.101.26.214: Permission denied (publickey,gssapi-keyex,gssapi-with-mic).\r\n", "unreachable": true}
-2024-12-20 21:56:10,995 p=95328 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 21:56:10,995 p=95328 u=kurthogarth n=ansible | health-development-0       : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 21:56:10,995 p=95328 u=kurthogarth n=ansible | health-development-1       : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 21:58:51,925 p=95529 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 21:58:53,019 p=95529 u=kurthogarth n=ansible | PLAY [Health Check] ***********************************************************************************************************
-2024-12-20 21:58:53,026 p=95529 u=kurthogarth n=ansible | TASK [Gathering Facts] ********************************************************************************************************
-2024-12-20 21:58:54,698 p=95529 u=kurthogarth n=ansible | fatal: [health-development-0]: UNREACHABLE! => {"changed": false, "msg": "Data could not be sent to remote host \"3.101.26.214\". Make sure this host can be reached over ssh: ec2-user@3.101.26.214: Permission denied (publickey,gssapi-keyex,gssapi-with-mic).\r\n", "unreachable": true}
-2024-12-20 21:58:54,698 p=95529 u=kurthogarth n=ansible | fatal: [health-development-1]: UNREACHABLE! => {"changed": false, "msg": "Data could not be sent to remote host \"3.101.139.32\". Make sure this host can be reached over ssh: ec2-user@3.101.139.32: Permission denied (publickey,gssapi-keyex,gssapi-with-mic).\r\n", "unreachable": true}
-2024-12-20 21:58:54,699 p=95529 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 21:58:54,699 p=95529 u=kurthogarth n=ansible | health-development-0       : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 21:58:54,699 p=95529 u=kurthogarth n=ansible | health-development-1       : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
-2024-12-20 22:00:01,726 p=95592 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 22:00:03,164 p=95592 u=kurthogarth n=ansible | PLAY [Health Check] ***********************************************************************************************************
-2024-12-20 22:00:03,169 p=95592 u=kurthogarth n=ansible | TASK [Gathering Facts] ********************************************************************************************************
-2024-12-20 22:00:07,175 p=95592 u=kurthogarth n=ansible | ok: [health-development-1]
-2024-12-20 22:00:08,203 p=95592 u=kurthogarth n=ansible | ok: [health-development-0]
-2024-12-20 22:00:08,212 p=95592 u=kurthogarth n=ansible | TASK [health : Create Web Directory] ******************************************************************************************
-2024-12-20 22:00:10,719 p=95592 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:00:10,914 p=95592 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:00:10,924 p=95592 u=kurthogarth n=ansible | TASK [health : Create Health Check Directory] *********************************************************************************
-2024-12-20 22:00:13,593 p=95592 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:00:13,865 p=95592 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:00:13,875 p=95592 u=kurthogarth n=ansible | TASK [health : Write Index HTML] **********************************************************************************************
-2024-12-20 22:00:15,998 p=95592 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:00:16,351 p=95592 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:00:16,361 p=95592 u=kurthogarth n=ansible | TASK [health : Check for Index HTML] ******************************************************************************************
-2024-12-20 22:00:18,727 p=95592 u=kurthogarth n=ansible | ok: [health-development-1]
-2024-12-20 22:00:18,774 p=95592 u=kurthogarth n=ansible | ok: [health-development-0]
-2024-12-20 22:00:18,781 p=95592 u=kurthogarth n=ansible | TASK [health : Start HTTP Server] *********************************************************************************************
-2024-12-20 22:00:18,798 p=95592 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:00:18,804 p=95592 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:00:18,814 p=95592 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 22:00:18,814 p=95592 u=kurthogarth n=ansible | health-development-0       : ok=2    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:00:18,814 p=95592 u=kurthogarth n=ansible | health-development-1       : ok=2    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:01:20,220 p=95677 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 22:01:21,252 p=95677 u=kurthogarth n=ansible | PLAY [Health Check] ***********************************************************************************************************
-2024-12-20 22:01:21,258 p=95677 u=kurthogarth n=ansible | TASK [Gathering Facts] ********************************************************************************************************
-2024-12-20 22:01:25,300 p=95677 u=kurthogarth n=ansible | ok: [health-development-0]
-2024-12-20 22:01:26,890 p=95677 u=kurthogarth n=ansible | ok: [health-development-1]
-2024-12-20 22:01:26,898 p=95677 u=kurthogarth n=ansible | TASK [health : Create Web Directory] ******************************************************************************************
-2024-12-20 22:01:29,372 p=95677 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:01:29,373 p=95677 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:01:29,380 p=95677 u=kurthogarth n=ansible | TASK [health : Create Health Check Directory] *********************************************************************************
-2024-12-20 22:01:31,553 p=95677 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:01:32,175 p=95677 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:01:32,185 p=95677 u=kurthogarth n=ansible | TASK [health : Write Index HTML] **********************************************************************************************
-2024-12-20 22:01:34,997 p=95677 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:01:35,123 p=95677 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:01:35,132 p=95677 u=kurthogarth n=ansible | TASK [health : Check for Index HTML] ******************************************************************************************
-2024-12-20 22:01:37,752 p=95677 u=kurthogarth n=ansible | ok: [health-development-1]
-2024-12-20 22:01:37,754 p=95677 u=kurthogarth n=ansible | ok: [health-development-0]
-2024-12-20 22:01:37,762 p=95677 u=kurthogarth n=ansible | TASK [health : Start HTTP Server] *********************************************************************************************
-2024-12-20 22:01:37,779 p=95677 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:01:37,784 p=95677 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:01:37,794 p=95677 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 22:01:37,794 p=95677 u=kurthogarth n=ansible | health-development-0       : ok=2    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:01:37,794 p=95677 u=kurthogarth n=ansible | health-development-1       : ok=2    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:02:38,765 p=95761 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 22:02:39,900 p=95761 u=kurthogarth n=ansible | PLAY [Health Check] ***********************************************************************************************************
-2024-12-20 22:02:39,906 p=95761 u=kurthogarth n=ansible | TASK [Gathering Facts] ********************************************************************************************************
-2024-12-20 22:02:43,307 p=95761 u=kurthogarth n=ansible | ok: [health-development-1]
-2024-12-20 22:02:43,601 p=95761 u=kurthogarth n=ansible | ok: [health-development-0]
-2024-12-20 22:02:43,609 p=95761 u=kurthogarth n=ansible | TASK [health : Create Web Directory] ******************************************************************************************
-2024-12-20 22:02:46,433 p=95761 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:02:46,639 p=95761 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:02:46,644 p=95761 u=kurthogarth n=ansible | TASK [health : Create Health Check Directory] *********************************************************************************
-2024-12-20 22:02:49,047 p=95761 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:02:49,047 p=95761 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:02:49,051 p=95761 u=kurthogarth n=ansible | TASK [health : Write Index HTML] **********************************************************************************************
-2024-12-20 22:02:51,150 p=95761 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:02:51,151 p=95761 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:02:51,160 p=95761 u=kurthogarth n=ansible | TASK [health : Check for Index HTML] ******************************************************************************************
-2024-12-20 22:02:53,954 p=95761 u=kurthogarth n=ansible | ok: [health-development-1]
-2024-12-20 22:02:54,322 p=95761 u=kurthogarth n=ansible | ok: [health-development-0]
-2024-12-20 22:02:54,330 p=95761 u=kurthogarth n=ansible | TASK [health : Start HTTP Server] *********************************************************************************************
-2024-12-20 22:02:54,344 p=95761 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:02:54,349 p=95761 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:02:54,358 p=95761 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 22:02:54,359 p=95761 u=kurthogarth n=ansible | health-development-0       : ok=2    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:02:54,359 p=95761 u=kurthogarth n=ansible | health-development-1       : ok=2    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:03:05,696 p=95812 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 22:03:06,717 p=95812 u=kurthogarth n=ansible | PLAY [Health Check] ***********************************************************************************************************
-2024-12-20 22:03:06,722 p=95812 u=kurthogarth n=ansible | TASK [Gathering Facts] ********************************************************************************************************
-2024-12-20 22:03:10,046 p=95812 u=kurthogarth n=ansible | ok: [health-development-1]
-2024-12-20 22:03:10,123 p=95812 u=kurthogarth n=ansible | ok: [health-development-0]
-2024-12-20 22:03:10,131 p=95812 u=kurthogarth n=ansible | TASK [health : Create Web Directory] ******************************************************************************************
-2024-12-20 22:03:14,019 p=95812 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:03:14,505 p=95812 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:03:14,513 p=95812 u=kurthogarth n=ansible | TASK [health : Create Health Check Directory] *********************************************************************************
-2024-12-20 22:03:16,970 p=95812 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:03:17,028 p=95812 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:03:17,036 p=95812 u=kurthogarth n=ansible | TASK [health : Write Index HTML] **********************************************************************************************
-2024-12-20 22:03:19,204 p=95812 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:03:19,205 p=95812 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:03:19,213 p=95812 u=kurthogarth n=ansible | TASK [health : Start HTTP Server] *********************************************************************************************
-2024-12-20 22:03:22,211 p=95812 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:03:22,271 p=95812 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:03:22,283 p=95812 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 22:03:22,283 p=95812 u=kurthogarth n=ansible | health-development-0       : ok=1    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:03:22,284 p=95812 u=kurthogarth n=ansible | health-development-1       : ok=1    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:04:44,277 p=95934 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 22:04:45,336 p=95934 u=kurthogarth n=ansible | PLAY [Health Check] ***********************************************************************************************************
-2024-12-20 22:04:45,343 p=95934 u=kurthogarth n=ansible | TASK [Gathering Facts] ********************************************************************************************************
-2024-12-20 22:04:48,745 p=95934 u=kurthogarth n=ansible | ok: [health-development-1]
-2024-12-20 22:04:48,816 p=95934 u=kurthogarth n=ansible | ok: [health-development-0]
-2024-12-20 22:04:48,823 p=95934 u=kurthogarth n=ansible | TASK [health : Create Web Directory] ******************************************************************************************
-2024-12-20 22:04:51,502 p=95934 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:04:51,503 p=95934 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:04:51,511 p=95934 u=kurthogarth n=ansible | TASK [health : Create Health Check Directory] *********************************************************************************
-2024-12-20 22:04:53,914 p=95934 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:04:53,915 p=95934 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:04:53,923 p=95934 u=kurthogarth n=ansible | TASK [health : Write Index HTML] **********************************************************************************************
-2024-12-20 22:04:56,176 p=95934 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:04:56,322 p=95934 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:04:56,331 p=95934 u=kurthogarth n=ansible | TASK [health : Check for Index HTML] ******************************************************************************************
-2024-12-20 22:04:58,658 p=95934 u=kurthogarth n=ansible | ok: [health-development-1]
-2024-12-20 22:04:58,687 p=95934 u=kurthogarth n=ansible | ok: [health-development-0]
-2024-12-20 22:04:58,696 p=95934 u=kurthogarth n=ansible | TASK [health : Start HTTP Server] *********************************************************************************************
-2024-12-20 22:04:58,711 p=95934 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:04:58,716 p=95934 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:04:58,725 p=95934 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 22:04:58,726 p=95934 u=kurthogarth n=ansible | health-development-0       : ok=2    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:04:58,726 p=95934 u=kurthogarth n=ansible | health-development-1       : ok=2    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:05:08,879 p=95989 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 22:05:10,084 p=95989 u=kurthogarth n=ansible | PLAY [Health Check] ***********************************************************************************************************
-2024-12-20 22:05:10,089 p=95989 u=kurthogarth n=ansible | TASK [Gathering Facts] ********************************************************************************************************
-2024-12-20 22:05:13,342 p=95989 u=kurthogarth n=ansible | ok: [health-development-0]
-2024-12-20 22:05:13,769 p=95989 u=kurthogarth n=ansible | ok: [health-development-1]
-2024-12-20 22:05:13,777 p=95989 u=kurthogarth n=ansible | TASK [health : Create Web Directory] ******************************************************************************************
-2024-12-20 22:05:16,136 p=95989 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:05:16,240 p=95989 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:05:16,245 p=95989 u=kurthogarth n=ansible | TASK [health : Create Health Check Directory] *********************************************************************************
-2024-12-20 22:05:19,393 p=95989 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:05:19,393 p=95989 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:05:19,401 p=95989 u=kurthogarth n=ansible | TASK [health : Write Index HTML] **********************************************************************************************
-2024-12-20 22:05:21,648 p=95989 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:05:21,720 p=95989 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:05:21,729 p=95989 u=kurthogarth n=ansible | TASK [health : Start HTTP Server] *********************************************************************************************
-2024-12-20 22:05:24,234 p=95989 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:05:24,247 p=95989 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:05:24,254 p=95989 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 22:05:24,255 p=95989 u=kurthogarth n=ansible | health-development-0       : ok=1    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:05:24,255 p=95989 u=kurthogarth n=ansible | health-development-1       : ok=1    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:06:54,360 p=96139 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 22:06:55,297 p=96139 u=kurthogarth n=ansible | PLAY [Health Check] ***********************************************************************************************************
-2024-12-20 22:06:55,303 p=96139 u=kurthogarth n=ansible | TASK [Gathering Facts] ********************************************************************************************************
-2024-12-20 22:06:58,910 p=96139 u=kurthogarth n=ansible | ok: [health-development-1]
-2024-12-20 22:06:59,189 p=96139 u=kurthogarth n=ansible | ok: [health-development-0]
-2024-12-20 22:06:59,197 p=96139 u=kurthogarth n=ansible | TASK [health : Create Web Directory] ******************************************************************************************
-2024-12-20 22:07:01,794 p=96139 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:07:01,896 p=96139 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:07:01,907 p=96139 u=kurthogarth n=ansible | TASK [health : Create Health Check Directory] *********************************************************************************
-2024-12-20 22:07:04,144 p=96139 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:07:04,280 p=96139 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:07:04,290 p=96139 u=kurthogarth n=ansible | TASK [health : Write Index HTML] **********************************************************************************************
-2024-12-20 22:07:08,136 p=96139 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:07:08,148 p=96139 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:07:08,157 p=96139 u=kurthogarth n=ansible | TASK [health : Start HTTP Server] *********************************************************************************************
-2024-12-20 22:07:10,578 p=96139 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:07:10,795 p=96139 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:07:10,813 p=96139 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 22:07:10,813 p=96139 u=kurthogarth n=ansible | health-development-0       : ok=1    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:07:10,813 p=96139 u=kurthogarth n=ansible | health-development-1       : ok=1    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:10:04,166 p=96311 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 22:10:04,986 p=96311 u=kurthogarth n=ansible | ERROR! We were unable to read either as JSON nor YAML, these are the errors we got from each:
+2024-12-23 10:56:47,151 p=82438 u=kurthogarth n=ansible | TASK [deploy_health_app : Get stats for directory '/srv'] ************************************************************************
+2024-12-23 10:56:58,138 p=82438 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 10:56:58,144 p=82438 u=kurthogarth n=ansible | TASK [deploy_health_app : Print message if directory exists] *********************************************************************
+2024-12-23 10:56:58,157 p=82438 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Directory '/srv' exists."
+}
+2024-12-23 10:56:58,161 p=82438 u=kurthogarth n=ansible | TASK [deploy_health_app : Fail if directory not found] ***************************************************************************
+2024-12-23 10:56:58,170 p=82438 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 10:56:58,172 p=82438 u=kurthogarth n=ansible | TASK [deploy_health_app : Create the app directory] ******************************************************************************
+2024-12-23 10:57:09,291 p=82438 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 10:57:09,297 p=82438 u=kurthogarth n=ansible | TASK [deploy_health_app : Check if the app directory was created] ****************************************************************
+2024-12-23 10:57:09,317 p=82438 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Created app directory."
+}
+2024-12-23 10:57:09,320 p=82438 u=kurthogarth n=ansible | TASK [deploy_health_app : Report failure if the app directory does not exist] ****************************************************
+2024-12-23 10:57:09,333 p=82438 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 10:57:09,338 p=82438 u=kurthogarth n=ansible | TASK [deploy_health_app : Copy server python script] *****************************************************************************
+2024-12-23 10:57:26,648 p=82438 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 10:57:26,658 p=82438 u=kurthogarth n=ansible | TASK [deploy_health_app : Check if the copy task was successful] *****************************************************************
+2024-12-23 10:57:26,682 p=82438 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Copied file to: /srv/health_check/http_server.py"
+}
+2024-12-23 10:57:26,687 p=82438 u=kurthogarth n=ansible | TASK [deploy_health_app : Report failure if copy task failed] ********************************************************************
+2024-12-23 10:57:26,700 p=82438 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 10:57:26,704 p=82438 u=kurthogarth n=ansible | TASK [Start HTTP Service] ********************************************************************************************************
+2024-12-23 10:57:26,718 p=82438 u=kurthogarth n=ansible | ERROR! We were unable to read either as JSON nor YAML, these are the errors we got from each:
 JSON: Expecting value: line 1 column 1 (char 0)
 
 Syntax Error while loading YAML.
   did not find expected '-' indicator. while parsing a block collection
-  in "<unicode string>", line 10, column 5
+  in "<unicode string>", line 7, column 5
 did not find expected '-' indicator
-  in "<unicode string>", line 11, column 5
+  in "<unicode string>", line 53, column 6
 
-The error appears to be in '/Users/kurthogarth/Documents/GitHub/requis_deploy/ansible/playbooks/health.yaml': line 11, column 5, but may
+The error appears to be in '/Users/kurthogarth/Documents/GitHub/requis_deploy/ansible/roles/systemd-service/tasks/main.yml': line 53, column 6, but may
 be elsewhere in the file depending on the exact syntax problem.
 
 The offending line appears to be:
 
-    - role: ../roles/health
-    become: true
-    ^ here
 
-2024-12-20 22:10:18,087 p=96334 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 22:10:18,787 p=96334 u=kurthogarth n=ansible | ERROR! role definitions must contain a role name
+     - name: Fail if the service is not running
+     ^ here
 
-The error appears to be in '/Users/kurthogarth/Documents/GitHub/requis_deploy/ansible/playbooks/health.yaml': line 11, column 7, but may
-be elsewhere in the file depending on the exact syntax problem.
-
-The offending line appears to be:
-
-    - role: ../roles/health
-    - become: true
-      ^ here
-
-2024-12-20 22:10:33,357 p=96357 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 22:10:34,569 p=96357 u=kurthogarth n=ansible | PLAY [Health Check] ***********************************************************************************************************
-2024-12-20 22:10:34,575 p=96357 u=kurthogarth n=ansible | TASK [Gathering Facts] ********************************************************************************************************
-2024-12-20 22:10:38,223 p=96357 u=kurthogarth n=ansible | ok: [health-development-1]
-2024-12-20 22:10:39,270 p=96357 u=kurthogarth n=ansible | ok: [health-development-0]
-2024-12-20 22:10:39,278 p=96357 u=kurthogarth n=ansible | TASK [../roles/health : Create Web Directory] *********************************************************************************
-2024-12-20 22:10:41,479 p=96357 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:10:41,479 p=96357 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:10:41,487 p=96357 u=kurthogarth n=ansible | TASK [../roles/health : Create Health Check Directory] ************************************************************************
-2024-12-20 22:10:43,679 p=96357 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:10:43,922 p=96357 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:10:43,931 p=96357 u=kurthogarth n=ansible | TASK [../roles/health : Write Index HTML] *************************************************************************************
-2024-12-20 22:10:46,957 p=96357 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:10:46,969 p=96357 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:10:46,980 p=96357 u=kurthogarth n=ansible | TASK [../roles/health : Start HTTP Server] ************************************************************************************
-2024-12-20 22:10:49,345 p=96357 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:10:49,346 p=96357 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:10:49,360 p=96357 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 22:10:49,360 p=96357 u=kurthogarth n=ansible | health-development-0       : ok=1    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:10:49,360 p=96357 u=kurthogarth n=ansible | health-development-1       : ok=1    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:11:02,895 p=96413 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 22:11:03,999 p=96413 u=kurthogarth n=ansible | PLAY [Health Check] ***********************************************************************************************************
-2024-12-20 22:11:04,005 p=96413 u=kurthogarth n=ansible | TASK [Gathering Facts] ********************************************************************************************************
-2024-12-20 22:11:07,836 p=96413 u=kurthogarth n=ansible | ok: [health-development-0]
-2024-12-20 22:11:08,168 p=96413 u=kurthogarth n=ansible | ok: [health-development-1]
-2024-12-20 22:11:08,172 p=96413 u=kurthogarth n=ansible | TASK [../roles/health : Create Web Directory] *********************************************************************************
-2024-12-20 22:11:10,620 p=96413 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:11:10,732 p=96413 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:11:10,737 p=96413 u=kurthogarth n=ansible | TASK [../roles/health : Create Health Check Directory] ************************************************************************
-2024-12-20 22:11:12,569 p=96413 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:11:12,609 p=96413 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:11:12,617 p=96413 u=kurthogarth n=ansible | TASK [../roles/health : Write Index HTML] *************************************************************************************
-2024-12-20 22:11:14,458 p=96413 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:11:14,521 p=96413 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:11:14,531 p=96413 u=kurthogarth n=ansible | TASK [../roles/health : Start HTTP Server] ************************************************************************************
-2024-12-20 22:11:16,426 p=96413 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:11:16,481 p=96413 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:11:16,495 p=96413 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 22:11:16,496 p=96413 u=kurthogarth n=ansible | health-development-0       : ok=1    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:11:16,496 p=96413 u=kurthogarth n=ansible | health-development-1       : ok=1    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:11:27,979 p=96467 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 22:11:28,814 p=96467 u=kurthogarth n=ansible | PLAY [Health Check] ***********************************************************************************************************
-2024-12-20 22:11:28,820 p=96467 u=kurthogarth n=ansible | TASK [Gathering Facts] ********************************************************************************************************
-2024-12-20 22:11:31,667 p=96467 u=kurthogarth n=ansible | ok: [health-development-1]
-2024-12-20 22:11:31,715 p=96467 u=kurthogarth n=ansible | ok: [health-development-0]
-2024-12-20 22:11:31,722 p=96467 u=kurthogarth n=ansible | TASK [../roles/health : Create Web Directory] *********************************************************************************
-2024-12-20 22:11:33,617 p=96467 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:11:33,701 p=96467 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:11:33,729 p=96467 u=kurthogarth n=ansible | TASK [../roles/health : Create Health Check Directory] ************************************************************************
-2024-12-20 22:11:35,583 p=96467 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:11:35,605 p=96467 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:11:35,611 p=96467 u=kurthogarth n=ansible | TASK [../roles/health : Write Index HTML] *************************************************************************************
-2024-12-20 22:11:37,462 p=96467 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:11:37,555 p=96467 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:11:37,560 p=96467 u=kurthogarth n=ansible | TASK [../roles/health : Start HTTP Server] ************************************************************************************
-2024-12-20 22:11:39,398 p=96467 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:11:39,398 p=96467 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:11:39,406 p=96467 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 22:11:39,406 p=96467 u=kurthogarth n=ansible | health-development-0       : ok=1    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:11:39,406 p=96467 u=kurthogarth n=ansible | health-development-1       : ok=1    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:12:20,774 p=96529 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
-2024-12-20 22:12:21,821 p=96529 u=kurthogarth n=ansible | PLAY [Health Check] ***********************************************************************************************************
-2024-12-20 22:12:21,826 p=96529 u=kurthogarth n=ansible | TASK [Gathering Facts] ********************************************************************************************************
-2024-12-20 22:12:25,809 p=96529 u=kurthogarth n=ansible | ok: [health-development-1]
-2024-12-20 22:12:26,446 p=96529 u=kurthogarth n=ansible | ok: [health-development-0]
-2024-12-20 22:12:26,454 p=96529 u=kurthogarth n=ansible | TASK [../roles/health : Create Web Directory] *********************************************************************************
-2024-12-20 22:12:28,497 p=96529 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:12:28,531 p=96529 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:12:28,538 p=96529 u=kurthogarth n=ansible | TASK [../roles/health : Create Health Check Directory] ************************************************************************
-2024-12-20 22:12:30,503 p=96529 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:12:30,584 p=96529 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:12:30,593 p=96529 u=kurthogarth n=ansible | TASK [../roles/health : Write Index HTML] *************************************************************************************
-2024-12-20 22:12:32,440 p=96529 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:12:32,586 p=96529 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:12:32,597 p=96529 u=kurthogarth n=ansible | TASK [../roles/health : Start HTTP Server] ************************************************************************************
-2024-12-20 22:12:34,627 p=96529 u=kurthogarth n=ansible | skipping: [health-development-0]
-2024-12-20 22:12:34,672 p=96529 u=kurthogarth n=ansible | skipping: [health-development-1]
-2024-12-20 22:12:34,689 p=96529 u=kurthogarth n=ansible | PLAY RECAP ********************************************************************************************************************
-2024-12-20 22:12:34,689 p=96529 u=kurthogarth n=ansible | health-development-0       : ok=1    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
-2024-12-20 22:12:34,689 p=96529 u=kurthogarth n=ansible | health-development-1       : ok=1    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
+2024-12-23 10:58:20,012 p=82562 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-23 10:58:20,881 p=82562 u=kurthogarth n=ansible | PLAY [Setup Health App] **********************************************************************************************************
+2024-12-23 10:58:20,887 p=82562 u=kurthogarth n=ansible | TASK [Gathering Facts] ***********************************************************************************************************
+2024-12-23 10:58:33,576 p=82562 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 10:58:33,582 p=82562 u=kurthogarth n=ansible | TASK [deploy_health_app : Check whoami] ******************************************************************************************
+2024-12-23 10:58:45,098 p=82562 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 10:58:45,109 p=82562 u=kurthogarth n=ansible | TASK [deploy_health_app : Display whoami] ****************************************************************************************
+2024-12-23 10:58:45,128 p=82562 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "The effective user is root"
+}
+2024-12-23 10:58:45,133 p=82562 u=kurthogarth n=ansible | TASK [deploy_health_app : Get stats for directory '/srv'] ************************************************************************
+2024-12-23 10:58:56,109 p=82562 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 10:58:56,118 p=82562 u=kurthogarth n=ansible | TASK [deploy_health_app : Print message if directory exists] *********************************************************************
+2024-12-23 10:58:56,137 p=82562 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Directory '/srv' exists."
+}
+2024-12-23 10:58:56,143 p=82562 u=kurthogarth n=ansible | TASK [deploy_health_app : Fail if directory not found] ***************************************************************************
+2024-12-23 10:58:56,154 p=82562 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 10:58:56,158 p=82562 u=kurthogarth n=ansible | TASK [deploy_health_app : Create the app directory] ******************************************************************************
+2024-12-23 10:59:07,119 p=82562 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 10:59:07,130 p=82562 u=kurthogarth n=ansible | TASK [deploy_health_app : Check if the app directory was created] ****************************************************************
+2024-12-23 10:59:07,158 p=82562 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Created app directory."
+}
+2024-12-23 10:59:07,163 p=82562 u=kurthogarth n=ansible | TASK [deploy_health_app : Report failure if the app directory does not exist] ****************************************************
+2024-12-23 10:59:07,177 p=82562 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 10:59:07,181 p=82562 u=kurthogarth n=ansible | TASK [deploy_health_app : Copy server python script] *****************************************************************************
+2024-12-23 10:59:24,556 p=82562 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 10:59:24,567 p=82562 u=kurthogarth n=ansible | TASK [deploy_health_app : Check if the copy task was successful] *****************************************************************
+2024-12-23 10:59:24,592 p=82562 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Copied file to: /srv/health_check/http_server.py"
+}
+2024-12-23 10:59:24,597 p=82562 u=kurthogarth n=ansible | TASK [deploy_health_app : Report failure if copy task failed] ********************************************************************
+2024-12-23 10:59:24,611 p=82562 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 10:59:24,615 p=82562 u=kurthogarth n=ansible | TASK [Start HTTP Service] ********************************************************************************************************
+2024-12-23 10:59:24,633 p=82562 u=kurthogarth n=ansible | included: systemd-service for health-development-0
+2024-12-23 10:59:24,638 p=82562 u=kurthogarth n=ansible | TASK [systemd-service : Create service file] *************************************************************************************
+2024-12-23 10:59:24,646 p=82562 u=kurthogarth n=ansible | fatal: [health-development-0]: FAILED! => {"msg": "The task includes an option with an undefined variable.. 'service_name' is undefined\n\nThe error appears to be in '/Users/kurthogarth/Documents/GitHub/requis_deploy/ansible/roles/systemd-service/tasks/main.yml': line 7, column 7, but may\nbe elsewhere in the file depending on the exact syntax problem.\n\nThe offending line appears to be:\n\n  block:\n    - name: Create service file\n      ^ here\n"}
+2024-12-23 10:59:24,647 p=82562 u=kurthogarth n=ansible | PLAY RECAP ***********************************************************************************************************************
+2024-12-23 10:59:24,647 p=82562 u=kurthogarth n=ansible | health-development-0       : ok=10   changed=1    unreachable=0    failed=1    skipped=3    rescued=0    ignored=0   
+2024-12-23 11:01:21,478 p=82720 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-23 11:01:22,684 p=82720 u=kurthogarth n=ansible | PLAY [Setup Health App] **********************************************************************************************************
+2024-12-23 11:01:22,690 p=82720 u=kurthogarth n=ansible | TASK [Gathering Facts] ***********************************************************************************************************
+2024-12-23 11:01:35,277 p=82720 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:01:35,281 p=82720 u=kurthogarth n=ansible | TASK [deploy_health_app : Check whoami] ******************************************************************************************
+2024-12-23 11:01:46,530 p=82720 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 11:01:46,541 p=82720 u=kurthogarth n=ansible | TASK [deploy_health_app : Display whoami] ****************************************************************************************
+2024-12-23 11:01:46,560 p=82720 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "The effective user is root"
+}
+2024-12-23 11:01:46,565 p=82720 u=kurthogarth n=ansible | TASK [deploy_health_app : Get stats for directory '/srv'] ************************************************************************
+2024-12-23 11:01:57,810 p=82720 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:01:57,814 p=82720 u=kurthogarth n=ansible | TASK [deploy_health_app : Print message if directory exists] *********************************************************************
+2024-12-23 11:01:57,825 p=82720 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Directory '/srv' exists."
+}
+2024-12-23 11:01:57,829 p=82720 u=kurthogarth n=ansible | TASK [deploy_health_app : Fail if directory not found] ***************************************************************************
+2024-12-23 11:01:57,838 p=82720 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 11:01:57,840 p=82720 u=kurthogarth n=ansible | TASK [deploy_health_app : Create the app directory] ******************************************************************************
+2024-12-23 11:02:09,244 p=82720 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:02:09,249 p=82720 u=kurthogarth n=ansible | TASK [deploy_health_app : Check if the app directory was created] ****************************************************************
+2024-12-23 11:02:09,268 p=82720 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Created app directory."
+}
+2024-12-23 11:02:09,272 p=82720 u=kurthogarth n=ansible | TASK [deploy_health_app : Report failure if the app directory does not exist] ****************************************************
+2024-12-23 11:02:09,282 p=82720 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 11:02:09,286 p=82720 u=kurthogarth n=ansible | TASK [deploy_health_app : Copy server python script] *****************************************************************************
+2024-12-23 11:02:26,543 p=82720 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:02:26,548 p=82720 u=kurthogarth n=ansible | TASK [deploy_health_app : Check if the copy task was successful] *****************************************************************
+2024-12-23 11:02:26,566 p=82720 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Copied file to: /srv/health_check/http_server.py"
+}
+2024-12-23 11:02:26,570 p=82720 u=kurthogarth n=ansible | TASK [deploy_health_app : Report failure if copy task failed] ********************************************************************
+2024-12-23 11:02:26,582 p=82720 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 11:02:26,585 p=82720 u=kurthogarth n=ansible | TASK [Start HTTP Service] ********************************************************************************************************
+2024-12-23 11:02:26,605 p=82720 u=kurthogarth n=ansible | included: systemd-service for health-development-0
+2024-12-23 11:02:26,609 p=82720 u=kurthogarth n=ansible | TASK [systemd-service : Create service file] *************************************************************************************
+2024-12-23 11:02:31,290 p=82720 u=kurthogarth n=ansible | An exception occurred during task execution. To see the full traceback, use -vvv. The error was: If you are using a module and expect the file to exist on the remote, see the remote_src option
+2024-12-23 11:02:31,291 p=82720 u=kurthogarth n=ansible | fatal: [health-development-0]: FAILED! => {"changed": false, "msg": "Could not find or access '../templates/systemd.service.j2'\nSearched in:\n\t/Users/kurthogarth/Documents/GitHub/requis_deploy/ansible/roles/systemd-service/templates/../templates/systemd.service.j2\n\t/Users/kurthogarth/Documents/GitHub/requis_deploy/ansible/roles/systemd-service/../templates/systemd.service.j2\n\t/Users/kurthogarth/Documents/GitHub/requis_deploy/ansible/roles/deploy_health_app/templates/../templates/systemd.service.j2\n\t/Users/kurthogarth/Documents/GitHub/requis_deploy/ansible/roles/deploy_health_app/../templates/systemd.service.j2\n\t/Users/kurthogarth/Documents/GitHub/requis_deploy/ansible/roles/systemd-service/tasks/templates/../templates/systemd.service.j2\n\t/Users/kurthogarth/Documents/GitHub/requis_deploy/ansible/roles/systemd-service/tasks/../templates/systemd.service.j2\n\t/Users/kurthogarth/Documents/GitHub/requis_deploy/ansible/playbooks/templates/../templates/systemd.service.j2\n\t/Users/kurthogarth/Documents/GitHub/requis_deploy/ansible/playbooks/../templates/systemd.service.j2 on the Ansible Controller.\nIf you are using a module and expect the file to exist on the remote, see the remote_src option"}
+2024-12-23 11:02:31,293 p=82720 u=kurthogarth n=ansible | PLAY RECAP ***********************************************************************************************************************
+2024-12-23 11:02:31,293 p=82720 u=kurthogarth n=ansible | health-development-0       : ok=10   changed=1    unreachable=0    failed=1    skipped=3    rescued=0    ignored=0   
+2024-12-23 11:03:19,288 p=82874 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-23 11:03:20,588 p=82874 u=kurthogarth n=ansible | PLAY [Setup Health App] **********************************************************************************************************
+2024-12-23 11:03:20,596 p=82874 u=kurthogarth n=ansible | TASK [Gathering Facts] ***********************************************************************************************************
+2024-12-23 11:03:32,685 p=82874 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:03:32,692 p=82874 u=kurthogarth n=ansible | TASK [deploy_health_app : Check whoami] ******************************************************************************************
+2024-12-23 11:03:44,862 p=82874 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 11:03:44,871 p=82874 u=kurthogarth n=ansible | TASK [deploy_health_app : Display whoami] ****************************************************************************************
+2024-12-23 11:03:44,887 p=82874 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "The effective user is root"
+}
+2024-12-23 11:03:44,892 p=82874 u=kurthogarth n=ansible | TASK [deploy_health_app : Get stats for directory '/srv'] ************************************************************************
+2024-12-23 11:03:56,526 p=82874 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:03:56,531 p=82874 u=kurthogarth n=ansible | TASK [deploy_health_app : Print message if directory exists] *********************************************************************
+2024-12-23 11:03:56,546 p=82874 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Directory '/srv' exists."
+}
+2024-12-23 11:03:56,549 p=82874 u=kurthogarth n=ansible | TASK [deploy_health_app : Fail if directory not found] ***************************************************************************
+2024-12-23 11:03:56,558 p=82874 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 11:03:56,561 p=82874 u=kurthogarth n=ansible | TASK [deploy_health_app : Create the app directory] ******************************************************************************
+2024-12-23 11:04:07,536 p=82874 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:04:07,540 p=82874 u=kurthogarth n=ansible | TASK [deploy_health_app : Check if the app directory was created] ****************************************************************
+2024-12-23 11:04:07,557 p=82874 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Created app directory."
+}
+2024-12-23 11:04:07,560 p=82874 u=kurthogarth n=ansible | TASK [deploy_health_app : Report failure if the app directory does not exist] ****************************************************
+2024-12-23 11:04:07,572 p=82874 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 11:04:07,576 p=82874 u=kurthogarth n=ansible | TASK [deploy_health_app : Copy server python script] *****************************************************************************
+2024-12-23 11:04:24,849 p=82874 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:04:24,855 p=82874 u=kurthogarth n=ansible | TASK [deploy_health_app : Check if the copy task was successful] *****************************************************************
+2024-12-23 11:04:24,874 p=82874 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Copied file to: /srv/health_check/http_server.py"
+}
+2024-12-23 11:04:24,878 p=82874 u=kurthogarth n=ansible | TASK [deploy_health_app : Report failure if copy task failed] ********************************************************************
+2024-12-23 11:04:24,893 p=82874 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 11:04:24,896 p=82874 u=kurthogarth n=ansible | TASK [Start HTTP Service] ********************************************************************************************************
+2024-12-23 11:04:24,914 p=82874 u=kurthogarth n=ansible | included: systemd-service for health-development-0
+2024-12-23 11:04:24,919 p=82874 u=kurthogarth n=ansible | TASK [systemd-service : Create service file] *************************************************************************************
+2024-12-23 11:04:46,626 p=82874 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 11:04:46,633 p=82874 u=kurthogarth n=ansible | TASK [systemd-service : Get service file stats] **********************************************************************************
+2024-12-23 11:04:57,486 p=82874 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:04:57,495 p=82874 u=kurthogarth n=ansible | TASK [systemd-service : Check if service file exists] ****************************************************************************
+2024-12-23 11:04:57,512 p=82874 u=kurthogarth n=ansible | fatal: [health-development-0]: FAILED! => {"msg": "invalid or malformed argument: 'Successfully created service health-check file.'"}
+2024-12-23 11:04:57,514 p=82874 u=kurthogarth n=ansible | PLAY RECAP ***********************************************************************************************************************
+2024-12-23 11:04:57,514 p=82874 u=kurthogarth n=ansible | health-development-0       : ok=12   changed=2    unreachable=0    failed=1    skipped=3    rescued=0    ignored=0   
+2024-12-23 11:05:49,216 p=83056 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-23 11:05:50,131 p=83056 u=kurthogarth n=ansible | PLAY [Setup Health App] **********************************************************************************************************
+2024-12-23 11:05:50,138 p=83056 u=kurthogarth n=ansible | TASK [Gathering Facts] ***********************************************************************************************************
+2024-12-23 11:06:03,436 p=83056 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:06:03,443 p=83056 u=kurthogarth n=ansible | TASK [deploy_health_app : Check whoami] ******************************************************************************************
+2024-12-23 11:06:14,944 p=83056 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 11:06:14,949 p=83056 u=kurthogarth n=ansible | TASK [deploy_health_app : Display whoami] ****************************************************************************************
+2024-12-23 11:06:14,962 p=83056 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "The effective user is root"
+}
+2024-12-23 11:06:14,965 p=83056 u=kurthogarth n=ansible | TASK [deploy_health_app : Get stats for directory '/srv'] ************************************************************************
+2024-12-23 11:06:26,072 p=83056 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:06:26,077 p=83056 u=kurthogarth n=ansible | TASK [deploy_health_app : Print message if directory exists] *********************************************************************
+2024-12-23 11:06:26,092 p=83056 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Directory '/srv' exists."
+}
+2024-12-23 11:06:26,095 p=83056 u=kurthogarth n=ansible | TASK [deploy_health_app : Fail if directory not found] ***************************************************************************
+2024-12-23 11:06:26,106 p=83056 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 11:06:26,109 p=83056 u=kurthogarth n=ansible | TASK [deploy_health_app : Create the app directory] ******************************************************************************
+2024-12-23 11:06:37,216 p=83056 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:06:37,228 p=83056 u=kurthogarth n=ansible | TASK [deploy_health_app : Check if the app directory was created] ****************************************************************
+2024-12-23 11:06:37,250 p=83056 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Created app directory."
+}
+2024-12-23 11:06:37,256 p=83056 u=kurthogarth n=ansible | TASK [deploy_health_app : Report failure if the app directory does not exist] ****************************************************
+2024-12-23 11:06:37,267 p=83056 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 11:06:37,272 p=83056 u=kurthogarth n=ansible | TASK [deploy_health_app : Copy server python script] *****************************************************************************
+2024-12-23 11:06:48,835 p=83056 u=kurthogarth n=ansible | fatal: [health-development-0]: FAILED! => {"msg": "file or module does not exist: /Users/kurthogarth/Documents/GitHub/requis_deploy/ansible/roles/deploy_health_app/files/http_server.py\nCould not find file on the Ansible Controller.\nIf you are using a module and expect the file to exist on the remote, see the remote_src option"}
+2024-12-23 11:06:48,837 p=83056 u=kurthogarth n=ansible | PLAY RECAP ***********************************************************************************************************************
+2024-12-23 11:06:48,837 p=83056 u=kurthogarth n=ansible | health-development-0       : ok=7    changed=1    unreachable=0    failed=1    skipped=2    rescued=0    ignored=0   
+2024-12-23 11:07:02,265 p=83195 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-23 11:07:03,049 p=83195 u=kurthogarth n=ansible | PLAY [Setup Health App] **********************************************************************************************************
+2024-12-23 11:07:03,059 p=83195 u=kurthogarth n=ansible | TASK [Gathering Facts] ***********************************************************************************************************
+2024-12-23 11:07:15,536 p=83195 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:07:15,540 p=83195 u=kurthogarth n=ansible | TASK [deploy_health_check : Check whoami] ****************************************************************************************
+2024-12-23 11:07:26,780 p=83195 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 11:07:26,792 p=83195 u=kurthogarth n=ansible | TASK [deploy_health_check : Display whoami] **************************************************************************************
+2024-12-23 11:07:26,814 p=83195 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "The effective user is root"
+}
+2024-12-23 11:07:26,819 p=83195 u=kurthogarth n=ansible | TASK [deploy_health_check : Get stats for directory '/srv'] **********************************************************************
+2024-12-23 11:07:38,021 p=83195 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:07:38,029 p=83195 u=kurthogarth n=ansible | TASK [deploy_health_check : Print message if directory exists] *******************************************************************
+2024-12-23 11:07:38,045 p=83195 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Directory '/srv' exists."
+}
+2024-12-23 11:07:38,049 p=83195 u=kurthogarth n=ansible | TASK [deploy_health_check : Fail if directory not found] *************************************************************************
+2024-12-23 11:07:38,062 p=83195 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 11:07:38,065 p=83195 u=kurthogarth n=ansible | TASK [deploy_health_check : Create the app directory] ****************************************************************************
+2024-12-23 11:07:48,902 p=83195 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:07:48,907 p=83195 u=kurthogarth n=ansible | TASK [deploy_health_check : Check if the app directory was created] **************************************************************
+2024-12-23 11:07:48,932 p=83195 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Created app directory."
+}
+2024-12-23 11:07:48,936 p=83195 u=kurthogarth n=ansible | TASK [deploy_health_check : Report failure if the app directory does not exist] **************************************************
+2024-12-23 11:07:49,011 p=83195 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 11:07:49,023 p=83195 u=kurthogarth n=ansible | TASK [deploy_health_check : Copy server python script] ***************************************************************************
+2024-12-23 11:08:06,436 p=83195 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:08:06,442 p=83195 u=kurthogarth n=ansible | TASK [deploy_health_check : Check if the copy task was successful] ***************************************************************
+2024-12-23 11:08:06,463 p=83195 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Copied file to: /srv/health_check/http_server.py"
+}
+2024-12-23 11:08:06,467 p=83195 u=kurthogarth n=ansible | TASK [deploy_health_check : Report failure if copy task failed] ******************************************************************
+2024-12-23 11:08:06,481 p=83195 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 11:08:06,487 p=83195 u=kurthogarth n=ansible | TASK [Start HTTP Service] ********************************************************************************************************
+2024-12-23 11:08:06,507 p=83195 u=kurthogarth n=ansible | included: systemd-service for health-development-0
+2024-12-23 11:08:06,511 p=83195 u=kurthogarth n=ansible | TASK [systemd-service : Create service file] *************************************************************************************
+2024-12-23 11:08:24,448 p=83195 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:08:24,452 p=83195 u=kurthogarth n=ansible | TASK [systemd-service : Get service file stats] **********************************************************************************
+2024-12-23 11:08:36,114 p=83195 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:08:36,121 p=83195 u=kurthogarth n=ansible | TASK [systemd-service : Check if service file exists] ****************************************************************************
+2024-12-23 11:08:36,132 p=83195 u=kurthogarth n=ansible | fatal: [health-development-0]: FAILED! => {"msg": "invalid or malformed argument: 'Successfully created service health-check file.'"}
+2024-12-23 11:08:36,133 p=83195 u=kurthogarth n=ansible | PLAY RECAP ***********************************************************************************************************************
+2024-12-23 11:08:36,133 p=83195 u=kurthogarth n=ansible | health-development-0       : ok=12   changed=1    unreachable=0    failed=1    skipped=3    rescued=0    ignored=0   
+2024-12-23 11:12:12,411 p=83443 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-23 11:12:13,325 p=83443 u=kurthogarth n=ansible | PLAY [Setup Health App] **********************************************************************************************************
+2024-12-23 11:12:13,331 p=83443 u=kurthogarth n=ansible | TASK [Gathering Facts] ***********************************************************************************************************
+2024-12-23 11:12:25,127 p=83443 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:12:25,132 p=83443 u=kurthogarth n=ansible | TASK [deploy_health_check : Check whoami] ****************************************************************************************
+2024-12-23 11:12:36,871 p=83443 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 11:12:36,883 p=83443 u=kurthogarth n=ansible | TASK [deploy_health_check : Display whoami] **************************************************************************************
+2024-12-23 11:12:36,896 p=83443 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "The effective user is root"
+}
+2024-12-23 11:12:36,899 p=83443 u=kurthogarth n=ansible | TASK [deploy_health_check : Get stats for directory '/srv'] **********************************************************************
+2024-12-23 11:12:48,380 p=83443 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:12:48,387 p=83443 u=kurthogarth n=ansible | TASK [deploy_health_check : Print message if directory exists] *******************************************************************
+2024-12-23 11:12:48,403 p=83443 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Directory '/srv' exists."
+}
+2024-12-23 11:12:48,408 p=83443 u=kurthogarth n=ansible | TASK [deploy_health_check : Fail if directory not found] *************************************************************************
+2024-12-23 11:12:48,418 p=83443 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 11:12:48,423 p=83443 u=kurthogarth n=ansible | TASK [deploy_health_check : Create the app directory] ****************************************************************************
+2024-12-23 11:12:59,717 p=83443 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:12:59,730 p=83443 u=kurthogarth n=ansible | TASK [deploy_health_check : Check if the app directory was created] **************************************************************
+2024-12-23 11:12:59,762 p=83443 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Created app directory."
+}
+2024-12-23 11:12:59,768 p=83443 u=kurthogarth n=ansible | TASK [deploy_health_check : Report failure if the app directory does not exist] **************************************************
+2024-12-23 11:12:59,781 p=83443 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 11:12:59,787 p=83443 u=kurthogarth n=ansible | TASK [deploy_health_check : Copy server python script] ***************************************************************************
+2024-12-23 11:13:17,187 p=83443 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:13:17,191 p=83443 u=kurthogarth n=ansible | TASK [deploy_health_check : Check if the copy task was successful] ***************************************************************
+2024-12-23 11:13:17,215 p=83443 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Copied file to: /srv/health_check/http_server.py"
+}
+2024-12-23 11:13:17,218 p=83443 u=kurthogarth n=ansible | TASK [deploy_health_check : Report failure if copy task failed] ******************************************************************
+2024-12-23 11:13:17,228 p=83443 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 11:13:17,231 p=83443 u=kurthogarth n=ansible | TASK [Start HTTP Service] ********************************************************************************************************
+2024-12-23 11:13:17,248 p=83443 u=kurthogarth n=ansible | included: systemd-service for health-development-0
+2024-12-23 11:13:17,251 p=83443 u=kurthogarth n=ansible | TASK [systemd-service : Create service file] *************************************************************************************
+2024-12-23 11:13:34,328 p=83443 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:13:34,338 p=83443 u=kurthogarth n=ansible | TASK [systemd-service : Get service file stats] **********************************************************************************
+2024-12-23 11:13:45,104 p=83443 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:13:45,111 p=83443 u=kurthogarth n=ansible | TASK [systemd-service : Check if service file exists] ****************************************************************************
+2024-12-23 11:13:45,120 p=83443 u=kurthogarth n=ansible | fatal: [health-development-0]: FAILED! => {"msg": "invalid or malformed argument: 'Successfully created service health-check file.'"}
+2024-12-23 11:13:45,121 p=83443 u=kurthogarth n=ansible | PLAY RECAP ***********************************************************************************************************************
+2024-12-23 11:13:45,121 p=83443 u=kurthogarth n=ansible | health-development-0       : ok=12   changed=1    unreachable=0    failed=1    skipped=3    rescued=0    ignored=0   
+2024-12-23 11:14:34,123 p=83614 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-23 11:14:35,126 p=83614 u=kurthogarth n=ansible | PLAY [Setup Health App] **********************************************************************************************************
+2024-12-23 11:14:35,133 p=83614 u=kurthogarth n=ansible | TASK [Gathering Facts] ***********************************************************************************************************
+2024-12-23 11:14:47,967 p=83614 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:14:47,975 p=83614 u=kurthogarth n=ansible | TASK [deploy_health_check : Check whoami] ****************************************************************************************
+2024-12-23 11:14:59,520 p=83614 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 11:14:59,525 p=83614 u=kurthogarth n=ansible | TASK [deploy_health_check : Display whoami] **************************************************************************************
+2024-12-23 11:14:59,535 p=83614 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "The effective user is root"
+}
+2024-12-23 11:14:59,539 p=83614 u=kurthogarth n=ansible | TASK [deploy_health_check : Get stats for directory '/srv'] **********************************************************************
+2024-12-23 11:15:10,543 p=83614 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:15:10,548 p=83614 u=kurthogarth n=ansible | TASK [deploy_health_check : Print message if directory exists] *******************************************************************
+2024-12-23 11:15:10,589 p=83614 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Directory '/srv' exists."
+}
+2024-12-23 11:15:10,607 p=83614 u=kurthogarth n=ansible | TASK [deploy_health_check : Fail if directory not found] *************************************************************************
+2024-12-23 11:15:10,626 p=83614 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 11:15:10,629 p=83614 u=kurthogarth n=ansible | TASK [deploy_health_check : Create the app directory] ****************************************************************************
+2024-12-23 11:15:21,804 p=83614 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:15:21,815 p=83614 u=kurthogarth n=ansible | TASK [deploy_health_check : Check if the app directory was created] **************************************************************
+2024-12-23 11:15:21,844 p=83614 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Created app directory."
+}
+2024-12-23 11:15:21,849 p=83614 u=kurthogarth n=ansible | TASK [deploy_health_check : Report failure if the app directory does not exist] **************************************************
+2024-12-23 11:15:21,863 p=83614 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 11:15:21,867 p=83614 u=kurthogarth n=ansible | TASK [deploy_health_check : Copy server python script] ***************************************************************************
+2024-12-23 11:15:38,251 p=83614 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:15:38,256 p=83614 u=kurthogarth n=ansible | TASK [deploy_health_check : Check if the copy task was successful] ***************************************************************
+2024-12-23 11:15:38,273 p=83614 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Copied file to: /srv/health_check/http_server.py"
+}
+2024-12-23 11:15:38,282 p=83614 u=kurthogarth n=ansible | TASK [deploy_health_check : Report failure if copy task failed] ******************************************************************
+2024-12-23 11:15:38,294 p=83614 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 11:15:38,298 p=83614 u=kurthogarth n=ansible | TASK [Start HTTP Service] ********************************************************************************************************
+2024-12-23 11:15:38,315 p=83614 u=kurthogarth n=ansible | included: systemd-service for health-development-0
+2024-12-23 11:15:38,319 p=83614 u=kurthogarth n=ansible | TASK [systemd-service : Create service file] *************************************************************************************
+2024-12-23 11:15:56,603 p=83614 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:15:56,614 p=83614 u=kurthogarth n=ansible | TASK [systemd-service : Get service file stats] **********************************************************************************
+2024-12-23 11:16:08,155 p=83614 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:16:08,160 p=83614 u=kurthogarth n=ansible | TASK [systemd-service : Check if service file exists] ****************************************************************************
+2024-12-23 11:16:08,179 p=83614 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Successfully created service health-check file."
+}
+2024-12-23 11:16:08,187 p=83614 u=kurthogarth n=ansible | TASK [systemd-service : Fail if the service file does not exist] *****************************************************************
+2024-12-23 11:16:08,198 p=83614 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 11:16:08,203 p=83614 u=kurthogarth n=ansible | TASK [systemd-service : Reload systemd configuration to recognize the new service] ***********************************************
+2024-12-23 11:16:19,484 p=83614 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 11:16:19,496 p=83614 u=kurthogarth n=ansible | TASK [systemd-service : Start systemd service] ***********************************************************************************
+2024-12-23 11:16:32,356 p=83614 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 11:16:32,368 p=83614 u=kurthogarth n=ansible | TASK [systemd-service : Get the status of the service] ***************************************************************************
+2024-12-23 11:16:44,769 p=83614 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 11:16:44,773 p=83614 u=kurthogarth n=ansible | TASK [systemd-service : Print message if service is running] *********************************************************************
+2024-12-23 11:16:44,787 p=83614 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Started service health-check."
+}
+2024-12-23 11:16:44,790 p=83614 u=kurthogarth n=ansible | TASK [systemd-service : Fail if the service is not running] **********************************************************************
+2024-12-23 11:16:44,800 p=83614 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 11:16:44,806 p=83614 u=kurthogarth n=ansible | PLAY RECAP ***********************************************************************************************************************
+2024-12-23 11:16:44,806 p=83614 u=kurthogarth n=ansible | health-development-0       : ok=17   changed=3    unreachable=0    failed=0    skipped=5    rescued=0    ignored=0   
+2024-12-23 16:48:05,417 p=87278 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-23 16:48:06,269 p=87278 u=kurthogarth n=ansible | PLAY [Setup Health App] *****************************************************************
+2024-12-23 16:48:06,277 p=87278 u=kurthogarth n=ansible | TASK [Gathering Facts] ******************************************************************
+2024-12-23 16:48:15,662 p=87278 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 16:48:15,671 p=87278 u=kurthogarth n=ansible | TASK [deploy_health_check : Check whoami] ***********************************************
+2024-12-23 16:48:24,073 p=87278 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 16:48:24,080 p=87278 u=kurthogarth n=ansible | TASK [deploy_health_check : Display whoami] *********************************************
+2024-12-23 16:48:24,093 p=87278 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "The effective user is root"
+}
+2024-12-23 16:48:24,097 p=87278 u=kurthogarth n=ansible | TASK [deploy_health_check : Get stats for directory '/srv'] *****************************
+2024-12-23 16:48:32,580 p=87278 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 16:48:32,585 p=87278 u=kurthogarth n=ansible | TASK [deploy_health_check : Print message if directory exists] **************************
+2024-12-23 16:48:32,599 p=87278 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Directory '/srv' exists."
+}
+2024-12-23 16:48:32,602 p=87278 u=kurthogarth n=ansible | TASK [deploy_health_check : Fail if directory not found] ********************************
+2024-12-23 16:48:32,617 p=87278 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 16:48:32,619 p=87278 u=kurthogarth n=ansible | TASK [deploy_health_check : Create the app directory] ***********************************
+2024-12-23 16:48:41,153 p=87278 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 16:48:41,164 p=87278 u=kurthogarth n=ansible | TASK [deploy_health_check : Check if the app directory was created] *********************
+2024-12-23 16:48:41,196 p=87278 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Created app directory."
+}
+2024-12-23 16:48:41,202 p=87278 u=kurthogarth n=ansible | TASK [deploy_health_check : Report failure if the app directory does not exist] *********
+2024-12-23 16:48:41,218 p=87278 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 16:48:41,223 p=87278 u=kurthogarth n=ansible | TASK [deploy_health_check : Copy server python script] **********************************
+2024-12-23 16:48:54,275 p=87278 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 16:48:54,286 p=87278 u=kurthogarth n=ansible | TASK [deploy_health_check : Check if the copy task was successful] **********************
+2024-12-23 16:48:54,303 p=87278 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Copied file to: /srv/health_check/http_server.py"
+}
+2024-12-23 16:48:54,306 p=87278 u=kurthogarth n=ansible | TASK [deploy_health_check : Report failure if copy task failed] *************************
+2024-12-23 16:48:54,317 p=87278 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 16:48:54,320 p=87278 u=kurthogarth n=ansible | TASK [Start HTTP Service] ***************************************************************
+2024-12-23 16:48:54,335 p=87278 u=kurthogarth n=ansible | included: systemd-service for health-development-0
+2024-12-23 16:48:54,338 p=87278 u=kurthogarth n=ansible | TASK [systemd-service : Create service file] ********************************************
+2024-12-23 16:49:07,755 p=87278 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 16:49:07,760 p=87278 u=kurthogarth n=ansible | TASK [systemd-service : Get service file stats] *****************************************
+2024-12-23 16:49:16,050 p=87278 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 16:49:16,054 p=87278 u=kurthogarth n=ansible | TASK [systemd-service : Check if service file exists] ***********************************
+2024-12-23 16:49:16,068 p=87278 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Successfully created service health-check file."
+}
+2024-12-23 16:49:16,071 p=87278 u=kurthogarth n=ansible | TASK [systemd-service : Fail if the service file does not exist] ************************
+2024-12-23 16:49:16,084 p=87278 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 16:49:16,088 p=87278 u=kurthogarth n=ansible | TASK [systemd-service : Reload systemd configuration to recognize the new service] ******
+2024-12-23 16:49:24,585 p=87278 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 16:49:24,590 p=87278 u=kurthogarth n=ansible | TASK [systemd-service : Start systemd service] ******************************************
+2024-12-23 16:49:33,311 p=87278 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 16:49:33,316 p=87278 u=kurthogarth n=ansible | TASK [systemd-service : Get the status of the service] **********************************
+2024-12-23 16:49:42,041 p=87278 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 16:49:42,046 p=87278 u=kurthogarth n=ansible | TASK [systemd-service : Print message if service is running] ****************************
+2024-12-23 16:49:42,059 p=87278 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Started service health-check."
+}
+2024-12-23 16:49:42,062 p=87278 u=kurthogarth n=ansible | TASK [systemd-service : Fail if the service is not running] *****************************
+2024-12-23 16:49:42,069 p=87278 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 16:49:42,074 p=87278 u=kurthogarth n=ansible | PLAY RECAP ******************************************************************************
+2024-12-23 16:49:42,075 p=87278 u=kurthogarth n=ansible | health-development-0       : ok=17   changed=2    unreachable=0    failed=0    skipped=5    rescued=0    ignored=0   
+2024-12-23 16:56:24,277 p=88271 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-23 16:56:25,053 p=88271 u=kurthogarth n=ansible | PLAY [Setup Health App] **********************************************************************************************************
+2024-12-23 16:56:25,060 p=88271 u=kurthogarth n=ansible | TASK [Gathering Facts] ***********************************************************************************************************
+2024-12-23 16:56:34,674 p=88271 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 16:56:34,682 p=88271 u=kurthogarth n=ansible | TASK [deploy_health_check : Check whoami] ****************************************************************************************
+2024-12-23 16:56:43,028 p=88271 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 16:56:43,034 p=88271 u=kurthogarth n=ansible | TASK [deploy_health_check : Display whoami] **************************************************************************************
+2024-12-23 16:56:43,052 p=88271 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "The effective user is root"
+}
+2024-12-23 16:56:43,058 p=88271 u=kurthogarth n=ansible | TASK [deploy_health_check : Get stats for directory '/srv'] **********************************************************************
+2024-12-23 16:56:51,465 p=88271 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 16:56:51,474 p=88271 u=kurthogarth n=ansible | TASK [deploy_health_check : Print message if directory exists] *******************************************************************
+2024-12-23 16:56:51,496 p=88271 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Directory '/srv' exists."
+}
+2024-12-23 16:56:51,502 p=88271 u=kurthogarth n=ansible | TASK [deploy_health_check : Fail if directory not found] *************************************************************************
+2024-12-23 16:56:51,514 p=88271 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 16:56:51,518 p=88271 u=kurthogarth n=ansible | TASK [deploy_health_check : Create the app directory] ****************************************************************************
+2024-12-23 16:56:59,953 p=88271 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 16:56:59,962 p=88271 u=kurthogarth n=ansible | TASK [deploy_health_check : Check if the app directory was created] **************************************************************
+2024-12-23 16:56:59,986 p=88271 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Created app directory."
+}
+2024-12-23 16:56:59,992 p=88271 u=kurthogarth n=ansible | TASK [deploy_health_check : Report failure if the app directory does not exist] **************************************************
+2024-12-23 16:57:00,005 p=88271 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 16:57:00,009 p=88271 u=kurthogarth n=ansible | TASK [deploy_health_check : Copy server python script] ***************************************************************************
+2024-12-23 16:57:16,318 p=88271 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 16:57:16,322 p=88271 u=kurthogarth n=ansible | TASK [deploy_health_check : Check if the copy task was successful] ***************************************************************
+2024-12-23 16:57:16,338 p=88271 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Copied file to: /srv/health_check/http_server.py"
+}
+2024-12-23 16:57:16,341 p=88271 u=kurthogarth n=ansible | TASK [deploy_health_check : Report failure if copy task failed] ******************************************************************
+2024-12-23 16:57:16,352 p=88271 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 16:57:16,355 p=88271 u=kurthogarth n=ansible | TASK [Start HTTP Service] ********************************************************************************************************
+2024-12-23 16:57:16,373 p=88271 u=kurthogarth n=ansible | included: systemd-service for health-development-0
+2024-12-23 16:57:16,377 p=88271 u=kurthogarth n=ansible | TASK [systemd-service : Create service file] *************************************************************************************
+2024-12-23 16:57:32,468 p=88271 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 16:57:32,478 p=88271 u=kurthogarth n=ansible | TASK [systemd-service : Get service file stats] **********************************************************************************
+2024-12-23 16:57:40,914 p=88271 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 16:57:40,925 p=88271 u=kurthogarth n=ansible | TASK [systemd-service : Check if service file exists] ****************************************************************************
+2024-12-23 16:57:40,946 p=88271 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Successfully created service health-check file."
+}
+2024-12-23 16:57:40,951 p=88271 u=kurthogarth n=ansible | TASK [systemd-service : Fail if the service file does not exist] *****************************************************************
+2024-12-23 16:57:40,962 p=88271 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 16:57:40,967 p=88271 u=kurthogarth n=ansible | TASK [systemd-service : Reload systemd configuration to recognize the new service] ***********************************************
+2024-12-23 16:57:49,728 p=88271 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 16:57:49,737 p=88271 u=kurthogarth n=ansible | TASK [systemd-service : Start systemd service] ***********************************************************************************
+2024-12-23 16:57:59,066 p=88271 u=kurthogarth n=ansible | changed: [health-development-0]
+2024-12-23 16:57:59,075 p=88271 u=kurthogarth n=ansible | TASK [systemd-service : Get the status of the service] ***************************************************************************
+2024-12-23 16:58:10,061 p=88271 u=kurthogarth n=ansible | ok: [health-development-0]
+2024-12-23 16:58:10,071 p=88271 u=kurthogarth n=ansible | TASK [systemd-service : Print message if service is running] *********************************************************************
+2024-12-23 16:58:10,094 p=88271 u=kurthogarth n=ansible | ok: [health-development-0] => {
+    "msg": "Started service health-check."
+}
+2024-12-23 16:58:10,098 p=88271 u=kurthogarth n=ansible | TASK [systemd-service : Fail if the service is not running] **********************************************************************
+2024-12-23 16:58:10,109 p=88271 u=kurthogarth n=ansible | skipping: [health-development-0]
+2024-12-23 16:58:10,117 p=88271 u=kurthogarth n=ansible | PLAY RECAP ***********************************************************************************************************************
+2024-12-23 16:58:10,117 p=88271 u=kurthogarth n=ansible | health-development-0       : ok=17   changed=6    unreachable=0    failed=0    skipped=5    rescued=0    ignored=0   

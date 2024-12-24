@@ -1,0 +1,14 @@
+[Unit]
+Description=Simple HTTP Server
+After=network.target
+
+[Service]
+ExecStart={{ exec_start }}
+Restart=always
+User=root
+WorkingDirectory={{ working_directory }}
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

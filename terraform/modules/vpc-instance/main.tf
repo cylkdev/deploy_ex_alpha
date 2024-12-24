@@ -52,8 +52,10 @@ resource "aws_security_group" "allow_tls" {
 resource "aws_vpc_security_group_ingress_rule" "allow_ssh_ipv4" {
   security_group_id = aws_security_group.allow_ssh.id
   
-  # The rule has a default source of 0.0.0.0/0. Rules with source
-  # of 0.0.0.0/0 or ::/0 allow all IP addresses to access your instance. 
+  # The rule has a default source of 0.0.0.0/0.
+  # Rules with source of 0.0.0.0/0 or ::/0
+  # allow all IP addresses to access your
+  # instance. 
   cidr_ipv4         = var.vpc_security_group_ingress_rule_allow_ssh_ipv4_cidr_ipv4
   
   from_port         = 22
@@ -66,15 +68,15 @@ resource "aws_vpc_security_group_ingress_rule" "allow_ssh_ipv4" {
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "allow_tls_ipv4" {
+resource "aws_vpc_security_group_ingress_rule" "allow_https_ipv4" {
   security_group_id = aws_security_group.allow_tls.id
-  cidr_ipv4         = aws_vpc.main.cidr_block
-  from_port         = var.vpc_security_group_ingress_rule_allow_tls_ipv4_from_port # 443
-  ip_protocol       = var.vpc_security_group_ingress_rule_allow_tls_ipv4_ip_protocol # "tcp"
-  to_port           = var.vpc_security_group_ingress_rule_allow_tls_ipv4_to_port # 443
+  cidr_ipv4         = var.vpc_security_group_ingress_rule_allow_https_ipv4_cidr
+  from_port         = var.vpc_security_group_ingress_rule_allow_https_ipv4_from_port # 443
+  ip_protocol       = var.vpc_security_group_ingress_rule_allow_https_ipv4_ip_protocol # "tcp"
+  to_port           = var.vpc_security_group_ingress_rule_allow_https_ipv4_to_port # 443
 
   tags = {
-    Name   = "allow_tls_ipv4"
+    Name   = "allow_https_ipv4"
     Region = var.region
   }
 }
@@ -120,27 +122,16 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
 #
 # Creates `count` amount of private subnets per availability zone.
 resource "aws_subnet" "private_subnet" {
-  # Subnets are mapped to unique string in the format
-  # `<index>-<availability_zone_name>` (e.g. 0-us-west-1a).
-  #
-  # This allows terraform to accurately track the subnets by
-  # availability zone and will destroy the appropriate resource
-  # if the available zones is changed.
-  for_each = { for idx in range(var.subnet_count * length(var.availability_zone_names)) :
-    "${idx}-${element(var.availability_zone_names, idx % length(var.availability_zone_names))}" => {
-      index = idx
-      availability_zone = element(var.availability_zone_names, idx % length(var.availability_zone_names))
-    }
-  }
+  count = var.subnet_count
 
   vpc_id            = aws_vpc.main.id
-  cidr_block        = cidrsubnet(aws_vpc.main.cidr_block, var.subnet_cidrsubnet_newbits, each.value.index + 1)
-  availability_zone = each.value.availability_zone
+  cidr_block        = cidrsubnet(aws_vpc.main.cidr_block, var.subnet_cidrsubnet_newbits, count.index + 1)
+  availability_zone = element(var.availability_zone_names, count.index % length(var.availability_zone_names))
 
   tags = {
-    AvailabilityZone = each.value.availability_zone
+    AvailabilityZone = element(var.availability_zone_names, count.index % length(var.availability_zone_names))
     Environment      = var.environment
-    Name             = format("%s-%s-%s-%s-%s", local.vpc_name_kebab_case, "public", var.environment, "sn", each.value.index)
+    Name             = format("%s-%s-%s-%s-%s", local.vpc_name_kebab_case, "public", var.environment, "sn", count.index)
     Region           = var.region
   }
 }
@@ -156,9 +147,9 @@ resource "aws_route_table" "private_route_table" {
 }
 
 resource "aws_route_table_association" "private_route_table" {
-  for_each = aws_subnet.private_subnet
-
-  subnet_id      = each.value.id
+  count = var.subnet_count
+  
+  subnet_id      = aws_subnet.private_subnet[count.index].id
   route_table_id = aws_route_table.private_route_table.id
 }
 
@@ -166,31 +157,20 @@ resource "aws_route_table_association" "private_route_table" {
 #
 # Creates `count` amount of public subnets per availability zone.
 resource "aws_subnet" "public_subnet" {
-  # Subnets are mapped to unique string in the format
-  # `<index>-<availability_zone_name>` (e.g. 0-us-west-1a).
-  #
-  # This allows terraform to accurately track the subnets by
-  # availability zone and will destroy the appropriate resource
-  # if the available zones is changed.
-  for_each = { for idx in range(var.subnet_count * length(var.availability_zone_names)) :
-    "${idx}-${element(var.availability_zone_names, idx % length(var.availability_zone_names))}" => {
-      index = idx
-      availability_zone = element(var.availability_zone_names, idx % length(var.availability_zone_names))
-    }
-  }
+  count = var.subnet_count
 
   vpc_id = aws_vpc.main.id
 
   # The CIDR block is offset by the length of the private subnets.
   # This allows the ip range of the public subnet to begin after
   # the private subnet range.
-  cidr_block        = cidrsubnet(aws_vpc.main.cidr_block, var.subnet_cidrsubnet_newbits, length(aws_subnet.private_subnet) + each.value.index + 1)
-  availability_zone = each.value.availability_zone
+  cidr_block        = cidrsubnet(aws_vpc.main.cidr_block, var.subnet_cidrsubnet_newbits, var.subnet_count + count.index + 1)
+  availability_zone = element(var.availability_zone_names, count.index % length(var.availability_zone_names))
 
   tags = {
-    AvailabilityZone = each.value.availability_zone
+    AvailabilityZone = element(var.availability_zone_names, count.index % length(var.availability_zone_names))
     Environment      = var.environment
-    Name             = format("%s-%s-%s-%s-%s", local.vpc_name_kebab_case, "public", var.environment, "sn", each.value.index)
+    Name             = format("%s-%s-%s-%s-%s", local.vpc_name_kebab_case, "public", var.environment, "sn", count.index)
     Region           = var.region
   }
 }
@@ -222,15 +202,8 @@ resource "aws_route_table" "public_route_table" {
 }
 
 resource "aws_route_table_association" "public_route_table" {
-  for_each = aws_subnet.public_subnet
+  count = var.subnet_count
   
-  subnet_id      = each.value.id
+  subnet_id      = aws_subnet.public_subnet[count.index].id
   route_table_id = aws_route_table.public_route_table.id
 }
-
-# resource "aws_route_table_association" "public_route" {
-#   count = var.subnet_count
-
-#   subnet_id      = aws_subnet.public_subnet[count.index].id
-#   route_table_id = aws_route_table.public_route.id
-# }
