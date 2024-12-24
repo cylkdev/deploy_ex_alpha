@@ -346,7 +346,7 @@ variable "enable_elb" {
   description = "Enables instance to generate an elastic load balancer for itself"
   type        = bool
   nullable    = false
-  default     = true
+  default     = false
 }
 
 variable "elb_listener_port" {

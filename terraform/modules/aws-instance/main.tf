@@ -390,60 +390,60 @@ resource "aws_eip_association" "ec2_eip_association" {
   count = var.enable_eip ? var.desired_count : 0
 
   instance_id   = aws_instance.ec2_instance[count.index].id
-  
+
   allocation_id = aws_eip.ec2_eip[count.index].id
 }
 
-# ### ELASTIC LOAD BALANCER
+### ELASTIC LOAD BALANCER
 
-# resource "aws_lb_target_group" "ec2_lb_target_group" {
-#   count = var.enable_elb && var.desired_count > 1 ? 1 : 0
+resource "aws_lb_target_group" "ec2_lb_target_group" {
+  count = var.enable_elb ? 1 : 0
 
-#   # The name is truncated because it cannot be longer than 32 characters.
-#   name  = substr(format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb-tg"), 0, 32)
+  # The name is truncated because it cannot be longer than 32 characters.
+  name  = substr(format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb-tg"), 0, 32)
 
-#   vpc_id             = var.vpc_id
-#   protocol           = "HTTP"
-#   port               = var.elb_target_group_port
+  vpc_id             = var.vpc_id
+  protocol           = "HTTP"
+  port               = var.elb_target_group_port
 
-#   tags = merge({
-#     Environment      = var.environment
-#     Group            = var.deployment_group
-#     InstanceGroup    = local.instance_group_snake_case
-#     Name             = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb-tg")
-#     Region           = var.region
-#     Vendor           = "Self"
-#     Type             = "Self Made"
-#   }, var.tags)
-# }
+  tags = merge({
+    Environment      = var.environment
+    Group            = var.deployment_group
+    InstanceGroup    = local.instance_group_snake_case
+    Name             = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb-tg")
+    Region           = var.region
+    Vendor           = "Self"
+    Type             = "Self Made"
+  }, var.tags)
+}
 
-# resource "aws_lb" "ec2_lb" {
-#   count = var.enable_elb && var.desired_count > 1 ? 1 : 0
+resource "aws_lb" "ec2_lb" {
+  count = var.enable_elb ? 1 : 0
 
-#   name                = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb")
-#   load_balancer_type  = "application"
-#   subnets             = [ for subnet in data.aws_subnet.public_subnet : subnet.id ]
-#   security_groups     = var.security_group_ids
+  name                = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb")
+  load_balancer_type  = "application"
+  subnets             = [ for subnet in data.aws_subnet.public_subnet : subnet.id ]
+  security_groups     = var.vpc_security_group_ids
 
-#   tags = merge({
-#     Environment   = var.environment
-#     InstanceGroup = local.instance_group_snake_case
-#     Group         = var.deployment_group
-#     Name          = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb")
-#     Region        = var.region
-#     Vendor        = "Self"
-#     Type          = "Self Made"
-#   }, var.tags)
-# }
+  tags = merge({
+    Environment   = var.environment
+    InstanceGroup = local.instance_group_snake_case
+    Group         = var.deployment_group
+    Name          = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb")
+    Region        = var.region
+    Vendor        = "Self"
+    Type          = "Self Made"
+  }, var.tags)
+}
 
-# # Attach each ec2 instance to the target group
-# resource "aws_lb_target_group_attachment" "ec2_lb_target_group_attachment" {
-#   count = var.enable_elb ? var.desired_count : 0
+# Attach each ec2 instance to the target group
+resource "aws_lb_target_group_attachment" "ec2_lb_target_group_attachment" {
+  count = var.enable_elb ? var.desired_count : 0
 
-#   target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
-#   target_id        = aws_instance.ec2_instance[count.index].id
-#   port             = var.elb_target_group_port
-# }
+  target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
+  target_id        = aws_instance.ec2_instance[count.index].id
+  port             = var.elb_target_group_port
+}
 
 # LOAD BALANCER LISTENER
 #
@@ -461,18 +461,24 @@ resource "aws_eip_association" "ec2_eip_association" {
 # logic. If the listener protocol is HTTPS, you must deploy at least one SSL
 # server certificate on the listener.
 
-# resource "aws_lb_listener" "ec2_lb_listener" {
-#   count = var.enable_elb && var.desired_count > 1 ? 1 : 0 
+resource "aws_lb_listener" "ec2_lb_listener" {
+  depends_on = [
+    aws_instance.ec2_instance,
+    aws_lb.ec2_lb,
+    aws_lb_target_group.ec2_lb_target_group
+  ]
 
-#   load_balancer_arn = aws_lb.ec2_lb[0].arn
-#   port              = var.elb_listener_port
-#   protocol          = aws_lb_target_group.ec2_lb_target_group[0].protocol
+  count = var.enable_elb && var.desired_count > 1 ? 1 : 0 
 
-#   default_action {
-#     type             = "forward"
-#     target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
-#   }
-# }
+  load_balancer_arn = aws_lb.ec2_lb[0].arn
+  port = var.elb_listener_port
+  protocol = aws_lb_target_group.ec2_lb_target_group[0].protocol
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
+  }
+}
 
 # ### Simple Queue Service
 

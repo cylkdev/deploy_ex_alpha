@@ -1,43 +1,103 @@
 version: 2.1
 
-jobs:
+executors:
+  terraform:
+    docker:
+      - image: hashicorp/terraform:latest
+        name: terraform
   ansible:
     docker:
       - image: alpine/ansible:2.17.0
         name: ansible
+
+jobs:
+  terraform_plan:
+    executor: terraform
+    working_directory: ~/project/terraform
+    parameters:
+      environment:
+        type: string
     steps:
       - checkout
       - run:
-          name: Ansible Version
+          name: List Directory contents
           command: |
-            ansible --version
-  terraform:
-    docker:
-      - image: hashicorp/terraform:1.10
-        name: terraform
+            ls -R --color
+      - run:
+          name: Terraform Plan
+          command: |
+            terraform plan -var-file="vars/<< parameters.environment >>.tfvars" -out << parameters.environment >>.tfplan
+  
+  terraform_apply_begin:
+    executor: terraform
+    working_directory: ~/project/terraform
+    parameters:
+      environment:
+        type: string
     steps:
       - checkout
       - run:
-          name: Terraform Version
+          name: List Directory contents
           command: |
-            terraform --version
+            ls -R --color
       - run:
-          name: Install Docker
-          command: |
-            apk add docker
+          name: Apply Terraform EC2 Resources
+          command: terraform apply << parameters.environment >>.tfplan -auto-approve
+
+  ansible_playbook:
+    executor: ansible
+    working_directory: ~/project/ansible
+    steps:
+      - checkout
       - run:
-          name: Ansible Controller
+          name: List Directory contents
           command: |
-            docker inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" ansible
+            ls -R --color
+      - run:
+          name: Run Ansible Playbook
+          command: |
+            ansible-playbook -i inventory/aws_ec2.yaml playbooks/health_check.yaml
+
+  terraform_apply_complete:
+    executor: terraform
+    working_directory: ~/project/terraform
+    parameters:
+      environment:
+        type: string
+    steps:
+      - checkout
+      - run:
+          name: List Directory contents
+          command: |
+            ls -R --color
+      - run:
+          name: Apply Terraform EC2 Resources
+          command: terraform apply << parameters.environment >>.tfplan -var='enable_elb=true' -var='enable_elb=true' -auto-approve
 
 workflows:
   deploy:
     jobs:
-      - ansible:
+      - terraform_plan:
           context:
             - aws_deploy
-      - terraform:
+          environment: development
+
+      - terraform_apply_begin:
           context:
             - aws_deploy
           requires:
-            - ansible
+            - terraform_plan
+          environment: development
+
+      - ansible_playbook:
+          context:
+            - aws_deploy
+          requires:
+            - terraform_apply_begin
+
+      - terraform_apply_complete:
+          context:
+            - aws_deploy
+          requires:
+            - ansible_playbook
+          environment: development
