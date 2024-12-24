@@ -21,13 +21,17 @@ jobs:
       - checkout:
           path: ~/project
       - run:
+          name: List Directory contents
+          command: |
+            ls -R --color
+      - run:
           name: Terraform Version
           command: |
             terraform --version
       - run:
-          name: List Directory contents
+          name: Terraform Init
           command: |
-            ls -R --color
+            terraform init
       - run:
           name: Terraform Plan
           command: |
