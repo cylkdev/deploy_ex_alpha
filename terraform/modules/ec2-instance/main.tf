@@ -295,6 +295,13 @@ resource "terraform_data" "replace_triggered_by" {
   input = var.replace_triggered_by
 }
 
+resource "terraform_data" "key_pair" {
+  input = [
+    format("%s:%s", "id", var.create_key_pair ? aws_key_pair.key_pair[0].id : null),
+    format("%s:%s", "key_name", var.key_pair_name == null ? aws_key_pair.key_pair[0].key_name : var.key_pair_name)
+  ]
+}
+
 resource "aws_instance" "ec2_instance" {
   ami = var.instance_ami_id
 
@@ -343,7 +350,12 @@ resource "aws_instance" "ec2_instance" {
   }
 
   lifecycle {
-    replace_triggered_by = [ terraform_data.replace_triggered_by ]
+    replace_triggered_by = [
+      aws_iam_instance_profile.ec2_instance_profile,
+      aws_lb_target_group.ec2_lb_target_group,
+      terraform_data.key_pair,
+      terraform_data.replace_triggered_by
+    ]
   }
 
   tags = merge({
