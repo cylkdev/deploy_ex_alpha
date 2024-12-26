@@ -1937,3 +1937,77 @@ The offending line appears to be:
 2024-12-26 18:06:40,200 p=22307 u=kurthogarth n=ansible | fatal: [sentry-0-development]: FAILED! => {"msg": "the connection plugin 'heck' was not found"}
 2024-12-26 18:06:40,200 p=22307 u=kurthogarth n=ansible | PLAY RECAP ***************************************************************************************************************************************************
 2024-12-26 18:06:40,200 p=22307 u=kurthogarth n=ansible | sentry-0-development       : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2024-12-26 18:08:30,555 p=22423 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-26 18:08:31,814 p=22423 u=kurthogarth n=ansible | PLAY [Setup Health App] **************************************************************************************************************************************
+2024-12-26 18:08:31,820 p=22423 u=kurthogarth n=ansible | TASK [Gathering Facts] ***************************************************************************************************************************************
+2024-12-26 18:08:31,830 p=22423 u=kurthogarth n=ansible | fatal: [sentry-0-development]: FAILED! => {"msg": "the connection plugin 'heck' was not found"}
+2024-12-26 18:08:31,831 p=22423 u=kurthogarth n=ansible | PLAY RECAP ***************************************************************************************************************************************************
+2024-12-26 18:08:31,831 p=22423 u=kurthogarth n=ansible | sentry-0-development       : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2024-12-26 18:10:28,500 p=22495 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-26 18:10:30,172 p=22495 u=kurthogarth n=ansible | PLAY [Setup Health App] **************************************************************************************************************************************
+2024-12-26 18:10:30,178 p=22495 u=kurthogarth n=ansible | TASK [Gathering Facts] ***************************************************************************************************************************************
+2024-12-26 18:10:31,220 p=22495 u=kurthogarth n=ansible | fatal: [sentry-0-development]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: Warning: Permanently added '54.241.82.176' (ED25519) to the list of known hosts.\r\nno such identity: /Users/kurthogarth/Documents/GitHub/requis_deploy/ansible/ec2-private-key.pem: No such file or directory\r\nec2-user@54.241.82.176: Permission denied (publickey,gssapi-keyex,gssapi-with-mic).", "unreachable": true}
+2024-12-26 18:10:31,222 p=22495 u=kurthogarth n=ansible | PLAY RECAP ***************************************************************************************************************************************************
+2024-12-26 18:10:31,222 p=22495 u=kurthogarth n=ansible | sentry-0-development       : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
+2024-12-26 18:11:06,161 p=22547 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-26 18:11:07,164 p=22547 u=kurthogarth n=ansible | PLAY [Setup Health App] **************************************************************************************************************************************
+2024-12-26 18:11:07,170 p=22547 u=kurthogarth n=ansible | TASK [Gathering Facts] ***************************************************************************************************************************************
+2024-12-26 18:11:19,744 p=22547 u=kurthogarth n=ansible | ok: [sentry-0-development]
+2024-12-26 18:11:19,750 p=22547 u=kurthogarth n=ansible | TASK [Ensure the inventory is not empty] *********************************************************************************************************************
+2024-12-26 18:11:19,832 p=22547 u=kurthogarth n=ansible | skipping: [sentry-0-development]
+2024-12-26 18:11:19,836 p=22547 u=kurthogarth n=ansible | TASK [deploy_health_check : Check whoami] ********************************************************************************************************************
+2024-12-26 18:11:34,849 p=22547 u=kurthogarth n=ansible | changed: [sentry-0-development]
+2024-12-26 18:11:34,860 p=22547 u=kurthogarth n=ansible | TASK [deploy_health_check : Display whoami] ******************************************************************************************************************
+2024-12-26 18:11:34,880 p=22547 u=kurthogarth n=ansible | ok: [sentry-0-development] => {
+    "msg": "The effective user is root"
+}
+2024-12-26 18:11:34,885 p=22547 u=kurthogarth n=ansible | TASK [deploy_health_check : Get stats for directory '/srv'] **************************************************************************************************
+2024-12-26 18:11:48,288 p=22547 u=kurthogarth n=ansible | ok: [sentry-0-development]
+2024-12-26 18:11:48,298 p=22547 u=kurthogarth n=ansible | TASK [deploy_health_check : Print message if directory exists] ***********************************************************************************************
+2024-12-26 18:11:48,319 p=22547 u=kurthogarth n=ansible | ok: [sentry-0-development] => {
+    "msg": "Directory '/srv' exists."
+}
+2024-12-26 18:11:48,323 p=22547 u=kurthogarth n=ansible | TASK [deploy_health_check : Fail if directory not found] *****************************************************************************************************
+2024-12-26 18:11:48,335 p=22547 u=kurthogarth n=ansible | skipping: [sentry-0-development]
+2024-12-26 18:11:48,340 p=22547 u=kurthogarth n=ansible | TASK [deploy_health_check : Create the app directory] ********************************************************************************************************
+2024-12-26 18:12:04,165 p=22547 u=kurthogarth n=ansible | changed: [sentry-0-development]
+2024-12-26 18:12:04,174 p=22547 u=kurthogarth n=ansible | TASK [deploy_health_check : Check if the app directory was created] ******************************************************************************************
+2024-12-26 18:12:04,200 p=22547 u=kurthogarth n=ansible | ok: [sentry-0-development] => {
+    "msg": "Created app directory."
+}
+2024-12-26 18:12:04,204 p=22547 u=kurthogarth n=ansible | TASK [deploy_health_check : Report failure if the app directory does not exist] ******************************************************************************
+2024-12-26 18:12:04,217 p=22547 u=kurthogarth n=ansible | skipping: [sentry-0-development]
+2024-12-26 18:12:04,221 p=22547 u=kurthogarth n=ansible | TASK [deploy_health_check : Copy server python script] *******************************************************************************************************
+2024-12-26 18:12:25,857 p=22547 u=kurthogarth n=ansible | changed: [sentry-0-development]
+2024-12-26 18:12:25,863 p=22547 u=kurthogarth n=ansible | TASK [deploy_health_check : Check if the copy task was successful] *******************************************************************************************
+2024-12-26 18:12:25,883 p=22547 u=kurthogarth n=ansible | ok: [sentry-0-development] => {
+    "msg": "Copied file to: /srv/health_check/http_server.py"
+}
+2024-12-26 18:12:25,886 p=22547 u=kurthogarth n=ansible | TASK [deploy_health_check : Report failure if copy task failed] **********************************************************************************************
+2024-12-26 18:12:25,900 p=22547 u=kurthogarth n=ansible | skipping: [sentry-0-development]
+2024-12-26 18:12:25,903 p=22547 u=kurthogarth n=ansible | TASK [Start HTTP Service] ************************************************************************************************************************************
+2024-12-26 18:12:25,922 p=22547 u=kurthogarth n=ansible | included: systemd-service for sentry-0-development
+2024-12-26 18:12:25,926 p=22547 u=kurthogarth n=ansible | TASK [systemd-service : Create service file] *****************************************************************************************************************
+2024-12-26 18:12:47,531 p=22547 u=kurthogarth n=ansible | changed: [sentry-0-development]
+2024-12-26 18:12:47,539 p=22547 u=kurthogarth n=ansible | TASK [systemd-service : Get service file stats] **************************************************************************************************************
+2024-12-26 18:12:58,932 p=22547 u=kurthogarth n=ansible | ok: [sentry-0-development]
+2024-12-26 18:12:58,944 p=22547 u=kurthogarth n=ansible | TASK [systemd-service : Check if service file exists] ********************************************************************************************************
+2024-12-26 18:12:58,970 p=22547 u=kurthogarth n=ansible | ok: [sentry-0-development] => {
+    "msg": "Successfully created service health-check file."
+}
+2024-12-26 18:12:58,975 p=22547 u=kurthogarth n=ansible | TASK [systemd-service : Fail if the service file does not exist] *********************************************************************************************
+2024-12-26 18:12:58,988 p=22547 u=kurthogarth n=ansible | skipping: [sentry-0-development]
+2024-12-26 18:12:58,993 p=22547 u=kurthogarth n=ansible | TASK [systemd-service : Reload systemd configuration to recognize the new service] ***************************************************************************
+2024-12-26 18:13:11,121 p=22547 u=kurthogarth n=ansible | changed: [sentry-0-development]
+2024-12-26 18:13:11,131 p=22547 u=kurthogarth n=ansible | TASK [systemd-service : Start systemd service] ***************************************************************************************************************
+2024-12-26 18:13:22,851 p=22547 u=kurthogarth n=ansible | changed: [sentry-0-development]
+2024-12-26 18:13:22,861 p=22547 u=kurthogarth n=ansible | TASK [systemd-service : Get the status of the service] *******************************************************************************************************
+2024-12-26 18:13:34,484 p=22547 u=kurthogarth n=ansible | ok: [sentry-0-development]
+2024-12-26 18:13:34,488 p=22547 u=kurthogarth n=ansible | TASK [systemd-service : Print message if service is running] *************************************************************************************************
+2024-12-26 18:13:34,503 p=22547 u=kurthogarth n=ansible | ok: [sentry-0-development] => {
+    "msg": "Started service health-check."
+}
+2024-12-26 18:13:34,506 p=22547 u=kurthogarth n=ansible | TASK [systemd-service : Fail if the service is not running] **************************************************************************************************
+2024-12-26 18:13:34,516 p=22547 u=kurthogarth n=ansible | skipping: [sentry-0-development]
+2024-12-26 18:13:34,523 p=22547 u=kurthogarth n=ansible | PLAY RECAP ***************************************************************************************************************************************************
+2024-12-26 18:13:34,523 p=22547 u=kurthogarth n=ansible | sentry-0-development       : ok=17   changed=6    unreachable=0    failed=0    skipped=6    rescued=0    ignored=0   
