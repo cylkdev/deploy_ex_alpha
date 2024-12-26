@@ -41,6 +41,14 @@ jobs:
     executor: ansible
     working_directory: ~/project/ansible
     steps:
+      - checkout:
+          path: ~/project
+
+      - run:
+          name: Ansible Version
+          command: |
+            ansible --version
+
       # The SSH key is stored in a circleci context and written from an
       # environment variable to the ssh key file.
       - run:
