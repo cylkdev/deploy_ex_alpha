@@ -49,8 +49,17 @@ jobs:
           command: |
             ansible --version
 
-      # The SSH key is stored in a circleci context and written from an
-      # environment variable to the ssh key file.
+      - run:
+          name: Install Build dependencies
+          command: |
+            apk update && apk upgrade
+            apk add --no-cache python3 py3-pip gcc musl-dev libffi-dev openssl-dev make curl
+
+      - run:
+          name: Install Botocore
+          command: |
+            pip install --no-cache-dir botocore boto3
+
       - run:
           name: Save SSH Key
           command: |
