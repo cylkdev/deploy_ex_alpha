@@ -7,10 +7,5 @@
   hosts: group_requis_backend
   vars:
     app_name: health_check
-  pre_tasks:
-    - name: Ensure the inventory is not empty
-      fail:
-        msg: "The inventory is empty. Please define at least one host."
-      when: groups['all'] | length == 0
   roles:
     - deploy_health_check

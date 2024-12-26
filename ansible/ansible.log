@@ -2023,3 +2023,30 @@ The offending line appears to be:
         ]
     }
 }
+2024-12-26 18:36:43,491 p=24328 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-26 18:36:44,453 p=24328 u=kurthogarth n=ansible | PLAY [Setup Health App] **************************************************************************************************************************************
+2024-12-26 18:36:44,459 p=24328 u=kurthogarth n=ansible | TASK [Gathering Facts] ***************************************************************************************************************************************
+2024-12-26 18:36:49,565 p=24328 u=kurthogarth n=ansible | fatal: [sentry-0-development]: FAILED! => {"msg": "template error while templating string: expected token 'end of print statement', got ':'. String: {{ ANSIBLE_PYTHON_INTERPRETER:-/usr/bin/python3 }}. expected token 'end of print statement', got ':'"}
+2024-12-26 18:36:49,566 p=24328 u=kurthogarth n=ansible | PLAY RECAP ***************************************************************************************************************************************************
+2024-12-26 18:36:49,566 p=24328 u=kurthogarth n=ansible | sentry-0-development       : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2024-12-26 18:37:00,886 p=24356 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-26 18:37:01,832 p=24356 u=kurthogarth n=ansible | PLAY [Setup Health App] **************************************************************************************************************************************
+2024-12-26 18:37:01,842 p=24356 u=kurthogarth n=ansible | TASK [Gathering Facts] ***************************************************************************************************************************************
+2024-12-26 18:37:06,958 p=24356 u=kurthogarth n=ansible | fatal: [sentry-0-development]: FAILED! => {"msg": "template error while templating string: expected token 'name', got '/'. String: {{ ANSIBLE_PYTHON_INTERPRETER | /usr/bin/python3 }}. expected token 'name', got '/'"}
+2024-12-26 18:37:06,959 p=24356 u=kurthogarth n=ansible | PLAY RECAP ***************************************************************************************************************************************************
+2024-12-26 18:37:06,959 p=24356 u=kurthogarth n=ansible | sentry-0-development       : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2024-12-26 18:37:17,144 p=24385 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-26 18:37:17,865 p=24385 u=kurthogarth n=ansible | PLAY [Setup Health App] **************************************************************************************************************************************
+2024-12-26 18:37:17,875 p=24385 u=kurthogarth n=ansible | TASK [Gathering Facts] ***************************************************************************************************************************************
+2024-12-26 18:37:22,445 p=24385 u=kurthogarth n=ansible | fatal: [sentry-0-development]: FAILED! => {"msg": "template error while templating string: expected token 'name', got 'string'. String: {{ ANSIBLE_PYTHON_INTERPRETER | '/usr/bin/python3' }}. expected token 'name', got 'string'"}
+2024-12-26 18:37:22,445 p=24385 u=kurthogarth n=ansible | PLAY RECAP ***************************************************************************************************************************************************
+2024-12-26 18:37:22,445 p=24385 u=kurthogarth n=ansible | sentry-0-development       : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2024-12-26 18:38:10,314 p=24424 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-26 18:38:11,299 p=24424 u=kurthogarth n=ansible | PLAY [Setup Health App] **************************************************************************************************************************************
+2024-12-26 18:38:11,317 p=24424 u=kurthogarth n=ansible | TASK [Gathering Facts] ***************************************************************************************************************************************
+2024-12-26 18:38:23,398 p=24424 u=kurthogarth n=ansible | ok: [sentry-0-development]
+2024-12-26 18:38:23,402 p=24424 u=kurthogarth n=ansible | TASK [Ensure the inventory is not empty] *********************************************************************************************************************
+2024-12-26 18:38:23,423 p=24424 u=kurthogarth n=ansible | skipping: [sentry-0-development]
+2024-12-26 18:38:23,426 p=24424 u=kurthogarth n=ansible | TASK [deploy_health_check : Check whoami] ********************************************************************************************************************
+2024-12-26 18:38:26,132 p=24424 u=kurthogarth n=ansible |  [ERROR]: User interrupted execution
+
