@@ -46,8 +46,8 @@ jobs:
       - run:
           name: Save SSH Key
           command: |
-            echo $AWS_INSTANCE_PRIVATE_KEY > ../terraform_exports/aws_instance/kurt-deploy-key.pem
-            chmod 400 ../terraform_exports/aws_instance/kurt-deploy-key.pem
+            echo $AWS_INSTANCE_PRIVATE_KEY > ec2-private-key.pem
+            chmod 400 ec2-private-key.pem
 
       - run:
           name: Run Ansible Playbook
