@@ -302,6 +302,12 @@ resource "terraform_data" "key_pair" {
   ]
 }
 
+resource "terraform_data" "load_balancer" {
+  input = [
+    format("%s:%s", "target_group", var.enable_elb ? aws_lb_target_group.ec2_lb_target_group[0].id : null),
+  ]
+}
+
 resource "aws_instance" "ec2_instance" {
   ami = var.instance_ami_id
 
@@ -352,7 +358,7 @@ resource "aws_instance" "ec2_instance" {
   lifecycle {
     replace_triggered_by = [
       aws_iam_instance_profile.ec2_instance_profile,
-      aws_lb_target_group.ec2_lb_target_group,
+      terraform_data.load_balancer,
       terraform_data.key_pair,
       terraform_data.replace_triggered_by
     ]
