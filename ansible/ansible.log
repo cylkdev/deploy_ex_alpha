@@ -1718,3 +1718,222 @@ The offending line appears to be:
         ]
     }
 }
+2024-12-26 18:06:24,957 p=22270 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-26 18:06:26,043 p=22270 u=kurthogarth n=ansible | {
+    "_meta": {
+        "hostvars": {
+            "sentry-0-development": {
+                "ami_launch_index": 0,
+                "ansible_host": "54.241.82.176",
+                "architecture": "x86_64",
+                "aws_credentials": {
+                    "AWS_ACCESS_KEY_ID": "<AWS_ACCESS_KEY_ID>",
+                    "AWS_SECRET_ACCESS_KEY": "<AWS_SECRET_ACCESS_KEY>"
+                },
+                "block_device_mappings": [
+                    {
+                        "device_name": "/dev/xvda",
+                        "ebs": {
+                            "attach_time": "2024-12-26T22:55:00+00:00",
+                            "delete_on_termination": true,
+                            "status": "attached",
+                            "volume_id": "vol-0e84e20f231d8c74f"
+                        }
+                    },
+                    {
+                        "device_name": "/dev/sdh",
+                        "ebs": {
+                            "attach_time": "2024-12-26T22:55:23+00:00",
+                            "delete_on_termination": false,
+                            "status": "attached",
+                            "volume_id": "vol-0a14aaa83e83486e4"
+                        }
+                    }
+                ],
+                "boot_mode": "uefi-preferred",
+                "capacity_reservation_specification": {
+                    "capacity_reservation_preference": "open"
+                },
+                "client_token": "terraform-20241226225458598400000001",
+                "cpu_options": {
+                    "core_count": 1,
+                    "threads_per_core": 2
+                },
+                "current_instance_boot_mode": "uefi",
+                "ebs_optimized": false,
+                "ena_support": true,
+                "enclave_options": {
+                    "enabled": false
+                },
+                "hibernation_options": {
+                    "configured": false
+                },
+                "hypervisor": "xen",
+                "iam_instance_profile": {
+                    "arn": "arn:aws:iam::750872578221:instance-profile/sentry-0-development-profile",
+                    "id": "AIPA25U36JCW5VKNYAW5R"
+                },
+                "image_id": "ami-047d7c33f6e7b4bc4",
+                "instance_id": "i-055c086e526eb3993",
+                "instance_type": "t3.micro",
+                "key_name": "kurt-deploy-key",
+                "launch_time": "2024-12-26T22:54:59+00:00",
+                "maintenance_options": {
+                    "auto_recovery": "default"
+                },
+                "metadata_options": {
+                    "http_endpoint": "enabled",
+                    "http_protocol_ipv6": "disabled",
+                    "http_put_response_hop_limit": 2,
+                    "http_tokens": "required",
+                    "instance_metadata_tags": "disabled",
+                    "state": "applied"
+                },
+                "monitoring": {
+                    "state": "disabled"
+                },
+                "network_interfaces": [
+                    {
+                        "association": {
+                            "ip_owner_id": "amazon",
+                            "public_dns_name": "ec2-54-241-82-176.us-west-1.compute.amazonaws.com",
+                            "public_ip": "54.241.82.176"
+                        },
+                        "attachment": {
+                            "attach_time": "2024-12-26T22:54:59+00:00",
+                            "attachment_id": "eni-attach-0f56884500021a9f9",
+                            "delete_on_termination": true,
+                            "device_index": 0,
+                            "network_card_index": 0,
+                            "status": "attached"
+                        },
+                        "description": "",
+                        "groups": [
+                            {
+                                "group_id": "sg-077dccb222bd4df95",
+                                "group_name": "requis_backend_allow_ssh"
+                            },
+                            {
+                                "group_id": "sg-0cef7ae2e69daa77a",
+                                "group_name": "requis_backend_allow_tls"
+                            }
+                        ],
+                        "interface_type": "interface",
+                        "ipv6_addresses": [],
+                        "mac_address": "06:3d:ec:db:b2:a1",
+                        "network_interface_id": "eni-0f8cd59421f0117fd",
+                        "owner_id": "750872578221",
+                        "private_dns_name": "i-055c086e526eb3993.us-west-1.compute.internal",
+                        "private_ip_address": "10.16.64.46",
+                        "private_ip_addresses": [
+                            {
+                                "association": {
+                                    "ip_owner_id": "amazon",
+                                    "public_dns_name": "ec2-54-241-82-176.us-west-1.compute.amazonaws.com",
+                                    "public_ip": "54.241.82.176"
+                                },
+                                "primary": true,
+                                "private_dns_name": "i-055c086e526eb3993.us-west-1.compute.internal",
+                                "private_ip_address": "10.16.64.46"
+                            }
+                        ],
+                        "source_dest_check": true,
+                        "status": "in-use",
+                        "subnet_id": "subnet-0ef614d4e231e27e0",
+                        "vpc_id": "vpc-07fc47cbc38b74074"
+                    }
+                ],
+                "owner_id": "750872578221",
+                "placement": {
+                    "availability_zone": "us-west-1a",
+                    "group_name": "",
+                    "region": "us-west-1",
+                    "tenancy": "default"
+                },
+                "platform_details": "Linux/UNIX",
+                "private_dns_name": "i-055c086e526eb3993.us-west-1.compute.internal",
+                "private_dns_name_options": {
+                    "enable_resource_name_dns_a_record": true,
+                    "enable_resource_name_dns_aaaa_record": false,
+                    "hostname_type": "resource-name"
+                },
+                "private_ip_address": "10.16.64.46",
+                "product_codes": [],
+                "public_dns_name": "ec2-54-241-82-176.us-west-1.compute.amazonaws.com",
+                "public_ip_address": "54.241.82.176",
+                "requester_id": "",
+                "reservation_id": "r-064b7648434e10143",
+                "root_device_name": "/dev/xvda",
+                "root_device_type": "ebs",
+                "security_groups": [
+                    {
+                        "group_id": "sg-077dccb222bd4df95",
+                        "group_name": "requis_backend_allow_ssh"
+                    },
+                    {
+                        "group_id": "sg-0cef7ae2e69daa77a",
+                        "group_name": "requis_backend_allow_tls"
+                    }
+                ],
+                "source_dest_check": true,
+                "state": {
+                    "code": 16,
+                    "name": "running"
+                },
+                "state_transition_reason": "",
+                "subnet_id": "subnet-0ef614d4e231e27e0",
+                "tags": {
+                    "AvailabilityZone": "us-west-1a",
+                    "Environment": "development",
+                    "InstanceGroup": "sentry",
+                    "InventoryGroup": "requis_backend",
+                    "Name": "sentry-0-development",
+                    "Region": "us-west-1",
+                    "Repository": "https://github.com/RequisDev/requis_backend_umbrella/",
+                    "Terraform": "true",
+                    "Type": "Self Made",
+                    "Vendor": "Self"
+                },
+                "usage_operation": "RunInstances",
+                "usage_operation_update_time": "2024-12-26T22:54:59+00:00",
+                "virtualization_type": "hvm",
+                "vpc_id": "vpc-07fc47cbc38b74074"
+            }
+        }
+    },
+    "all": {
+        "children": [
+            "ungrouped",
+            "aws_ec2",
+            "group_requis_backend",
+            "instance_group_sentry"
+        ]
+    },
+    "aws_ec2": {
+        "hosts": [
+            "sentry-0-development"
+        ]
+    },
+    "group_requis_backend": {
+        "hosts": [
+            "sentry-0-development"
+        ]
+    },
+    "instance_group_sentry": {
+        "hosts": [
+            "sentry-0-development"
+        ]
+    }
+}
+2024-12-26 18:06:36,600 p=22295 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-26 18:06:37,630 p=22295 u=kurthogarth n=ansible | PLAY [Setup Health App] **************************************************************************************************************************************
+2024-12-26 18:06:37,636 p=22295 u=kurthogarth n=ansible | TASK [Gathering Facts] ***************************************************************************************************************************************
+2024-12-26 18:06:37,646 p=22295 u=kurthogarth n=ansible | fatal: [sentry-0-development]: FAILED! => {"msg": "the connection plugin 'heck' was not found"}
+2024-12-26 18:06:37,647 p=22295 u=kurthogarth n=ansible | PLAY RECAP ***************************************************************************************************************************************************
+2024-12-26 18:06:37,647 p=22295 u=kurthogarth n=ansible | sentry-0-development       : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2024-12-26 18:06:39,428 p=22307 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-26 18:06:40,185 p=22307 u=kurthogarth n=ansible | PLAY [Setup Health App] **************************************************************************************************************************************
+2024-12-26 18:06:40,190 p=22307 u=kurthogarth n=ansible | TASK [Gathering Facts] ***************************************************************************************************************************************
+2024-12-26 18:06:40,200 p=22307 u=kurthogarth n=ansible | fatal: [sentry-0-development]: FAILED! => {"msg": "the connection plugin 'heck' was not found"}
+2024-12-26 18:06:40,200 p=22307 u=kurthogarth n=ansible | PLAY RECAP ***************************************************************************************************************************************************
+2024-12-26 18:06:40,200 p=22307 u=kurthogarth n=ansible | sentry-0-development       : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
