@@ -50,9 +50,14 @@ jobs:
             chmod 400 ec2-private-key.pem
 
       - run:
+          name: List Directory Contents
+          command: |
+            ls .
+
+      - run:
           name: Run Ansible Playbook
           command: |
-            ansible-playbook -i inventory/aws_ec2.yaml playbooks/health_check.yaml
+            ansible-playbook -i inventory/aws_ec2.yaml ./playbooks/health_check.yaml
 
   terraform_provision_load_balancer:
     executor: terraform
