@@ -297,14 +297,14 @@ resource "terraform_data" "replace_triggered_by" {
 
 resource "terraform_data" "key_pair" {
   input = [
-    format("%s:%s", "id", var.create_key_pair ? aws_key_pair.key_pair[0].id : null),
+    format("%s:%s", "id", var.create_key_pair ? aws_key_pair.key_pair[0].id : ""),
     format("%s:%s", "key_name", var.key_pair_name == null ? aws_key_pair.key_pair[0].key_name : var.key_pair_name)
   ]
 }
 
 resource "terraform_data" "load_balancer" {
   input = [
-    format("%s:%s", "target_group", var.enable_elb ? aws_lb_target_group.ec2_lb_target_group[0].id : null),
+    format("%s:%s", "target_group", var.enable_elb ? aws_lb_target_group.ec2_lb_target_group[0].id : ""),
   ]
 }
 
