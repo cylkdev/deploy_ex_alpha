@@ -1,5 +1,6 @@
 # Fetch all hosts in us-west-1
 plugin: aws_ec2
+
 regions:
   - us-west-1
 
@@ -8,15 +9,15 @@ hostnames:
 
 # Only target hosts that are a part of this deployment group.
 filters:
-  tag:Group: 'requis_backend'
+  tag:InventoryGroup: 'requis_backend'
 
 # Add hosts to group based on the values of a variable.
 keyed_groups:
-  - key: tags['Group']
+  - key: tags['InventoryGroup']
     prefix: "group"
 
   - key: tags['InstanceGroup']
-    prefix: "group"
+    prefix: "instance_group"
 
 # Use the public IP address to connect to the host
 # (note: this does not modify inventory_hostname)

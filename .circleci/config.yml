@@ -31,21 +31,30 @@ jobs:
       - run:
           name: Terraform Plan
           command: |
-            terraform plan -var-file="vars/<< parameters.environment >>.tfvars" -var='enable_elb=false' -out << parameters.environment >>.tfplan
+            terraform plan -var-file="vars/<< parameters.environment >>.tfvars" -out << parameters.environment >>.tfplan
       - run:
-          name: Apply Terraform EC2 Resources
-          command: terraform apply << parameters.environment >>.tfplan
+          name: Terraform Apply
+          command: |
+            terraform apply << parameters.environment >>.tfplan
 
   ansible_playbook:
     executor: ansible
     working_directory: ~/project/ansible
     steps:
+      # The SSH key is stored in a circleci context and written from an
+      # environment variable to the ssh key file.
+      - run:
+          name: Save SSH Key
+          command: |
+            echo $AWS_INSTANCE_PRIVATE_KEY > ../terraform_exports/aws_instance/kurt-deploy-key.pem
+            chmod 400 ../terraform_exports/aws_instance/kurt-deploy-key.pem
+
       - run:
           name: Run Ansible Playbook
           command: |
             ansible-playbook -i inventory/aws_ec2.yaml playbooks/health_check.yaml
 
-  terraform_provision_autoscaling:
+  terraform_provision_load_balancer:
     executor: terraform
     working_directory: ~/project/terraform
     parameters:
@@ -67,9 +76,9 @@ jobs:
           command: |
             terraform plan -var-file="vars/<< parameters.environment >>.tfvars" -var='enable_elb=true' -out << parameters.environment >>.tfplan
       - run:
-          name: Apply Terraform EC2 Resources
+          name: Terraform Apply
           command: |
-            terraform apply << parameters.environment >>.tfplan -var='enable_elb=true' -var='enable_elb=true' -auto-approve
+            terraform apply << parameters.environment >>.tfplan
 
 workflows:
   deploy:
@@ -85,7 +94,7 @@ workflows:
           requires:
             - terraform_provision_ec2
 
-      - terraform_provision_autoscaling:
+      - terraform_provision_load_balancer:
           context:
             - aws_deploy
           requires:

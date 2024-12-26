@@ -1,63 +1,28 @@
-# deploy = {
-#   # Note: The group name is mapped to the ansible inventory group name.
-#   region    = "us-west-1"
-#   group     = "Requis Backend"
-#   vpc_name  = "Requis Backend Alpha"
+environment = "development"
 
-#   instances = {
-#     sentry = {
-#       instance_group             = "Sentry"
-#       placement_group_strategy  = "cluster"
+deployments = {
+  requis_us_west_1 = {
+    region          = "us-west-1"
+    inventory_group = "requis_backend"
+    vpc_name        = "Requis Backend"
+    tags            = {}
 
-#       create_key_pair           = true
+    ec2_instances = {
+      sentry = {
+        instance_group            = "Sentry"
+        placement_group_strategy  = "cluster"
+        key_pair_name             = "kurt-deploy-key"
 
-#       enable_auto_scaling       = true
-#       desired_count    = 1
-#       minimum_instance_count    = 1
-#       maximum_instance_count    = 1
+        enable_auto_scaling       = true
+        desired_count             = 1
+        minimum_instance_count    = 1
+        maximum_instance_count    = 1
 
-#       enable_ebs                = true
+        enable_ebs                = true
+        enable_user_data          = true
 
-#       # The minimum requirements are:
-#       #
-#       # - 4 CPU Cores
-#       # - 16 GB RAM
-#       # - 20 GB Free Disk Space
-#       #
-#       # https://develop.sentry.dev/self-hosted/#required-minimum-system-resources
-#       ebs_volume_size         = 20
-
-#       enable_elb                = true
-#       enable_sqs                = true
-#     }
-#   }
-# }
-
-### GENERAL
-
-deployment_group          = "requis_backend"
-environment               = "development"
-region                    = "us-west-1"
-vpc_name                  = "TestDeployEx"
-
-### EC2
-
-ec2_instances = {
-  health = {
-    instance_group             = "Health"
-    placement_group_strategy  = "cluster"
-
-    create_key_pair           = true
-
-    enable_auto_scaling       = true
-    desired_count    = 1
-    minimum_instance_count    = 1
-    maximum_instance_count    = 1
-
-    enable_ebs                = true
-    ebs_volume_size         = 20
-
-    enable_elb                = true
-    enable_sqs                = true
+        ebs_volume_size = 20
+      }
+    }
   }
 }

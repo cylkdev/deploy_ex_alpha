@@ -1,9 +1,46 @@
-# module: aws-instance
-# version: 0.1.0
+# -----------------------------------------------------------------------------
+# EC2 Instance Module
+#
+# Description: Provision AWS EC2 instances.
+# Author: Kurt Hogarth <kurt@learn-elixir.dev>, Mika Kalathil <mika@learn-elixir.dev>
+# Version: 0.1.0
+# Last Updated: <LAST_UPDATED>
+# -----------------------------------------------------------------------------
 
 locals {
-  instance_group_kebab_case = lower(replace(var.instance_group, " ", "-"))
-  instance_group_snake_case = lower(replace(var.instance_group, " ", "_"))
+  instance_group_snake_case = lower(
+    replace(
+      replace(
+        replace(var.instance_group, " ", "_"),
+        "/[^a-zA-Z0-9_]/",
+        ""
+      ),
+      "-",
+      "_"
+    )
+  )
+
+  instance_name_kebab_case = lower(
+    replace(
+      replace(
+        replace(var.instance_name, " ", "-"), 
+        "/[^a-zA-Z0-9-]/", ""
+      ), 
+      "_", "-"
+    )
+  )
+
+  instance_name_snake_case = lower(
+    replace(
+      replace(
+        replace(var.instance_name, " ", "_"),
+        "/[^a-zA-Z0-9_]/",
+        ""
+      ),
+      "-",
+      "_"
+    )
+  )
 }
 
 ################################################################
@@ -25,10 +62,10 @@ locals {
 # Do not output this resource as it will save the result in
 # plaintext to the terraform state which is a security risk.
 resource "tls_private_key" "ssh_key" {
-  count = var.create_key_pair && (var.key_pair_key_name == null) ? 1 : 0
+  count = var.create_key_pair ? 1 : 0
 
   algorithm = "RSA"
-  rsa_bits  = 4096
+  rsa_bits = 4096
 }
 
 # ---
@@ -40,9 +77,9 @@ resource "tls_private_key" "ssh_key" {
 # Do not output this resource as it will save the result in
 # plaintext to the terraform state which is a security risk.
 resource "aws_key_pair" "key_pair" {
-  count = var.create_key_pair && (var.key_pair_key_name == null) ? 1 : 0
+  count = var.create_key_pair ? 1 : 0
 
-  key_name   = "${local.instance_group_kebab_case}-key-pair"
+  key_name = "${local.instance_name_kebab_case}-key-pair"
   public_key = tls_private_key.ssh_key[0].public_key_openssh
 }
 
@@ -50,10 +87,10 @@ resource "aws_key_pair" "key_pair" {
 #
 # Saves the TLS private key to a file.
 resource "local_file" "ssh_key" {
-  count = var.create_key_pair && (var.key_pair_key_name == null) ? 1 : 0
+  count = var.create_key_pair ? 1 : 0
 
-  filename        = "../${path.root}/terraform_exports/aws_instance/ssh/${aws_key_pair.key_pair[0].key_name}.pem"
-  content         = tls_private_key.ssh_key[0].private_key_pem
+  filename = "../${path.root}/terraform_exports/aws_instance/ec2-private-key.pem"
+  content = tls_private_key.ssh_key[0].private_key_pem
   file_permission = 0400
 }
 
@@ -117,7 +154,7 @@ resource "local_file" "ssh_key" {
 # Creates a IAM policy document (Trust Policy) that defines
 # who or what is allowed to assume the role
 # (e.g EC2 instance / AWS Account).
-data "aws_iam_policy_document" "trust_policy" {
+data "aws_iam_policy_document" "trust_policy_document" {
   statement {
     effect  = "Allow"
     actions = [
@@ -142,18 +179,18 @@ data "aws_iam_policy_document" "trust_policy" {
 #
 # Creates a IAM role that defines the permissions available
 # to the ec2 instance at runtime.
-resource "aws_iam_role" "instance_role" {
-  name = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "role")
+resource "aws_iam_role" "ec2_instance_role" {
+  name = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "role")
 
-  assume_role_policy = data.aws_iam_policy_document.trust_policy.json
+  assume_role_policy = data.aws_iam_policy_document.trust_policy_document.json
 
   tags = merge({
-    Name          = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "role")
-    InstanceGroup = local.instance_group_snake_case
-    Group         = var.deployment_group
-    Environment   = var.environment
-    Vendor        = "Self"
-    Type          = "Self Made"
+    Environment    = var.environment
+    InstanceGroup  = local.instance_group_snake_case
+    InventoryGroup = var.inventory_group
+    Name           = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "role")
+    Type           = "Self Made"
+    Vendor         = "Self"
   }, var.tags)
 }
 
@@ -166,9 +203,9 @@ resource "aws_iam_instance_profile" "ec2_instance_profile" {
   # if you have different role or path values, duplicating an
   # existing instance profile name will lead to an
   # EntityAlreadyExists error.
-  name = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "profile")
+  name = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "profile")
 
-  role = aws_iam_role.instance_role.name
+  role = aws_iam_role.ec2_instance_role.name
 }
 
 # ---
@@ -176,7 +213,7 @@ resource "aws_iam_instance_profile" "ec2_instance_profile" {
 # Creates a IAM policy document for the IAM role policy.
 # These permissions define what the IAM role can do, as
 # well as the actions and resources the role can access.
-data "aws_iam_policy_document" "role_policy" {
+data "aws_iam_policy_document" "role_policy_document" {
   statement {
     effect = "Allow"
     actions = ["autoscaling:*"]
@@ -207,9 +244,11 @@ data "aws_iam_policy_document" "role_policy" {
 # Creates a IAM role policy which defines what the role can do,
 # as well as the actions and resources the role can access.
 resource "aws_iam_role_policy" "role_policy" {
-  name = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "policy")
-  role = aws_iam_role.instance_role.id
-  policy = data.aws_iam_policy_document.role_policy.json
+  name = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "policy")
+
+  role = aws_iam_role.ec2_instance_role.id
+
+  policy = data.aws_iam_policy_document.role_policy_document.json
 }
 
 ################################################################
@@ -223,10 +262,11 @@ resource "aws_iam_role_policy" "role_policy" {
 # module `vpc-instance` for more information on creating
 # subnets.
 data "aws_subnet" "private_subnet" {
-  count = length(var.available_private_subnets)
+  count = length(var.private_subnet_ids)
 
-  availability_zone = var.available_private_subnets[count.index].availability_zone
-  id = var.available_private_subnets[count.index].id
+  availability_zone = var.availability_zone_name
+
+  id = var.private_subnet_ids[count.index]
 }
 
 # ---
@@ -236,10 +276,11 @@ data "aws_subnet" "private_subnet" {
 # module `vpc-instance` for more information on creating
 # subnets.
 data "aws_subnet" "public_subnet" {
-  count = length(var.available_public_subnets)
+  count = length(var.public_subnet_ids)
 
-  availability_zone = var.available_public_subnets[count.index].availability_zone
-  id = var.available_public_subnets[count.index].id
+  availability_zone = var.availability_zone_name
+
+  id = var.public_subnet_ids[count.index]
 }
 
 ################################################################
@@ -255,11 +296,11 @@ resource "terraform_data" "replace_triggered_by" {
 }
 
 resource "aws_instance" "ec2_instance" {
-  count = var.desired_count
+  ami = var.instance_ami_id
 
-  ami               = var.instance_ami_id
-  availability_zone = element(var.availability_zone_names, count.index % length(var.availability_zone_names))
-  instance_type     = var.instance_type
+  availability_zone = var.availability_zone_name
+
+  instance_type = var.instance_type
 
   # After attaching an Amazon EBS volume to an EC2 instance,
   # the disk needs to be prepared before it can be used. This is
@@ -274,11 +315,7 @@ resource "aws_instance" "ec2_instance" {
     ""
   )
 
-  key_name = (
-    var.create_key_pair && (var.key_pair_key_name == null) ?
-    aws_key_pair.key_pair[0].key_name :
-    var.key_pair_key_name
-  )
+  key_name = var.key_pair_name == null ? aws_key_pair.key_pair[0].key_name : var.key_pair_name
 
   # The IAM instance profile is required to use the instance
   # metadata service. This profile is loaded at runtime with
@@ -293,23 +330,7 @@ resource "aws_instance" "ec2_instance" {
 
   associate_public_ip_address = var.associate_public_ip_address
 
-  subnet_id = (
-    var.enable_public_subnet ?
-    element(
-      lookup(
-        { for subnet in var.available_public_subnets : subnet.availability_zone => subnet... },
-        element(var.availability_zone_names, count.index % length(var.availability_zone_names))
-      ),
-      count.index % length(var.availability_zone_names)
-    ).id :
-    element(
-      lookup(
-        { for subnet in var.available_private_subnets : subnet.availability_zone => subnet... },
-        element(var.availability_zone_names, count.index % length(var.availability_zone_names))
-      ),
-      count.index % length(var.availability_zone_names)
-    ).id
-  )
+  subnet_id = (var.enable_public_subnet ? var.public_subnet_id : var.private_subnet_id)
 
   cpu_options {
     core_count = var.cpu_core_count
@@ -326,34 +347,30 @@ resource "aws_instance" "ec2_instance" {
   }
 
   tags = merge({
-    AvailabilityZone = element(var.availability_zone_names, count.index % length(var.availability_zone_names))
+    AvailabilityZone = var.availability_zone_name
     Environment      = var.environment
-    Group            = var.deployment_group
     InstanceGroup    = local.instance_group_snake_case
-    Name             = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, count.index)
+    InventoryGroup   = var.inventory_group
+    Name             = format("%s-%s", local.instance_name_kebab_case, var.environment)
     Region           = var.region
     Vendor           = "Self"
     Type             = "Self Made"
   }, var.tags)
 }
 
-################################################################
-# Amazon Elastic Block Store (EBS)
-################################################################
-
 resource "aws_ebs_volume" "ec2_ebs" {
-  count = var.desired_count
+  count = var.enable_ebs ? 1 : 0
 
-  availability_zone  = element(var.availability_zone_names, count.index % length(var.availability_zone_names))
+  availability_zone  = var.availability_zone_name
 
   size               = var.ebs_volume_size
 
   tags = merge({
-    AvailabilityZone = element(var.availability_zone_names, count.index % length(var.availability_zone_names))
+    AvailabilityZone = var.availability_zone_name
     Environment      = var.environment
     InstanceGroup    = local.instance_group_snake_case
-    Group            = var.deployment_group
-    Name             = format("%s-%s-%s-%s", local.instance_group_kebab_case, var.environment, "ebs", count.index)
+    InventoryGroup   = var.inventory_group
+    Name             = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "ebs")
     Region           = var.region
     Vendor           = "Self"
     Type             = "Self Made"
@@ -361,87 +378,87 @@ resource "aws_ebs_volume" "ec2_ebs" {
 }
 
 resource "aws_volume_attachment" "ec2_ebs_association" {
-  count = var.desired_count
+  count = var.enable_ebs ? 1 : 0
 
   device_name = "/dev/sdh"
-  volume_id   = aws_ebs_volume.ec2_ebs[count.index].id
-  instance_id = aws_instance.ec2_instance[count.index].id
+
+  volume_id   = aws_ebs_volume.ec2_ebs[0].id
+
+  instance_id = aws_instance.ec2_instance.id
 }
 
 ### ELASTIC IP
 
 resource "aws_eip" "ec2_eip" {
-  count = var.enable_eip ? var.desired_count : 0
+  count = var.enable_eip ? 1 : 0
 
   domain = "vpc"
 
   tags = merge({
-    Environment      = var.environment
-    Group            = var.deployment_group
-    InstanceGroup    = local.instance_group_snake_case
-    Name             = format("%s-%s-%s-%s", local.instance_group_kebab_case, var.environment, "eip", count.index)
-    Region           = var.region
-    Vendor           = "Self"
-    Type             = "Self Made"
+    Environment    = var.environment
+    InstanceGroup  = local.instance_group_snake_case
+    InventoryGroup = var.inventory_group
+    Name           = format("%s-%s-%s-%s", local.instance_name_kebab_case, var.environment, "eip")
+    Region         = var.region
+    Vendor         = "Self"
+    Type           = "Self Made"
   }, var.tags)
 }
 
 resource "aws_eip_association" "ec2_eip_association" {
-  count = var.enable_eip ? var.desired_count : 0
+  count = var.enable_eip ? 1 : 0
 
-  instance_id   = aws_instance.ec2_instance[count.index].id
+  instance_id = aws_instance.ec2_instance.id
 
-  allocation_id = aws_eip.ec2_eip[count.index].id
+  allocation_id = aws_eip.ec2_eip[0].id
 }
-
-### ELASTIC LOAD BALANCER
 
 resource "aws_lb_target_group" "ec2_lb_target_group" {
   count = var.enable_elb ? 1 : 0
 
   # The name is truncated because it cannot be longer than 32 characters.
-  name  = substr(format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb-tg"), 0, 32)
+  name     = substr(format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "lb-tg"), 0, 32)
 
-  vpc_id             = var.vpc_id
-  protocol           = "HTTP"
-  port               = var.elb_target_group_port
+  vpc_id   = var.vpc_id
+  protocol = "HTTP"
+  port     = var.elb_target_group_port
 
   tags = merge({
-    Environment      = var.environment
-    Group            = var.deployment_group
-    InstanceGroup    = local.instance_group_snake_case
-    Name             = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb-tg")
-    Region           = var.region
-    Vendor           = "Self"
-    Type             = "Self Made"
+    Environment    = var.environment
+    InstanceGroup  = local.instance_group_snake_case
+    InventoryGroup = var.inventory_group
+    Name           = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "lb-tg")
+    Region         = var.region
+    Vendor         = "Self"
+    Type           = "Self Made"
   }, var.tags)
 }
 
 resource "aws_lb" "ec2_lb" {
   count = var.enable_elb ? 1 : 0
 
-  name                = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb")
-  load_balancer_type  = "application"
-  subnets             = [ for subnet in data.aws_subnet.public_subnet : subnet.id ]
-  security_groups     = var.vpc_security_group_ids
+  name               = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "lb")
+  load_balancer_type = "application"
+  subnets            = [ for subnet in data.aws_subnet.public_subnet : subnet.id ]
+  security_groups    = var.vpc_security_group_ids
 
   tags = merge({
-    Environment   = var.environment
-    InstanceGroup = local.instance_group_snake_case
-    Group         = var.deployment_group
-    Name          = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb")
-    Region        = var.region
-    Vendor        = "Self"
-    Type          = "Self Made"
+    Environment    = var.environment
+    InstanceGroup  = local.instance_group_snake_case
+    InventoryGroup = var.inventory_group
+    Name           = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "lb")
+    Region         = var.region
+    Vendor         = "Self"
+    Type           = "Self Made"
   }, var.tags)
 }
 
 # Attach each ec2 instance to the target group
 resource "aws_lb_target_group_attachment" "ec2_lb_target_group_attachment" {
-  count = var.enable_elb ? var.desired_count : 0
+  count = var.enable_elb ? 1 : 0
 
   target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
-  target_id        = aws_instance.ec2_instance[count.index].id
+  target_id        = aws_instance.ec2_instance.id
   port             = var.elb_target_group_port
 }
 
@@ -460,19 +477,12 @@ resource "aws_lb_target_group_attachment" "ec2_lb_target_group_attachment" {
 # to your load balancer so that your applications can focus on their business
 # logic. If the listener protocol is HTTPS, you must deploy at least one SSL
 # server certificate on the listener.
-
 resource "aws_lb_listener" "ec2_lb_listener" {
-  depends_on = [
-    aws_instance.ec2_instance,
-    aws_lb.ec2_lb,
-    aws_lb_target_group.ec2_lb_target_group
-  ]
-
-  count = var.enable_elb && var.desired_count > 1 ? 1 : 0 
+  count = var.enable_elb ? 1 : 0 
 
   load_balancer_arn = aws_lb.ec2_lb[0].arn
-  port = var.elb_listener_port
-  protocol = aws_lb_target_group.ec2_lb_target_group[0].protocol
+  port              = var.elb_listener_port
+  protocol          = aws_lb_target_group.ec2_lb_target_group[0].protocol
 
   default_action {
     type             = "forward"
@@ -485,19 +495,19 @@ resource "aws_lb_listener" "ec2_lb_listener" {
 # resource "aws_sqs_queue" "ec2_sqs" {
 #   count                     = (var.enable_sqs && var.desired_count > 1) ? 1 : 0
 
-#   name                      = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "sqs")
+#   name                      = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "sqs")
 #   delay_seconds             = var.sqs_delay_seconds
 #   max_message_size          = var.max_message_size
 #   message_retention_seconds = var.message_retention_seconds
 #   receive_wait_time_seconds = var.sqs_receive_wait_time_seconds
 
 #   tags = merge({
-#     Name          = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "sqs")
-#     InstanceGroup = local.instance_group_snake_case
-#     Group         = var.deployment_group
 #     Environment   = var.environment
-#     Vendor        = "Self"
+#     Group         = var.inventory_group
+#     InstanceGroup = local.instance_group_snake_case
+#     Name          = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "sqs")
 #     Type          = "Self Made"
+#     Vendor        = "Self"
 #   }, var.tags)
 # }
 
@@ -517,7 +527,7 @@ resource "aws_lb_listener" "ec2_lb_listener" {
 # resource "aws_sqs_queue" "ec2_sqs_dlq" {
 #   count = (var.enable_sqs && var.desired_count > 1) ? 1 : 0
 
-#   name = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "sqs-dlq")
+#   name = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "sqs-dlq")
 
 #   redrive_allow_policy = jsonencode({
 #     redrivePermission  = "byQueue",
@@ -531,23 +541,23 @@ resource "aws_lb_listener" "ec2_lb_listener" {
 #   count = (var.enable_auto_scaling && var.desired_count > 1) ? 1 : 0
 
 #   # <instance_group>-<environment>-lt
-#   name_prefix   = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lt")
+#   name_prefix   = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "lt")
 #   image_id      = var.instance_ami_id
 #   instance_type = var.instance_type
 # }
 
 # resource "aws_placement_group" "ec2_placement_group" {
-#   count = (var.enable_auto_scaling && var.desired_count > 1) ? length(var.availability_zone_names) : 0
+#   count = (var.enable_auto_scaling && var.desired_count > 1) ? length(var.availability_zone_name_names) : 0
 
 #   # <instance_group>-<environment>-pg
-#   name     = format("%s-%s-%s-%s", local.instance_group_kebab_case, var.environment, "pg", count.index)
+#   name     = format("%s-%s-%s-%s", local.instance_name_kebab_case, var.environment, "pg", count.index)
 #   strategy = var.placement_group_strategy
 # }
 
 # resource "aws_autoscaling_group" "ec2_autoscaling_group" {
-#   count = (var.enable_auto_scaling && var.desired_count > 1) ? length(var.availability_zone_names) : 0
+#   count = (var.enable_auto_scaling && var.desired_count > 1) ? length(var.availability_zone_name_names) : 0
   
-#   name                      = format("%s-%s-%s-%s", local.instance_group_kebab_case, var.environment, "asg", count.index)
+#   name                      = format("%s-%s-%s-%s", local.instance_name_kebab_case, var.environment, "asg", count.index)
 #   placement_group           = aws_placement_group.ec2_placement_group[count.index].id
 #   desired_capacity          = var.desired_count
 #   min_size                  = var.minimum_instance_count
@@ -558,8 +568,8 @@ resource "aws_lb_listener" "ec2_lb_listener" {
 
 #   vpc_zone_identifier       = (
 #     var.enable_public_subnet ?
-#     flatten([ for subnet in data.aws_subnet.public_subnet : subnet.availability_zone == element(var.availability_zone_names, count.index) ? [subnet.id] : [] ]) :
-#     flatten([ for subnet in data.aws_subnet.private_subnet : subnet.availability_zone == element(var.availability_zone_names, count.index) ? [subnet.id] : [] ])
+#     flatten([ for subnet in data.aws_subnet.public_subnet : subnet.availability_zone == element(var.availability_zone_name_names, count.index) ? [subnet.id] : [] ]) :
+#     flatten([ for subnet in data.aws_subnet.private_subnet : subnet.availability_zone == element(var.availability_zone_name_names, count.index) ? [subnet.id] : [] ])
 #   )
 
 #   instance_maintenance_policy {
@@ -573,7 +583,7 @@ resource "aws_lb_listener" "ec2_lb_listener" {
 #   }
 
 #   initial_lifecycle_hook {
-#     name                 = format("%s-%s-%s-%s", local.instance_group_kebab_case, var.environment, "lck", count.index)
+#     name                 = format("%s-%s-%s-%s", local.instance_name_kebab_case, var.environment, "lck", count.index)
 #     default_result       = "CONTINUE"
 #     heartbeat_timeout    = 2000
 #     lifecycle_transition = "autoscaling:EC2_INSTANCE_LAUNCHING"
@@ -581,11 +591,11 @@ resource "aws_lb_listener" "ec2_lb_listener" {
 #     notification_metadata = jsonencode({
 #       message = "EC2 Auto Scaling Test Message"
 #       payload = merge({
-#                   AvailabilityZone = element(var.availability_zone_names, count.index % length(var.availability_zone_names))
+#                   AvailabilityZone = var.availability_zone_name
 #                   Environment      = var.environment
-#                   Group            = var.deployment_group
+#                   Group            = var.inventory_group
 #                   InstanceGroup    = local.instance_group_snake_case
-#                   Name             = format("%s-%s-%s-%s", local.instance_group_kebab_case, var.environment, "asg", count.index)
+#                   Name             = format("%s-%s-%s-%s", local.instance_name_kebab_case, var.environment, "asg", count.index)
 #                   Region           = var.region
 #                   Vendor           = "Self"
 #                   Type             = "Self Made"
@@ -602,11 +612,11 @@ resource "aws_lb_listener" "ec2_lb_listener" {
 
 #   dynamic "tag" {
 #     for_each = merge({
-#       AvailabilityZone = element(var.availability_zone_names, count.index % length(var.availability_zone_names))
+#       AvailabilityZone = var.availability_zone_name
 #       Environment      = var.environment
-#       Group            = var.deployment_group
+#       Group            = var.inventory_group
 #       InstanceGroup    = local.instance_group_snake_case
-#       Name             = format("%s-%s-%s-%s", local.instance_group_kebab_case, var.environment, "asg", count.index)
+#       Name             = format("%s-%s-%s-%s", local.instance_name_kebab_case, var.environment, "asg", count.index)
 #       Region           = var.region
 #       Vendor           = "Self"
 #       Type             = "Self Made"
