@@ -2011,3 +2011,15 @@ The offending line appears to be:
 2024-12-26 18:13:34,516 p=22547 u=kurthogarth n=ansible | skipping: [sentry-0-development]
 2024-12-26 18:13:34,523 p=22547 u=kurthogarth n=ansible | PLAY RECAP ***************************************************************************************************************************************************
 2024-12-26 18:13:34,523 p=22547 u=kurthogarth n=ansible | sentry-0-development       : ok=17   changed=6    unreachable=0    failed=0    skipped=6    rescued=0    ignored=0   
+2024-12-26 18:23:37,977 p=23396 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-26 18:23:38,880 p=23396 u=kurthogarth n=ansible | {
+    "_meta": {
+        "hostvars": {}
+    },
+    "all": {
+        "children": [
+            "ungrouped",
+            "aws_ec2"
+        ]
+    }
+}
