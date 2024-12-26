@@ -50,6 +50,11 @@ jobs:
             ansible --version
 
       - run:
+          name: Python location
+          command: |
+            which python3
+
+      - run:
           name: Save SSH Key
           command: |
             echo $AWS_INSTANCE_PRIVATE_KEY > ec2-private-key.pem
