@@ -20,6 +20,16 @@ locals {
     )
   )
 
+  instance_group_kebab_case = lower(
+    replace(
+      replace(
+        replace(var.instance_group, " ", "-"), 
+        "/[^a-zA-Z0-9-]/", ""
+      ), 
+      "_", "-"
+    )
+  )
+
   instance_name_kebab_case = lower(
     replace(
       replace(
