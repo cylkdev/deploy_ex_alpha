@@ -70,9 +70,9 @@ jobs:
             chmod 400 ec2-private-key.pem
 
       - run:
-        name: Print Key
-        command: |
-          cat ec2-private-key.pem
+          name: Print Key
+          command: |
+            cat ec2-private-key.pem
   
       - run:
           name: List Directory Contents
