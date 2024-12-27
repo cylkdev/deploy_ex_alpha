@@ -5,9 +5,7 @@
 # such as environment variables, or updating systems.
 - name: Setup Health App
   hosts: group_requis_backend
-  gather_facts: yes
   vars:
-    ansible_python_interpreter: /usr/local/bin/python3 
     app_name: health_check
   roles:
     - check_python_version
