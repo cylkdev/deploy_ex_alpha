@@ -46,6 +46,8 @@ jobs:
       - checkout:
           path: ~/project
 
+      - add_ssh_keys
+
       - run:
           name: Ansible Version
           command: |
@@ -57,15 +59,20 @@ jobs:
             ansible-playbook --version
 
       - run:
+          name: Install boto3 and botocore
+          command: |
+            /usr/local/bin/python3 -m pip install boto3 botocore --user ansible
+
+      - run:
           name: Save SSH Key
           command: |
             echo $AWS_INSTANCE_PRIVATE_KEY > ec2-private-key.pem
             chmod 400 ec2-private-key.pem
-
+  
       - run:
-          name: Install boto3 and botocore
+          name: List Directory Contents
           command: |
-            /usr/local/bin/python3 -m pip install boto3 botocore --user ansible
+            ls .
 
       - run:
           name: List ansible EC2 inventory

@@ -17,7 +17,7 @@ keyed_groups:
     prefix: "group"
 
   - key: tags['InstanceGroup']
-    prefix: "instance_group"
+    prefix: "group"
 
 # Use the public IP address to connect to the host
 # (note: this does not modify inventory_hostname)
