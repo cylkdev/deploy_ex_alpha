@@ -48,11 +48,16 @@ jobs:
           name: Ansible Version
           command: |
             ansible --version
+          
+      - run:
+          name: Ansible Playbook Version
+          command: |
+            ansible-playbook --version
 
       - run:
-          name: Python location
+          name: Install Boto and Botocore
           command: |
-            which python3
+            pip install --no-cache-dir botocore boto3
 
       - run:
           name: Save SSH Key
@@ -64,11 +69,6 @@ jobs:
           name: List Directory Contents
           command: |
             ls .
-
-      - run:
-          name: Ansible Playbook Version
-          command: |
-            ansible-playbook --version
 
       - run:
           name: Run Ansible Playbook
