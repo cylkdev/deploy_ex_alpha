@@ -66,9 +66,9 @@ jobs:
             ls .
 
       - run:
-        name: Ansible Playbook Version
-        command: |
-          ansible-playbook --version
+          name: Ansible Playbook Version
+          command: |
+            ansible-playbook --version
 
       - run:
           name: Run Ansible Playbook
