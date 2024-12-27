@@ -68,6 +68,11 @@ jobs:
           command: |
             echo $AWS_INSTANCE_PRIVATE_KEY > ec2-private-key.pem
             chmod 400 ec2-private-key.pem
+
+      - run:
+        name: Print Key
+        command: |
+          cat ec2-private-key.pem
   
       - run:
           name: List Directory Contents
