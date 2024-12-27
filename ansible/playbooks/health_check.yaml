@@ -7,6 +7,9 @@
   hosts: group_requis_backend
   vars:
     app_name: health_check
+  pre_tasks:
+    - name: Ensure botocore and boto3 modules are installed
+      ansible.builtin.pip:
+        name: [ "boto3", "botocore" ]
   roles:
-    - install_dependencies
     - deploy_health_check
