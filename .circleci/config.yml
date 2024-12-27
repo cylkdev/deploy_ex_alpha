@@ -40,6 +40,8 @@ jobs:
   ansible_playbook:
     executor: ansible
     working_directory: ~/project/ansible
+    environment:
+      ANSIBLE_PYTHON_INTERPRETER: /usr/local/bin/python3
     steps:
       - checkout:
           path: ~/project
@@ -61,9 +63,19 @@ jobs:
             chmod 400 ec2-private-key.pem
 
       - run:
-          name: Run Ansible Playbook
+          name: Install boto3 and botocore
           command: |
-           ansible-playbook -vvv -i inventory/aws_ec2.yaml ./playbooks/health_check.yaml
+            /usr/local/bin/python3 -m pip install boto3 botocore
+
+      - run:
+          name: List ansible EC2 inventory
+          command: |
+            ansible-inventory -i ./inventory/aws_ec2.yaml --list
+
+      - run:
+          name: Deploy EC2 instance with playbook
+          command: |
+            ansible-playbook -vvv -i inventory/aws_ec2.yaml ./playbooks/health_check.yaml
 
   terraform_provision_load_balancer:
     executor: terraform
