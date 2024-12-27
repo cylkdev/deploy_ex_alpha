@@ -45,15 +45,45 @@ jobs:
           path: ~/project
 
       - run:
+          name: Update Packages
+          command: |
+            apk update
+      
+      - run:
+          name: Install Python and Required Packages
+          command: |
+            apk add python3 py3-pip
+
+      - run:
+          name: Install GCC and Build Tools
+          command: |
+            apk add gcc musl-dev libffi-dev openssl-dev python3-dev
+
+      - run:
+          name: Install Botocore and Boto
+          command: |
+            pip install boto botocore
+
+      - run:
+          name: Install Ansible
+          command: |
+            pip install ansible
+
+      - run:
+          name: Ansible Version
+          command: |
+            ansible --version
+
+      - run:
           name: Save SSH Key
           command: |
             echo $AWS_INSTANCE_PRIVATE_KEY > ec2-private-key.pem
             chmod 400 ec2-private-key.pem
 
       - run:
-          name: List Directory Contents
+          name: Run Ansible Playbook
           command: |
-            ls .
+           ansible-playbook -vvv ./playbooks/setup.yaml
 
       - run:
           name: Run Ansible Playbook
