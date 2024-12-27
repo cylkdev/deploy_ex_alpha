@@ -65,7 +65,7 @@ jobs:
       - run:
           name: Install boto3 and botocore
           command: |
-            /usr/local/bin/python3 -m pip install boto3 botocore
+            /usr/local/bin/python3 -m pip install boto3 botocore --user ansible
 
       - run:
           name: List ansible EC2 inventory
