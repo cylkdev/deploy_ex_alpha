@@ -68,7 +68,7 @@ jobs:
       - run:
           name: Run Ansible Playbook
           command: |
-            ansible-playbook -i inventory/aws_ec2.yaml ./playbooks/health_check.yaml
+            ansible-playbook -vvv -i inventory/aws_ec2.yaml ./playbooks/health_check.yaml
 
   terraform_provision_load_balancer:
     executor: terraform
