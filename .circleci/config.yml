@@ -7,7 +7,7 @@ executors:
         name: terraform
   ansible:
     docker:
-      - image: alpine:latest
+      - image: alpine/ansible:2.17.0
         name: ansible
 
 jobs:
@@ -45,34 +45,9 @@ jobs:
           path: ~/project
 
       - run:
-          name: Update Packages
-          command: |
-            apk update
-      
-      - run:
-          name: Install Python and Required Packages
-          command: |
-            apk add python3 py3-pip
-
-      - run:
-          name: Install GCC and Build Tools
-          command: |
-            apk add gcc musl-dev libffi-dev openssl-dev python3-dev
-
-      - run:
-          name: Install Botocore and Boto
-          command: |
-            pip install boto botocore
-
-      - run:
-          name: Install Ansible
-          command: |
-            pip install ansible
-
-      - run:
-          name: Ansible Version
-          command: |
-            ansible --version
+        name: Install Boto
+        command: |
+          apt install python3-boto3
 
       - run:
           name: Save SSH Key
