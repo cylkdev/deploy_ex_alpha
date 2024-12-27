@@ -45,11 +45,6 @@ jobs:
           path: ~/project
 
       - run:
-          name: Install Boto
-          command: |
-            apk add python3-boto3
-
-      - run:
           name: Save SSH Key
           command: |
             echo $AWS_INSTANCE_PRIVATE_KEY > ec2-private-key.pem
