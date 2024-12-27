@@ -66,9 +66,14 @@ jobs:
             ls .
 
       - run:
+        name: Ansible Playbook Version
+        command: |
+          ansible-playbook --version
+
+      - run:
           name: Run Ansible Playbook
           command: |
-            python3 $(which ansible-playbook) -vvv -i inventory/aws_ec2.yaml ./playbooks/health_check.yaml
+           ansible-playbook -vvv -i inventory/aws_ec2.yaml ./playbooks/health_check.yaml
 
   terraform_provision_load_balancer:
     executor: terraform
