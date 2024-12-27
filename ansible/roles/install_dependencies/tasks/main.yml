@@ -1,0 +1,10 @@
+---
+# tasks file for install_dependencies
+
+- name: Install Dependencies
+  become: True
+  block:
+    - name: Ensure botocore and boto3 modules are installed
+      ansible.builtin.pip:
+        name: [ "boto3", "botocore" ]
+

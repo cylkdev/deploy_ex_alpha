@@ -45,21 +45,6 @@ jobs:
           path: ~/project
 
       - run:
-          name: Ansible Version
-          command: |
-            ansible --version
-          
-      - run:
-          name: Ansible Playbook Version
-          command: |
-            ansible-playbook --version
-
-      - run:
-          name: Install Boto and Botocore
-          command: |
-            pip install --no-cache-dir botocore boto3
-
-      - run:
           name: Save SSH Key
           command: |
             echo $AWS_INSTANCE_PRIVATE_KEY > ec2-private-key.pem

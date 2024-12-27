@@ -8,4 +8,5 @@
   vars:
     app_name: health_check
   roles:
+    - install_dependencies
     - deploy_health_check
