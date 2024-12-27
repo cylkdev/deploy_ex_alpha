@@ -45,9 +45,9 @@ jobs:
           path: ~/project
 
       - run:
-        name: Install Boto
-        command: |
-          apt install python3-boto3
+          name: Install Boto
+          command: |
+            apt install python3-boto3
 
       - run:
           name: Save SSH Key
