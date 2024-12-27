@@ -47,7 +47,7 @@ jobs:
       - run:
           name: Install Boto
           command: |
-            apt install python3-boto3
+            apk add python3-boto3
 
       - run:
           name: Save SSH Key
