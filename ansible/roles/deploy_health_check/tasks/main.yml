@@ -2,7 +2,6 @@
 # tasks file for deploy_health_app
 
 - name: Deploy Health Check Application
-  become: True
   block:
     - name: Check whoami
       ansible.builtin.command: whoami
