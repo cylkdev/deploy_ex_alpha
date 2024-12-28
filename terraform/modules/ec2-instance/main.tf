@@ -311,8 +311,8 @@ resource "terraform_data" "key_pair" {
 resource "terraform_data" "load_balancer" {
   input = [
     format("%s:%s", "target_group", var.enable_elb ? aws_lb_target_group.ec2_lb_target_group[0].id : ""),
-    format("%s:%s", "ec2_lb", var.enable_elb ? aws_lb.ec2_lb.id : ""),
-    format("%s:%s", "ec2_lb_listener", var.enable_elb ? aws_lb_listener.ec2_lb_listener.id : "")
+    format("%s:%s", "ec2_lb", var.enable_elb ? aws_lb.ec2_lb[0].id : ""),
+    format("%s:%s", "ec2_lb_listener", var.enable_elb ? aws_lb_listener.ec2_lb_listener[0].id : "")
   ]
 }
 
