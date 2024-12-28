@@ -9,7 +9,7 @@ hostnames:
 
 # Only target hosts that are a part of this deployment group.
 filters:
-  tag:Group: 'requis_backend'
+  tag:InventoryGroup: 'requis_backend'
 
 # Add hosts to group based on the values of a variable.
 keyed_groups:

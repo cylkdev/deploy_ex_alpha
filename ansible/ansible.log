@@ -1,0 +1,399 @@
+2024-12-28 15:00:28,370 p=12401 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-28 15:00:29,171 p=12401 u=kurthogarth n=ansible | {
+    "_meta": {
+        "hostvars": {}
+    },
+    "all": {
+        "children": [
+            "ungrouped",
+            "aws_ec2"
+        ]
+    }
+}
+2024-12-28 15:00:46,178 p=12462 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-28 15:00:47,060 p=12462 u=kurthogarth n=ansible | {
+    "_meta": {
+        "hostvars": {
+            "sentry-0-development": {
+                "ami_launch_index": 0,
+                "ansible_host": "13.57.37.146",
+                "architecture": "x86_64",
+                "aws_credentials": {
+                    "AWS_ACCESS_KEY_ID": "<AWS_ACCESS_KEY_ID>",
+                    "AWS_SECRET_ACCESS_KEY": "<AWS_SECRET_ACCESS_KEY>"
+                },
+                "block_device_mappings": [
+                    {
+                        "device_name": "/dev/xvda",
+                        "ebs": {
+                            "attach_time": "2024-12-28T19:58:11+00:00",
+                            "delete_on_termination": true,
+                            "status": "attached",
+                            "volume_id": "vol-034fcd9ff02f2979a"
+                        }
+                    },
+                    {
+                        "device_name": "/dev/sdh",
+                        "ebs": {
+                            "attach_time": "2024-12-28T19:58:33.867000+00:00",
+                            "delete_on_termination": false,
+                            "status": "attached",
+                            "volume_id": "vol-057fcab14ee51fc78"
+                        }
+                    }
+                ],
+                "boot_mode": "uefi-preferred",
+                "capacity_reservation_specification": {
+                    "capacity_reservation_preference": "open"
+                },
+                "client_token": "terraform-20241228195809652300000001",
+                "cpu_options": {
+                    "core_count": 1,
+                    "threads_per_core": 2
+                },
+                "current_instance_boot_mode": "uefi",
+                "ebs_optimized": false,
+                "ena_support": true,
+                "enclave_options": {
+                    "enabled": false
+                },
+                "hibernation_options": {
+                    "configured": false
+                },
+                "hypervisor": "xen",
+                "iam_instance_profile": {
+                    "arn": "arn:aws:iam::750872578221:instance-profile/sentry-0-development-profile",
+                    "id": "AIPA25U36JCWVAQCIOLJK"
+                },
+                "image_id": "ami-047d7c33f6e7b4bc4",
+                "instance_id": "i-041599c51182c6fe1",
+                "instance_type": "t3.micro",
+                "key_name": "kurt-deploy-key",
+                "launch_time": "2024-12-28T19:58:10+00:00",
+                "maintenance_options": {
+                    "auto_recovery": "default"
+                },
+                "metadata_options": {
+                    "http_endpoint": "enabled",
+                    "http_protocol_ipv6": "disabled",
+                    "http_put_response_hop_limit": 2,
+                    "http_tokens": "required",
+                    "instance_metadata_tags": "disabled",
+                    "state": "applied"
+                },
+                "monitoring": {
+                    "state": "disabled"
+                },
+                "network_interfaces": [
+                    {
+                        "association": {
+                            "ip_owner_id": "amazon",
+                            "public_dns_name": "ec2-13-57-37-146.us-west-1.compute.amazonaws.com",
+                            "public_ip": "13.57.37.146"
+                        },
+                        "attachment": {
+                            "attach_time": "2024-12-28T19:58:10+00:00",
+                            "attachment_id": "eni-attach-08da4f566835643e3",
+                            "delete_on_termination": true,
+                            "device_index": 0,
+                            "network_card_index": 0,
+                            "status": "attached"
+                        },
+                        "description": "",
+                        "groups": [
+                            {
+                                "group_id": "sg-0ca8fb7cdf4af51ed",
+                                "group_name": "requis_backend_allow_ssh"
+                            },
+                            {
+                                "group_id": "sg-0d571932fc9e55c77",
+                                "group_name": "requis_backend_allow_tls"
+                            }
+                        ],
+                        "interface_type": "interface",
+                        "ipv6_addresses": [],
+                        "mac_address": "06:a5:b7:2c:b2:cf",
+                        "network_interface_id": "eni-03f55c942247dada5",
+                        "owner_id": "750872578221",
+                        "private_dns_name": "i-041599c51182c6fe1.us-west-1.compute.internal",
+                        "private_ip_address": "10.16.64.54",
+                        "private_ip_addresses": [
+                            {
+                                "association": {
+                                    "ip_owner_id": "amazon",
+                                    "public_dns_name": "ec2-13-57-37-146.us-west-1.compute.amazonaws.com",
+                                    "public_ip": "13.57.37.146"
+                                },
+                                "primary": true,
+                                "private_dns_name": "i-041599c51182c6fe1.us-west-1.compute.internal",
+                                "private_ip_address": "10.16.64.54"
+                            }
+                        ],
+                        "source_dest_check": true,
+                        "status": "in-use",
+                        "subnet_id": "subnet-0df2256c6fb9e1cc8",
+                        "vpc_id": "vpc-0dd7ddd5368eed03f"
+                    }
+                ],
+                "owner_id": "750872578221",
+                "placement": {
+                    "availability_zone": "us-west-1a",
+                    "group_name": "",
+                    "region": "us-west-1",
+                    "tenancy": "default"
+                },
+                "platform_details": "Linux/UNIX",
+                "private_dns_name": "i-041599c51182c6fe1.us-west-1.compute.internal",
+                "private_dns_name_options": {
+                    "enable_resource_name_dns_a_record": true,
+                    "enable_resource_name_dns_aaaa_record": false,
+                    "hostname_type": "resource-name"
+                },
+                "private_ip_address": "10.16.64.54",
+                "product_codes": [],
+                "public_dns_name": "ec2-13-57-37-146.us-west-1.compute.amazonaws.com",
+                "public_ip_address": "13.57.37.146",
+                "requester_id": "",
+                "reservation_id": "r-05ad929cfde53948a",
+                "root_device_name": "/dev/xvda",
+                "root_device_type": "ebs",
+                "security_groups": [
+                    {
+                        "group_id": "sg-0ca8fb7cdf4af51ed",
+                        "group_name": "requis_backend_allow_ssh"
+                    },
+                    {
+                        "group_id": "sg-0d571932fc9e55c77",
+                        "group_name": "requis_backend_allow_tls"
+                    }
+                ],
+                "source_dest_check": true,
+                "state": {
+                    "code": 16,
+                    "name": "running"
+                },
+                "state_transition_reason": "",
+                "subnet_id": "subnet-0df2256c6fb9e1cc8",
+                "tags": {
+                    "AvailabilityZone": "us-west-1a",
+                    "Environment": "development",
+                    "InstanceGroup": "sentry",
+                    "InventoryGroup": "requis_backend",
+                    "Name": "sentry-0-development",
+                    "Region": "us-west-1",
+                    "Repository": "https://github.com/RequisDev/requis_backend_umbrella/",
+                    "Terraform": "true",
+                    "Type": "Self Made",
+                    "Vendor": "Self"
+                },
+                "usage_operation": "RunInstances",
+                "usage_operation_update_time": "2024-12-28T19:58:10+00:00",
+                "virtualization_type": "hvm",
+                "vpc_id": "vpc-0dd7ddd5368eed03f"
+            },
+            "sentry-1-development": {
+                "ami_launch_index": 0,
+                "ansible_host": "13.57.236.195",
+                "architecture": "x86_64",
+                "aws_credentials": {
+                    "AWS_ACCESS_KEY_ID": "<AWS_ACCESS_KEY_ID>",
+                    "AWS_SECRET_ACCESS_KEY": "<AWS_SECRET_ACCESS_KEY>"
+                },
+                "block_device_mappings": [
+                    {
+                        "device_name": "/dev/xvda",
+                        "ebs": {
+                            "attach_time": "2024-12-28T19:58:11+00:00",
+                            "delete_on_termination": true,
+                            "status": "attached",
+                            "volume_id": "vol-0da8837c0c539da21"
+                        }
+                    },
+                    {
+                        "device_name": "/dev/sdh",
+                        "ebs": {
+                            "attach_time": "2024-12-28T19:58:33.870000+00:00",
+                            "delete_on_termination": false,
+                            "status": "attached",
+                            "volume_id": "vol-08170e6309fbee671"
+                        }
+                    }
+                ],
+                "boot_mode": "uefi-preferred",
+                "capacity_reservation_specification": {
+                    "capacity_reservation_preference": "open"
+                },
+                "client_token": "terraform-20241228195809652400000002",
+                "cpu_options": {
+                    "core_count": 1,
+                    "threads_per_core": 2
+                },
+                "current_instance_boot_mode": "uefi",
+                "ebs_optimized": false,
+                "ena_support": true,
+                "enclave_options": {
+                    "enabled": false
+                },
+                "hibernation_options": {
+                    "configured": false
+                },
+                "hypervisor": "xen",
+                "iam_instance_profile": {
+                    "arn": "arn:aws:iam::750872578221:instance-profile/sentry-1-development-profile",
+                    "id": "AIPA25U36JCW75MQCXBLX"
+                },
+                "image_id": "ami-047d7c33f6e7b4bc4",
+                "instance_id": "i-0a22e39ecc309824f",
+                "instance_type": "t3.micro",
+                "key_name": "kurt-deploy-key",
+                "launch_time": "2024-12-28T19:58:10+00:00",
+                "maintenance_options": {
+                    "auto_recovery": "default"
+                },
+                "metadata_options": {
+                    "http_endpoint": "enabled",
+                    "http_protocol_ipv6": "disabled",
+                    "http_put_response_hop_limit": 2,
+                    "http_tokens": "required",
+                    "instance_metadata_tags": "disabled",
+                    "state": "applied"
+                },
+                "monitoring": {
+                    "state": "disabled"
+                },
+                "network_interfaces": [
+                    {
+                        "association": {
+                            "ip_owner_id": "amazon",
+                            "public_dns_name": "ec2-13-57-236-195.us-west-1.compute.amazonaws.com",
+                            "public_ip": "13.57.236.195"
+                        },
+                        "attachment": {
+                            "attach_time": "2024-12-28T19:58:10+00:00",
+                            "attachment_id": "eni-attach-06726596f68aed51c",
+                            "delete_on_termination": true,
+                            "device_index": 0,
+                            "network_card_index": 0,
+                            "status": "attached"
+                        },
+                        "description": "",
+                        "groups": [
+                            {
+                                "group_id": "sg-0ca8fb7cdf4af51ed",
+                                "group_name": "requis_backend_allow_ssh"
+                            },
+                            {
+                                "group_id": "sg-0d571932fc9e55c77",
+                                "group_name": "requis_backend_allow_tls"
+                            }
+                        ],
+                        "interface_type": "interface",
+                        "ipv6_addresses": [],
+                        "mac_address": "02:ff:c4:b4:6e:f1",
+                        "network_interface_id": "eni-0b60f2ce0349a6a61",
+                        "owner_id": "750872578221",
+                        "private_dns_name": "i-0a22e39ecc309824f.us-west-1.compute.internal",
+                        "private_ip_address": "10.16.64.72",
+                        "private_ip_addresses": [
+                            {
+                                "association": {
+                                    "ip_owner_id": "amazon",
+                                    "public_dns_name": "ec2-13-57-236-195.us-west-1.compute.amazonaws.com",
+                                    "public_ip": "13.57.236.195"
+                                },
+                                "primary": true,
+                                "private_dns_name": "i-0a22e39ecc309824f.us-west-1.compute.internal",
+                                "private_ip_address": "10.16.64.72"
+                            }
+                        ],
+                        "source_dest_check": true,
+                        "status": "in-use",
+                        "subnet_id": "subnet-0b26fc1db0fdb63ac",
+                        "vpc_id": "vpc-0dd7ddd5368eed03f"
+                    }
+                ],
+                "owner_id": "750872578221",
+                "placement": {
+                    "availability_zone": "us-west-1b",
+                    "group_name": "",
+                    "region": "us-west-1",
+                    "tenancy": "default"
+                },
+                "platform_details": "Linux/UNIX",
+                "private_dns_name": "i-0a22e39ecc309824f.us-west-1.compute.internal",
+                "private_dns_name_options": {
+                    "enable_resource_name_dns_a_record": true,
+                    "enable_resource_name_dns_aaaa_record": false,
+                    "hostname_type": "resource-name"
+                },
+                "private_ip_address": "10.16.64.72",
+                "product_codes": [],
+                "public_dns_name": "ec2-13-57-236-195.us-west-1.compute.amazonaws.com",
+                "public_ip_address": "13.57.236.195",
+                "requester_id": "",
+                "reservation_id": "r-05c70bc86798b6b4d",
+                "root_device_name": "/dev/xvda",
+                "root_device_type": "ebs",
+                "security_groups": [
+                    {
+                        "group_id": "sg-0ca8fb7cdf4af51ed",
+                        "group_name": "requis_backend_allow_ssh"
+                    },
+                    {
+                        "group_id": "sg-0d571932fc9e55c77",
+                        "group_name": "requis_backend_allow_tls"
+                    }
+                ],
+                "source_dest_check": true,
+                "state": {
+                    "code": 16,
+                    "name": "running"
+                },
+                "state_transition_reason": "",
+                "subnet_id": "subnet-0b26fc1db0fdb63ac",
+                "tags": {
+                    "AvailabilityZone": "us-west-1b",
+                    "Environment": "development",
+                    "InstanceGroup": "sentry",
+                    "InventoryGroup": "requis_backend",
+                    "Name": "sentry-1-development",
+                    "Region": "us-west-1",
+                    "Repository": "https://github.com/RequisDev/requis_backend_umbrella/",
+                    "Terraform": "true",
+                    "Type": "Self Made",
+                    "Vendor": "Self"
+                },
+                "usage_operation": "RunInstances",
+                "usage_operation_update_time": "2024-12-28T19:58:10+00:00",
+                "virtualization_type": "hvm",
+                "vpc_id": "vpc-0dd7ddd5368eed03f"
+            }
+        }
+    },
+    "all": {
+        "children": [
+            "ungrouped",
+            "aws_ec2",
+            "group_requis_backend",
+            "group_sentry"
+        ]
+    },
+    "aws_ec2": {
+        "hosts": [
+            "sentry-0-development",
+            "sentry-1-development"
+        ]
+    },
+    "group_requis_backend": {
+        "hosts": [
+            "sentry-0-development",
+            "sentry-1-development"
+        ]
+    },
+    "group_sentry": {
+        "hosts": [
+            "sentry-0-development",
+            "sentry-1-development"
+        ]
+    }
+}
