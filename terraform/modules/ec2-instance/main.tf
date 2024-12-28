@@ -15,17 +15,7 @@ locals {
         "/[^a-zA-Z0-9_]/",
         ""
       ),
-      "-",
-      "_"
-    )
-  )
-  inventory_group_kebab_case = lower(
-    replace(
-      replace(
-        replace(var.inventory_group, " ", "-"), 
-        "/[^a-zA-Z0-9-]/", ""
-      ), 
-      "_", "-"
+      "-", "_"
     )
   )
 
@@ -36,8 +26,7 @@ locals {
         "/[^a-zA-Z0-9_]/",
         ""
       ),
-      "-",
-      "_"
+      "-", "_"
     )
   )
   instance_group_kebab_case = lower(
@@ -216,7 +205,7 @@ resource "aws_iam_role" "ec2_instance_role" {
   tags = merge({
     Environment    = var.environment
     InstanceGroup  = local.instance_group_snake_case
-    InventoryGroup = local.inventory_group_kebab_case
+    InventoryGroup = local.inventory_group_snake_case
     Name           = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "role")
     Type           = "Self Made"
     Vendor         = "Self"
@@ -377,7 +366,7 @@ resource "aws_instance" "ec2_instance" {
     AvailabilityZone = var.availability_zone_name
     Environment      = var.environment
     InstanceGroup    = local.instance_group_snake_case
-    InventoryGroup   = local.inventory_group_kebab_case
+    InventoryGroup   = local.inventory_group_snake_case
     Name             = format("%s-%s", local.instance_name_kebab_case, var.environment)
     Region           = var.region
     Vendor           = "Self"
@@ -396,7 +385,7 @@ resource "aws_ebs_volume" "ec2_ebs" {
     AvailabilityZone = var.availability_zone_name
     Environment      = var.environment
     InstanceGroup    = local.instance_group_snake_case
-    InventoryGroup   = local.inventory_group_kebab_case
+    InventoryGroup   = local.inventory_group_snake_case
     Name             = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "ebs")
     Region           = var.region
     Vendor           = "Self"
@@ -424,7 +413,7 @@ resource "aws_eip" "ec2_eip" {
   tags = merge({
     Environment    = var.environment
     InstanceGroup  = local.instance_group_snake_case
-    InventoryGroup = local.inventory_group_kebab_case
+    InventoryGroup = local.inventory_group_snake_case
     Name           = format("%s-%s-%s-%s", local.instance_name_kebab_case, var.environment, "eip")
     Region         = var.region
     Vendor         = "Self"
@@ -454,7 +443,7 @@ resource "aws_eip_association" "ec2_eip_association" {
 #   tags = merge({
 #     Environment    = var.environment
 #     InstanceGroup  = local.instance_group_snake_case
-#     InventoryGroup = local.inventory_group_kebab_case
+#     InventoryGroup = local.inventory_group_snake_case
 #     Name           = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb-tg")
 #     Region         = var.region
 #     Vendor         = "Self"
@@ -473,7 +462,7 @@ resource "aws_eip_association" "ec2_eip_association" {
 #   tags = merge({
 #     Environment    = var.environment
 #     InstanceGroup  = local.instance_group_snake_case
-#     InventoryGroup = local.inventory_group_kebab_case
+#     InventoryGroup = local.inventory_group_snake_case
 #     Name           = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb")
 #     Region         = var.region
 #     Vendor         = "Self"
@@ -531,7 +520,7 @@ resource "aws_eip_association" "ec2_eip_association" {
 
 #   tags = merge({
 #     Environment   = var.environment
-#     Group         = local.inventory_group_kebab_case
+#     Group         = local.inventory_group_snake_case
 #     InstanceGroup = local.instance_group_snake_case
 #     Name          = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "sqs")
 #     Type          = "Self Made"
@@ -621,7 +610,7 @@ resource "aws_eip_association" "ec2_eip_association" {
 #       payload = merge({
 #                   AvailabilityZone = var.availability_zone_name
 #                   Environment      = var.environment
-#                   Group            = local.inventory_group_kebab_case
+#                   Group            = local.inventory_group_snake_case
 #                   InstanceGroup    = local.instance_group_snake_case
 #                   Name             = format("%s-%s-%s-%s", local.instance_name_kebab_case, var.environment, "asg", count.index)
 #                   Region           = var.region
@@ -642,7 +631,7 @@ resource "aws_eip_association" "ec2_eip_association" {
 #     for_each = merge({
 #       AvailabilityZone = var.availability_zone_name
 #       Environment      = var.environment
-#       Group            = local.inventory_group_kebab_case
+#       Group            = local.inventory_group_snake_case
 #       InstanceGroup    = local.instance_group_snake_case
 #       Name             = format("%s-%s-%s-%s", local.instance_name_kebab_case, var.environment, "asg", count.index)
 #       Region           = var.region

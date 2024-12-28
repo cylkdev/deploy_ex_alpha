@@ -7,30 +7,6 @@
 # Last Updated: <LAST_UPDATED>
 # -----------------------------------------------------------------------------
 
-locals {
-  inventory_group_kebab_case = lower(
-    replace(
-      replace(
-        replace(var.inventory_group, " ", "-"), 
-        "/[^a-zA-Z0-9-]/", ""
-      ), 
-      "_", "-"
-    )
-  )
-  
-  inventory_group_snake_case = lower(
-    replace(
-      replace(
-        replace(var.inventory_group, " ", "_"),
-        "/[^a-zA-Z0-9_]/",
-        ""
-      ),
-      "-",
-      "_"
-    )
-  )
-}
-
 module "vpc_instance" {
   source = "../vpc-instance"
 
@@ -206,7 +182,7 @@ module "scaling_instance" {
 
   vpc_id         = module.vpc_instance.vpc_instance.id
   instance_group = each.value.instance_group
-  target_id      = length(each.value.ec2_eip) != 0 ? each.value.ec2_eip[0].private_ip : each.value.ec2_instance.private_ip
+  target_id      = each.value.ec2_instance_private_ip
 
   vpc_security_group_ids = [
     module.vpc_instance.security_group_allow_ssh.id,

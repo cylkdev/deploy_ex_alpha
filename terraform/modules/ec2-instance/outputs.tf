@@ -42,6 +42,14 @@ output "ec2_instance" {
   value = aws_instance.ec2_instance
 }
 
+output "ec2_instance_public_ip" {
+  value = var.enable_eip ? aws_eip.ec2_eip[0].public_ip : aws_instance.ec2_instance.public_ip
+}
+
+output "ec2_instance_private_ip" {
+  value = var.enable_eip ? aws_eip.ec2_eip[0].private_ip : aws_instance.ec2_instance.private_ip
+}
+
 output "ec2_ebs" {
   value = aws_ebs_volume.ec2_ebs
 }
