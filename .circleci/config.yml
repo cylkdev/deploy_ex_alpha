@@ -11,7 +11,10 @@ executors:
         name: ansible
 
 jobs:
-  terraform_provision_ec2:
+  # This job only provisions AWS resources. When EC2 instances
+  # are created they are in an unhealthy state and will be
+  # configured by the `ansible_playbook` job.
+  terraform_provision:
     executor: terraform
     working_directory: ~/project/terraform
     parameters:
@@ -37,6 +40,7 @@ jobs:
           command: |
             terraform apply << parameters.environment >>.tfplan
 
+  # This job spawns a Ansible controller to run a playbook.
   ansible_playbook:
     executor: ansible
     working_directory: ~/project/ansible
@@ -68,16 +72,19 @@ jobs:
             chmod 400 ansible-private-key.pem
 
       - run:
-          name: List Ansible inventory - << parameters.inventory >>
+          name: List Ansible Inventory
           command: |
             ansible-inventory -i ./inventory/<< parameters.inventory >>.yaml --list
 
       - run:
-          name: Run Ansible Playbook - << parameters.playbook >>
+          name: Run Ansible Playbook
           command: |
             ansible-playbook -i inventory/<< parameters.inventory >>.yaml ./playbooks/<< parameters.playbook >>.yaml
 
-  terraform_provision_load_balancer:
+  # This job applies the deployment strategy. This job can run tests
+  # against a deployed resource before moving the traffic from the
+  # old EC2 instances.
+  terraform_promote:
     executor: terraform
     working_directory: ~/project/terraform
     parameters:
@@ -106,20 +113,23 @@ jobs:
 workflows:
   deploy:
     jobs:
-      - terraform_provision_ec2:
+      # 1. Provision resources.
+      - terraform_provision:
           context:
             - aws_deploy
           environment: development
 
+      # 2. Configure resources.
       - ansible_playbook:
           inventory: aws_ec2
           playbook: health_check
           context:
             - aws_deploy
           requires:
-            - terraform_provision_ec2
+            - terraform_provision
 
-      - terraform_provision_load_balancer:
+      # 2. Promote resources.
+      - terraform_promote:
           context:
             - aws_deploy
           requires:

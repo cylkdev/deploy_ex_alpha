@@ -1,5 +1,5 @@
-module "region_instance" {
-  source = "./modules/region-instance"
+module "aws_deploy" {
+  source = "./modules/aws-deploy"
 
   for_each = var.deployments
 

@@ -1,7 +1,7 @@
 # -----------------------------------------------------------------------------
-# Region Instance Module
+# AWS Deploy
 #
-# Description: Provision AWS resources in a region.
+# Description: Provision AWS resources for a provider.
 # Author: Kurt Hogarth <kurt@learn-elixir.dev>, Mika Kalathil <mika@learn-elixir.dev>
 # Version: 0.1.0
 # Last Updated: <LAST_UPDATED>
@@ -94,10 +94,7 @@ locals {
           )
         
           # Select subnets matching the availability zone.
-          public_subnets = lookup(
-            { for subnet in module.vpc_instance.public_subnet : subnet.availability_zone => subnet... },
-            module.vpc_instance.availability_zones.names[index % length(module.vpc_instance.availability_zones.names)]
-          )
+          public_subnets = module.vpc_instance.public_subnet
 
           # Private Subnet
           #
@@ -115,10 +112,7 @@ locals {
           )
 
           # Select subnets matching the availability zone.
-          private_subnets = lookup(
-            { for subnet in module.vpc_instance.private_subnet : subnet.availability_zone => subnet... },
-            module.vpc_instance.availability_zones.names[index % length(module.vpc_instance.availability_zones.names)]
-          )
+          private_subnets = module.vpc_instance.private_subnet
         }
       }
     ]

@@ -274,8 +274,6 @@ resource "aws_iam_role_policy" "role_policy" {
 data "aws_subnet" "private_subnet" {
   count = length(var.private_subnet_ids)
 
-  availability_zone = var.availability_zone_name
-
   id = var.private_subnet_ids[count.index]
 }
 
@@ -287,8 +285,6 @@ data "aws_subnet" "private_subnet" {
 # subnets.
 data "aws_subnet" "public_subnet" {
   count = length(var.public_subnet_ids)
-
-  availability_zone = var.availability_zone_name
 
   id = var.public_subnet_ids[count.index]
 }
@@ -445,11 +441,11 @@ resource "aws_lb_target_group" "ec2_lb_target_group" {
   count = var.enable_elb ? 1 : 0
 
   # The name is truncated because it cannot be longer than 32 characters.
-  name     = substr(format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "lb-tg"), 0, 32)
+  name = substr(format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "lb-tg"), 0, 32)
 
-  vpc_id   = var.vpc_id
+  vpc_id = var.vpc_id
   protocol = "HTTP"
-  port     = var.elb_target_group_port
+  port = var.elb_target_group_port
 
   tags = merge({
     Environment    = var.environment
