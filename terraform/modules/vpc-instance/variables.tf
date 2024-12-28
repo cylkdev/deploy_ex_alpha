@@ -154,6 +154,8 @@ variable "subnet_cidrsubnet_newbits" {
 
 variable "availability_zone_names" {
   type = list(string)
+  nullable = false
+  default = []
 }
 
 variable "availability_zone_count" {

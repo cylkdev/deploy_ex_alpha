@@ -26,6 +26,15 @@ data "aws_availability_zones" "available" {
     values = [var.region]
   }
 
+  dynamic "filter" {
+    for_each = { for name in var.availability_zone_names : name => name } 
+
+    content {
+      name   = "group-name"
+      values = [each.value]
+    }
+  }
+
   filter {
     name   = "zone-type"
     values = ["availability-zone"]

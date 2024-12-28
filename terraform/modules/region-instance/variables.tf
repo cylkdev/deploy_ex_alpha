@@ -80,7 +80,7 @@ variable "cidrsubnet_netnum" {
 variable "subnet_count" {
   type = number
   nullable = false
-  default = 1
+  default = 2
 }
 
 variable "subnet_cidrsubnet_newbits" {
