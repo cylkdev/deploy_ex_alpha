@@ -63,14 +63,15 @@ jobs:
           command: |
             python3 -m pip install boto3 botocore --user ansible
 
-      # The value of the ssh key must be encoded to base64 and stored
-      # in the organization context or project environment variable.
+      # The SSH key is not committed to the repository, instead it is encoded to
+      # base64 and stored as an environment variable in the organization context.
       - run:
           name: Save Ansible SSH Key
           command: |
             echo "$AWS_INSTANCE_PRIVATE_KEY" | base64 -d > ansible-private-key.pem
             chmod 400 ansible-private-key.pem
 
+      # Pre-check to ensure we can retrieve the inventory and it is correct.
       - run:
           name: List Ansible Inventory
           command: |
@@ -79,7 +80,7 @@ jobs:
       - run:
           name: Run Ansible Playbook
           command: |
-            ansible-playbook -i inventory/<< parameters.inventory >>.yaml ./playbooks/<< parameters.playbook >>.yaml
+            ansible-playbook -vvv -i inventory/<< parameters.inventory >>.yaml ./playbooks/<< parameters.playbook >>.yaml
 
   # This job applies the deployment strategy. This job can run tests
   # against a deployed resource before moving the traffic from the

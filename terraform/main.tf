@@ -1,5 +1,5 @@
-module "aws_deploy" {
-  source = "./modules/aws-deploy"
+module "deployment" {
+  source = "./modules/deployment"
 
   for_each = var.deployments
 
