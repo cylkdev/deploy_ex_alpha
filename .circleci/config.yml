@@ -40,18 +40,26 @@ jobs:
   ansible_playbook:
     executor: ansible
     working_directory: ~/project/ansible
+    parameters:
+      inventory:
+        type: string
+      playbook:
+        type: string
     environment:
+      # There are two versions of python installed at `/usr/bin/python3` and `/usr/local/bin/python3`.
+      # Only the python version installed at `/usr/local/bin/python3` has pip installed.
       ANSIBLE_PYTHON_INTERPRETER: /usr/local/bin/python3
     steps:
       - checkout:
           path: ~/project
 
-      - add_ssh_keys
-
-      - run:
-          name: Ansible Version
-          command: |
-            ansible --version
+      # Note: This is used as a convenience to setup ssh inside the container
+      # while keeping the behavior consistent. The intent here is to not have
+      # multiple methods of installing and configuring ssh.
+      #
+      # https://circleci.com/docs/add-ssh-key/
+      - add_ssh_keys:
+          fingerprints:
 
       - run:
           name: Ansible Playbook Version
@@ -63,31 +71,28 @@ jobs:
           command: |
             /usr/local/bin/python3 -m pip install boto3 botocore --user ansible
 
+      # The value of the ssh key must be encoded to base64 and stored
+      # in the organization context or project environment variable.
       - run:
           name: Save Ansible SSH Key
           command: |
             echo "$AWS_INSTANCE_PRIVATE_KEY" | base64 -d > ansible-private-key.pem
             chmod 400 ansible-private-key.pem
-
-      - run:
-          name: Print Key
-          command: |
-            cat ansible-private-key.pem
   
       - run:
-          name: List Directory Contents
+          name: Python alias
           command: |
-            ls .
+            type python3
 
       - run:
-          name: List ansible EC2 inventory
+          name: List Ansible inventory - << parameters.inventory >>
           command: |
-            ansible-inventory -i ./inventory/aws_ec2.yaml --list
+            ansible-inventory -i ./inventory/<< parameters.inventory >>.yaml --list
 
       - run:
-          name: Deploy EC2 instance with playbook
+          name: Run Ansible Playbook - << parameters.playbook >>
           command: |
-            ansible-playbook -vvv -i inventory/aws_ec2.yaml ./playbooks/health_check.yaml
+            ansible-playbook -vvv -i inventory/<< parameters.inventory >>.yaml ./playbooks/<< parameters.playbook >>.yaml
 
   terraform_provision_load_balancer:
     executor: terraform
@@ -126,6 +131,9 @@ workflows:
       - ansible_playbook:
           context:
             - aws_deploy
+          inventory: aws_ec2
+          playbook: health_check
+          
           # requires:
           #   - terraform_provision_ec2
 
