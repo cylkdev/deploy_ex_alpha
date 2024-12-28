@@ -16,10 +16,10 @@ locals {
 data "aws_availability_zones" "available" {
   count = var.enable_availability_zones ? 1 : 0
   
-  state                   = "available"
-  all_availability_zones  = var.all_availability_zones
-  exclude_names           = var.exclude_availability_zone_names
-  exclude_zone_ids        = var.exclude_availability_zone_ids
+  state                  = "available"
+  all_availability_zones = var.all_availability_zones
+  exclude_names          = var.exclude_availability_zone_names
+  exclude_zone_ids       = var.exclude_availability_zone_ids
 
   filter {
     name   = "region-name"
@@ -39,7 +39,7 @@ locals {
       var.enable_availability_zones ?
       data.aws_availability_zones.available[0].names :
       []
-    ):
+    ) :
     var.availability_zone_names
   )
 }

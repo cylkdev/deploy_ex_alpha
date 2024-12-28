@@ -1,8 +1,0 @@
----
-# tasks file for check_python_version
-
-- name: Check Python Version
-  block:
-    - name: Print Python Interpreter
-      ansible.builtin.debug:
-        msg: "Python interpreter: {{ ansible_facts.python.executable }}"

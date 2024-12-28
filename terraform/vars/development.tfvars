@@ -7,6 +7,8 @@ deployments = {
     vpc_name        = "Requis Backend"
     tags            = {}
 
+    subnet_count    = 2
+
     ec2_instances = {
       sentry = {
         instance_group            = "Sentry"
