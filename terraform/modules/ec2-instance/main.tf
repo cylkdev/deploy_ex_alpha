@@ -8,6 +8,27 @@
 # -----------------------------------------------------------------------------
 
 locals {
+  inventory_group_snake_case = lower(
+    replace(
+      replace(
+        replace(var.inventory_group, " ", "_"),
+        "/[^a-zA-Z0-9_]/",
+        ""
+      ),
+      "-",
+      "_"
+    )
+  )
+  inventory_group_kebab_case = lower(
+    replace(
+      replace(
+        replace(var.inventory_group, " ", "-"), 
+        "/[^a-zA-Z0-9-]/", ""
+      ), 
+      "_", "-"
+    )
+  )
+
   instance_group_snake_case = lower(
     replace(
       replace(
@@ -19,7 +40,6 @@ locals {
       "_"
     )
   )
-
   instance_group_kebab_case = lower(
     replace(
       replace(
@@ -39,7 +59,6 @@ locals {
       "_", "-"
     )
   )
-
   instance_name_snake_case = lower(
     replace(
       replace(
@@ -197,7 +216,7 @@ resource "aws_iam_role" "ec2_instance_role" {
   tags = merge({
     Environment    = var.environment
     InstanceGroup  = local.instance_group_snake_case
-    InventoryGroup = var.inventory_group
+    InventoryGroup = local.inventory_group_kebab_case
     Name           = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "role")
     Type           = "Self Made"
     Vendor         = "Self"
@@ -265,24 +284,12 @@ resource "aws_iam_role_policy" "role_policy" {
 # SUBNET
 ################################################################
 
-# ---
-# Creates a subnet
-#
-# This does not create the subnet resource. See the
-# module `vpc-instance` for more information on creating
-# subnets.
 data "aws_subnet" "private_subnet" {
   count = length(var.private_subnet_ids)
 
   id = var.private_subnet_ids[count.index]
 }
 
-# ---
-# Creates a subnet
-#
-# This does not create the subnet resource. See the
-# module `vpc-instance` for more information on creating
-# subnets.
 data "aws_subnet" "public_subnet" {
   count = length(var.public_subnet_ids)
 
@@ -305,14 +312,6 @@ resource "terraform_data" "key_pair" {
   input = [
     format("%s:%s", "id", var.create_key_pair ? aws_key_pair.key_pair[0].id : ""),
     format("%s:%s", "key_name", var.key_pair_name == null ? aws_key_pair.key_pair[0].key_name : var.key_pair_name)
-  ]
-}
-
-resource "terraform_data" "load_balancer" {
-  input = [
-    format("%s:%s", "target_group", var.enable_elb ? aws_lb_target_group.ec2_lb_target_group[0].id : ""),
-    format("%s:%s", "ec2_lb", var.enable_elb ? aws_lb.ec2_lb[0].id : ""),
-    format("%s:%s", "ec2_lb_listener", var.enable_elb ? aws_lb_listener.ec2_lb_listener[0].id : "")
   ]
 }
 
@@ -369,8 +368,6 @@ resource "aws_instance" "ec2_instance" {
       aws_iam_role.ec2_instance_role,
       aws_iam_instance_profile.ec2_instance_profile,
 
-      terraform_data.load_balancer,
-
       terraform_data.key_pair,
       terraform_data.replace_triggered_by
     ]
@@ -380,7 +377,7 @@ resource "aws_instance" "ec2_instance" {
     AvailabilityZone = var.availability_zone_name
     Environment      = var.environment
     InstanceGroup    = local.instance_group_snake_case
-    InventoryGroup   = var.inventory_group
+    InventoryGroup   = local.inventory_group_kebab_case
     Name             = format("%s-%s", local.instance_name_kebab_case, var.environment)
     Region           = var.region
     Vendor           = "Self"
@@ -399,7 +396,7 @@ resource "aws_ebs_volume" "ec2_ebs" {
     AvailabilityZone = var.availability_zone_name
     Environment      = var.environment
     InstanceGroup    = local.instance_group_snake_case
-    InventoryGroup   = var.inventory_group
+    InventoryGroup   = local.inventory_group_kebab_case
     Name             = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "ebs")
     Region           = var.region
     Vendor           = "Self"
@@ -427,7 +424,7 @@ resource "aws_eip" "ec2_eip" {
   tags = merge({
     Environment    = var.environment
     InstanceGroup  = local.instance_group_snake_case
-    InventoryGroup = var.inventory_group
+    InventoryGroup = local.inventory_group_kebab_case
     Name           = format("%s-%s-%s-%s", local.instance_name_kebab_case, var.environment, "eip")
     Region         = var.region
     Vendor         = "Self"
@@ -443,82 +440,83 @@ resource "aws_eip_association" "ec2_eip_association" {
   allocation_id = aws_eip.ec2_eip[0].id
 }
 
-resource "aws_lb_target_group" "ec2_lb_target_group" {
-  count = var.enable_elb ? 1 : 0
+# # ---
 
-  # The name is truncated because it cannot be longer than 32 characters.
-  name = substr(format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "lb-tg"), 0, 32)
+# resource "aws_lb_target_group" "ec2_lb_target_group" {
+#   count = var.enable_elb ? 1 : 0
 
-  vpc_id = var.vpc_id
-  protocol = "HTTP"
-  port = var.elb_target_group_port
+#   name = substr(format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb-tg"), 0, 32)
 
-  tags = merge({
-    Environment    = var.environment
-    InstanceGroup  = local.instance_group_snake_case
-    InventoryGroup = var.inventory_group
-    Name           = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "lb-tg")
-    Region         = var.region
-    Vendor         = "Self"
-    Type           = "Self Made"
-  }, var.tags)
-}
+#   vpc_id = var.vpc_id
+#   protocol = "HTTP"
+#   port = var.elb_target_group_port
 
-resource "aws_lb" "ec2_lb" {
-  count = var.enable_elb ? 1 : 0
+#   tags = merge({
+#     Environment    = var.environment
+#     InstanceGroup  = local.instance_group_snake_case
+#     InventoryGroup = local.inventory_group_kebab_case
+#     Name           = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb-tg")
+#     Region         = var.region
+#     Vendor         = "Self"
+#     Type           = "Self Made"
+#   }, var.tags)
+# }
 
-  name               = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb")
-  load_balancer_type = "application"
-  subnets            = [ for subnet in data.aws_subnet.public_subnet : subnet.id ]
-  security_groups    = var.vpc_security_group_ids
+# resource "aws_lb" "ec2_lb" {
+#   count = var.enable_elb ? 1 : 0
 
-  tags = merge({
-    Environment    = var.environment
-    InstanceGroup  = local.instance_group_snake_case
-    InventoryGroup = var.inventory_group
-    Name           = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb")
-    Region         = var.region
-    Vendor         = "Self"
-    Type           = "Self Made"
-  }, var.tags)
-}
+#   name               = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb")
+#   load_balancer_type = "application"
+#   subnets            = [ for subnet in data.aws_subnet.public_subnet : subnet.id ]
+#   security_groups    = var.vpc_security_group_ids
 
-# Attach each ec2 instance to the target group
-resource "aws_lb_target_group_attachment" "ec2_lb_target_group_attachment" {
-  count = var.enable_elb ? 1 : 0
+#   tags = merge({
+#     Environment    = var.environment
+#     InstanceGroup  = local.instance_group_snake_case
+#     InventoryGroup = local.inventory_group_kebab_case
+#     Name           = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb")
+#     Region         = var.region
+#     Vendor         = "Self"
+#     Type           = "Self Made"
+#   }, var.tags)
+# }
 
-  target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
-  target_id        = aws_instance.ec2_instance.id
-  port             = var.elb_target_group_port
-}
+# # Attach each ec2 instance to the target group
+# resource "aws_lb_target_group_attachment" "ec2_lb_target_group_attachment" {
+#   count = var.enable_elb ? 1 : 0
 
-# LOAD BALANCER LISTENER
-#
-# A listener checks for connection requests using the configured protocol and port.
-# Before you start using your load balancer you must add at least one listener.
-# If your load balancer has no listeners, it can't receive incoming traffic.
-#
-# Listeners support the following protocols and ports:
-#
-# Protocols: HTTP, HTTPS
-# Ports: 1-65535
-#
-# You can use an HTTPS listener to offload the work of encryption and decryption
-# to your load balancer so that your applications can focus on their business
-# logic. If the listener protocol is HTTPS, you must deploy at least one SSL
-# server certificate on the listener.
-resource "aws_lb_listener" "ec2_lb_listener" {
-  count = var.enable_elb ? 1 : 0 
+#   target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
+#   target_id        = aws_instance.ec2_instance.id
+#   port             = var.elb_target_group_port
+# }
 
-  load_balancer_arn = aws_lb.ec2_lb[0].arn
-  port              = var.elb_listener_port
-  protocol          = aws_lb_target_group.ec2_lb_target_group[0].protocol
+# # LOAD BALANCER LISTENER
+# #
+# # A listener checks for connection requests using the configured protocol and port.
+# # Before you start using your load balancer you must add at least one listener.
+# # If your load balancer has no listeners, it can't receive incoming traffic.
+# #
+# # Listeners support the following protocols and ports:
+# #
+# # Protocols: HTTP, HTTPS
+# # Ports: 1-65535
+# #
+# # You can use an HTTPS listener to offload the work of encryption and decryption
+# # to your load balancer so that your applications can focus on their business
+# # logic. If the listener protocol is HTTPS, you must deploy at least one SSL
+# # server certificate on the listener.
+# resource "aws_lb_listener" "ec2_lb_listener" {
+#   count = var.enable_elb ? 1 : 0 
 
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
-  }
-}
+#   load_balancer_arn = aws_lb.ec2_lb[0].arn
+#   port              = var.elb_listener_port
+#   protocol          = aws_lb_target_group.ec2_lb_target_group[0].protocol
+
+#   default_action {
+#     type             = "forward"
+#     target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
+#   }
+# }
 
 # ### Simple Queue Service
 
@@ -533,7 +531,7 @@ resource "aws_lb_listener" "ec2_lb_listener" {
 
 #   tags = merge({
 #     Environment   = var.environment
-#     Group         = var.inventory_group
+#     Group         = local.inventory_group_kebab_case
 #     InstanceGroup = local.instance_group_snake_case
 #     Name          = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "sqs")
 #     Type          = "Self Made"
@@ -623,7 +621,7 @@ resource "aws_lb_listener" "ec2_lb_listener" {
 #       payload = merge({
 #                   AvailabilityZone = var.availability_zone_name
 #                   Environment      = var.environment
-#                   Group            = var.inventory_group
+#                   Group            = local.inventory_group_kebab_case
 #                   InstanceGroup    = local.instance_group_snake_case
 #                   Name             = format("%s-%s-%s-%s", local.instance_name_kebab_case, var.environment, "asg", count.index)
 #                   Region           = var.region
@@ -644,7 +642,7 @@ resource "aws_lb_listener" "ec2_lb_listener" {
 #     for_each = merge({
 #       AvailabilityZone = var.availability_zone_name
 #       Environment      = var.environment
-#       Group            = var.inventory_group
+#       Group            = local.inventory_group_kebab_case
 #       InstanceGroup    = local.instance_group_snake_case
 #       Name             = format("%s-%s-%s-%s", local.instance_name_kebab_case, var.environment, "asg", count.index)
 #       Region           = var.region

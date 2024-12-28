@@ -117,23 +117,6 @@ variable "user_data" {
   default = ""
 }
 
-variable "vpc_id" {
-  type = string
-  nullable = false
-  description = "VPC identifier."
-}
-
-variable "vpc_security_group_ids" {
-  type = list(string)
-  nullable = false
-  default = []
-  description = <<EOF
-  The list of security group IDs to associate with the instance.
-  This defines the firewall rules for things like HTTP/HTTPS
-  and SSH traffic.
-  EOF
-}
-
 variable "associate_public_ip_address" {
   type = bool
 
@@ -282,25 +265,43 @@ variable "enable_eip" {
   description = "Enables instance to generate an elastic ip for itself"
 }
 
-# Elastic Load Balancer
+# # Elastic Load Balancer
 
-variable "enable_elb" {
-  type        = bool
-  nullable    = false
-  default     = false
-  description = "Enables instance to generate an elastic load balancer for itself"
+
+# variable "vpc_id" {
+#   type = string
+#   nullable = false
+#   description = "VPC identifier."
+# }
+
+variable "vpc_security_group_ids" {
+  type = list(string)
+  nullable = false
+  default = []
+  description = <<EOF
+  The list of security group IDs to associate with the instance.
+  This defines the firewall rules for things like HTTP/HTTPS
+  and SSH traffic.
+  EOF
 }
 
-variable "elb_listener_port" {
-  type        = number
-  nullable    = false
-  default     = 443
-  description = "The port that the load balancer will listen on for incoming traffic."
-}
+# variable "enable_elb" {
+#   type        = bool
+#   nullable    = false
+#   default     = false
+#   description = "Enables instance to generate an elastic load balancer for itself"
+# }
 
-variable "elb_target_group_port" {
-  type        = number
-  nullable    = false
-  default     = 443
-  description = "The port on which the load balancer should forward traffic to the targets (e.g. ec2 instances) that are registered in the target group."
-}
+# variable "elb_listener_port" {
+#   type        = number
+#   nullable    = false
+#   default     = 443
+#   description = "The port that the load balancer will listen on for incoming traffic."
+# }
+
+# variable "elb_target_group_port" {
+#   type        = number
+#   nullable    = false
+#   default     = 443
+#   description = "The port on which the load balancer should forward traffic to the targets (e.g. ec2 instances) that are registered in the target group."
+# }

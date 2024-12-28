@@ -8,7 +8,7 @@ module "deployment" {
   inventory_group = each.value.inventory_group
   vpc_name        = each.value.vpc_name
 
-  enable_elb      = try(var.enable_elb, null)
+  attach_target_group = try(var.attach_target_group, null)
   
   ec2_instances   = try(each.value.ec2_instances, null)
 }

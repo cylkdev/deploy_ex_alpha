@@ -95,6 +95,24 @@ variable "enable_dns_hostnames" {
 
 variable "enable_elb" {
   type = bool
+  nullable = false
+  default = true
+}
+
+variable "elb_listener_port" {
+  type = number
+  default = 443
+}
+
+variable "elb_target_group_port" {
+  type = number
+  default = 443
+}
+
+variable "attach_target_group" {
+  type        = bool
+  nullable    = false
+  default     = false
 }
 
 variable "ec2_instances" {
@@ -113,7 +131,6 @@ variable "ec2_instances" {
     enable_ebs               = optional(bool)
     ebs_volume_size          = optional(number)
 
-    enable_elb               = optional(bool)
     enable_sqs               = optional(bool)
   }))
 

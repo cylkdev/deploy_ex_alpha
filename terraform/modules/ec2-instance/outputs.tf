@@ -1,3 +1,11 @@
+output "instance_group" {
+  value = var.instance_group
+}
+
+output "instance_name" {
+  value = var.instance_name
+}
+
 output "trust_policy_document" {
   value = data.aws_iam_policy_document.trust_policy_document
 }

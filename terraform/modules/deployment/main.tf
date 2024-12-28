@@ -61,21 +61,17 @@ locals {
   vpc_private_subnets = { for subnet in module.vpc_instance.private_subnet : subnet.availability_zone => subnet... }
 }
 
-locals {
-  # The state for each ec2 instance is resolved ahead of time here
-  # to ensure that the subnets given to the module belong to the
-  # availability zone the instance is being launched in.
-  ec2_instances = merge(flatten([
+module "ec2_instance" {
+  source = "../ec2-instance"
+
+  for_each = merge(flatten([
     for instance_key, instance in var.ec2_instances : [
       for index in range(instance.desired_count) : {
         "${instance.instance_group}-${index}-${module.vpc_instance.availability_zones.names[index % length(module.vpc_instance.availability_zones.names)]}" = {
           instance_key = instance_key
-
-          # The instance name must be unique and is set internally
-          # so that it can be offset by the index.
           instance_name = "${instance.instance_group}-${index}"
-
           instance = instance
+          
           availability_zone_name = module.vpc_instance.availability_zones.names[index % length(module.vpc_instance.availability_zones.names)]
           
           # Public Subnet
@@ -117,12 +113,6 @@ locals {
       }
     ]
   ])...)
-}
-
-module "ec2_instance" {
-  source = "../ec2-instance"
-
-  for_each = local.ec2_instances
 
   # General
   environment      = var.environment
@@ -130,7 +120,7 @@ module "ec2_instance" {
   region           = var.region
   tags             = var.tags
 
-  vpc_id           = module.vpc_instance.vpc_instance.id
+  # vpc_id           = module.vpc_instance.vpc_instance.id
   
   instance_group   = each.value.instance.instance_group
   instance_name    = each.value.instance_name
@@ -164,10 +154,10 @@ module "ec2_instance" {
   private_subnet_id      = each.value.private_subnet.id
   private_subnet_ids     = [ for subnet in each.value.private_subnets : subnet.id ]
 
-  # Load Balancer
-  enable_elb             = var.enable_elb != null ? var.enable_elb : try(each.value.instance.enable_elb, null)
-  elb_listener_port      = try(each.value.instance.elb_listener_port, null)
-  elb_target_group_port  = try(each.value.instance.elb_target_group_port, null)
+  # # Load Balancer
+  # enable_elb             = var.enable_elb != null ? var.enable_elb : try(each.value.instance.enable_elb, null)
+  # elb_listener_port      = try(each.value.instance.elb_listener_port, null)
+  # elb_target_group_port  = try(each.value.instance.elb_target_group_port, null)
 
   # Security Group
   vpc_security_group_ids = [
@@ -197,4 +187,31 @@ module "ec2_instance" {
     format("%s:%s", "security_group_allow_tls.allow_traffic_egress_rule_ipv4_cidr", module.vpc_instance.allow_traffic_egress_rule_ipv4_cidr),
     format("%s:%s", "security_group_allow_tls.allow_traffic_egress_rule_ipv4_ip_protocol", module.vpc_instance.allow_traffic_egress_rule_ipv4_ip_protocol),
   ]
+}
+
+module "load_balancer_instance" {
+  source = "../load-balancer-instance"
+
+  for_each = module.ec2_instance
+
+  environment     = var.environment
+  region          = var.region
+  inventory_group = var.inventory_group
+  tags            = var.tags
+
+  enable_elb            = var.enable_elb
+  attach_target_group   = var.attach_target_group
+  elb_listener_port     = var.elb_listener_port
+  elb_target_group_port = var.elb_target_group_port
+
+  vpc_id         = module.vpc_instance.vpc_instance.id
+  instance_group = each.value.instance_group
+  target_id      = each.value.ec2_instance.id
+
+  vpc_security_group_ids = [
+    module.vpc_instance.security_group_allow_ssh.id,
+    module.vpc_instance.security_group_allow_tls.id
+  ]
+
+  public_subnet_ids = [ for subnet in module.vpc_instance.public_subnet : subnet.id ]
 }

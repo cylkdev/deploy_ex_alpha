@@ -3,9 +3,10 @@ variable "environment" {
   nullable = false
 }
 
-variable "enable_elb" {
-  type = bool
-  default = null
+variable "attach_target_group" {
+  type        = bool
+  nullable    = false
+  default     = false
 }
 
 variable "deployments" {
@@ -30,7 +31,6 @@ variable "deployments" {
       ebs_volume_size          = optional(number)
 
       # Load Balancer
-      enable_elb               = optional(bool)
       elb_listener_port        = optional(number)
       elb_target_group_port    = optional(number)
 
