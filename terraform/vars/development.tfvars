@@ -16,9 +16,9 @@ deployments = {
         key_pair_name             = "kurt-deploy-key"
 
         enable_auto_scaling       = true
-        desired_count             = 1
+        desired_count             = 2
         minimum_instance_count    = 1
-        maximum_instance_count    = 1
+        maximum_instance_count    = 2
 
         enable_ebs                = true
         enable_user_data          = true

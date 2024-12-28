@@ -141,7 +141,7 @@ variable "subnet_count" {
   description = "Number of subnets"
   type = number
   nullable = false
-  default = 1
+  default = 2
 }
 
 variable "subnet_cidrsubnet_newbits" {
