@@ -43,7 +43,7 @@ variable "cidrsubnet_netnum" {
 variable "cidrsubnet_newbits" {
   type = number
   nullable = false
-  default = 4
+  default = 12
 }
 
 variable "enable_dns_support" {
@@ -147,7 +147,7 @@ variable "subnet_count" {
 variable "subnet_cidrsubnet_newbits" {
   type = number
   nullable = false
-  default = 8
+  default = 12
 }
 
 # Availability Zone

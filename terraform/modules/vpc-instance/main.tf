@@ -19,11 +19,6 @@ data "aws_availability_zones" "available" {
   exclude_names          = var.exclude_availability_zone_names
   exclude_zone_ids       = var.exclude_availability_zone_ids
 
-  filter {
-    name   = "region-name"
-    values = [var.region]
-  }
-
   dynamic "filter" {
     for_each = { for name in var.availability_zone_names : name => name } 
 
@@ -31,6 +26,11 @@ data "aws_availability_zones" "available" {
       name   = "group-name"
       values = [each.value]
     }
+  }
+
+  filter {
+    name   = "region-name"
+    values = [var.region]
   }
 
   filter {
