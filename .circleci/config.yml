@@ -64,15 +64,15 @@ jobs:
             /usr/local/bin/python3 -m pip install boto3 botocore --user ansible
 
       - run:
-          name: Save SSH Key
+          name: Save Ansible SSH Key
           command: |
-            echo $AWS_INSTANCE_PRIVATE_KEY > ec2-private-key.pem
-            chmod 400 ec2-private-key.pem
+            echo "$AWS_INSTANCE_PRIVATE_KEY" | base64 --decode > ansible-private-key.pem
+            chmod 400 ansible-private-key.pem
 
       - run:
           name: Print Key
           command: |
-            echo $AWS_INSTANCE_PRIVATE_KEY
+            cat ansible-private-key.pem
   
       - run:
           name: List Directory Contents
@@ -118,16 +118,16 @@ jobs:
 workflows:
   deploy:
     jobs:
-      - terraform_provision_ec2:
-          context:
-            - aws_deploy
-          environment: development
+      # - terraform_provision_ec2:
+      #     context:
+      #       - aws_deploy
+      #     environment: development
 
       - ansible_playbook:
           context:
             - aws_deploy
-          requires:
-            - terraform_provision_ec2
+          # requires:
+          #   - terraform_provision_ec2
 
       # - terraform_provision_load_balancer:
       #     context:
