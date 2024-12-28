@@ -363,6 +363,8 @@ resource "aws_instance" "ec2_instance" {
 
   lifecycle {
     replace_triggered_by = [
+      aws_iam_role_policy.role_policy,
+      aws_iam_role.ec2_instance_role,
       aws_iam_instance_profile.ec2_instance_profile,
       terraform_data.load_balancer,
       terraform_data.key_pair,
