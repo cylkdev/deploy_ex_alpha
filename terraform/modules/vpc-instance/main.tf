@@ -176,7 +176,7 @@ resource "aws_subnet" "private_subnet" {
     AvailabilityZone = element(data.aws_availability_zones.available.names, count.index % length(data.aws_availability_zones.available.names))
     Environment      = var.environment
     InventoryGroup   = var.inventory_group
-    Name             = format("%s-%s-%s-%s-%s", local.vpc_name_kebab_case, "public", var.environment, "sn", count.index)
+    Name             = format("%s-%s-%s-%s-%s", local.vpc_name_kebab_case, "private", var.environment, "sn", count.index)
     Region           = var.region
   }, var.tags)
 }

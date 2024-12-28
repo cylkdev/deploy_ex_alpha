@@ -294,13 +294,13 @@ variable "enable_elb" {
 variable "elb_listener_port" {
   type        = number
   nullable    = false
-  default     = 80
+  default     = 443
   description = "The port that the load balancer will listen on for incoming traffic."
 }
 
 variable "elb_target_group_port" {
   type        = number
   nullable    = false
-  default     = 80
+  default     = 443
   description = "The port on which the load balancer should forward traffic to the targets (e.g. ec2 instances) that are registered in the target group."
 }

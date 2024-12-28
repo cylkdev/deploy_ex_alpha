@@ -308,7 +308,7 @@ resource "terraform_data" "key_pair" {
   ]
 }
 
-resource "terraform_data" "load_balancer" {
+resource "terraform_data" "target_group" {
   input = [
     format("%s:%s", "target_group", var.enable_elb ? aws_lb_target_group.ec2_lb_target_group[0].id : ""),
   ]
@@ -366,7 +366,7 @@ resource "aws_instance" "ec2_instance" {
       aws_iam_role_policy.role_policy,
       aws_iam_role.ec2_instance_role,
       aws_iam_instance_profile.ec2_instance_profile,
-      terraform_data.load_balancer,
+      terraform_data.target_group,
       terraform_data.key_pair,
       terraform_data.replace_triggered_by
     ]
@@ -463,7 +463,7 @@ resource "aws_lb_target_group" "ec2_lb_target_group" {
 resource "aws_lb" "ec2_lb" {
   count = var.enable_elb ? 1 : 0
 
-  name               = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "lb")
+  name               = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb")
   load_balancer_type = "application"
   subnets            = [ for subnet in data.aws_subnet.public_subnet : subnet.id ]
   security_groups    = var.vpc_security_group_ids
@@ -472,7 +472,7 @@ resource "aws_lb" "ec2_lb" {
     Environment    = var.environment
     InstanceGroup  = local.instance_group_snake_case
     InventoryGroup = var.inventory_group
-    Name           = format("%s-%s-%s", local.instance_name_kebab_case, var.environment, "lb")
+    Name           = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb")
     Region         = var.region
     Vendor         = "Self"
     Type           = "Self Made"
