@@ -40,7 +40,6 @@ module "vpc_instance" {
   inventory_group                 = var.inventory_group
   
   availability_zone_names         = try(var.availability_zone_names, null)
-  enable_availability_zones       = try(var.enable_availability_zones, null)
   availability_zone_count         = try(var.availability_zone_count, null)
   all_availability_zones          = try(var.all_availability_zones, null)
   exclude_availability_zone_names = try(var.exclude_availability_zone_names, null)
@@ -69,7 +68,7 @@ locals {
   ec2_instances = merge(flatten([
     for instance_key, instance in var.ec2_instances : [
       for index in range(instance.desired_count) : {
-        "${instance.instance_group}-${index}-${module.vpc_instance.availability_zones_available.names[index % length(module.vpc_instance.availability_zones_available.names)]}" = {
+        "${instance.instance_group}-${index}-${module.vpc_instance.availability_zones.names[index % length(module.vpc_instance.availability_zones.names)]}" = {
           instance_key = instance_key
 
           # The instance name must be unique and is set internally
@@ -77,7 +76,7 @@ locals {
           instance_name = "${instance.instance_group}-${index}"
 
           instance = instance
-          availability_zone_name = module.vpc_instance.availability_zones_available.names[index % length(module.vpc_instance.availability_zones_available.names)]
+          availability_zone_name = module.vpc_instance.availability_zones.names[index % length(module.vpc_instance.availability_zones.names)]
           
           # Public Subnet
           #
@@ -86,18 +85,18 @@ locals {
           public_subnet = element(
             lookup(
               { for subnet in module.vpc_instance.public_subnet : subnet.availability_zone => subnet... },
-              module.vpc_instance.availability_zones_available.names[index % length(module.vpc_instance.availability_zones_available.names)]
+              module.vpc_instance.availability_zones.names[index % length(module.vpc_instance.availability_zones.names)]
             ),
             index % length(lookup(
               { for subnet in module.vpc_instance.public_subnet : subnet.availability_zone => subnet... },
-              module.vpc_instance.availability_zones_available.names[index % length(module.vpc_instance.availability_zones_available.names)]
+              module.vpc_instance.availability_zones.names[index % length(module.vpc_instance.availability_zones.names)]
             ))
           )
         
           # Select subnets matching the availability zone.
           public_subnets = lookup(
             { for subnet in module.vpc_instance.public_subnet : subnet.availability_zone => subnet... },
-            module.vpc_instance.availability_zones_available.names[index % length(module.vpc_instance.availability_zones_available.names)]
+            module.vpc_instance.availability_zones.names[index % length(module.vpc_instance.availability_zones.names)]
           )
 
           # Private Subnet
@@ -107,18 +106,18 @@ locals {
           private_subnet = element(
             lookup(
               { for subnet in module.vpc_instance.private_subnet : subnet.availability_zone => subnet... },
-              module.vpc_instance.availability_zones_available.names[index % length(module.vpc_instance.availability_zones_available.names)]
+              module.vpc_instance.availability_zones.names[index % length(module.vpc_instance.availability_zones.names)]
             ),
             index % length(lookup(
               { for subnet in module.vpc_instance.private_subnet : subnet.availability_zone => subnet... },
-              module.vpc_instance.availability_zones_available.names[index % length(module.vpc_instance.availability_zones_available.names)]
+              module.vpc_instance.availability_zones.names[index % length(module.vpc_instance.availability_zones.names)]
             ))
           )
 
           # Select subnets matching the availability zone.
           private_subnets = lookup(
             { for subnet in module.vpc_instance.private_subnet : subnet.availability_zone => subnet... },
-            module.vpc_instance.availability_zones_available.names[index % length(module.vpc_instance.availability_zones_available.names)]
+            module.vpc_instance.availability_zones.names[index % length(module.vpc_instance.availability_zones.names)]
           )
         }
       }

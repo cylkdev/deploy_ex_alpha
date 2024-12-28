@@ -100,6 +100,6 @@ output "public_route_table_association" {
 
 # ---
 
-output "availability_zones_available" {
-  value = data.aws_availability_zones.available[0]
+output "availability_zones" {
+  value = data.aws_availability_zones.available
 }

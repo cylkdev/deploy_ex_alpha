@@ -14,8 +14,6 @@ locals {
 }
 
 data "aws_availability_zones" "available" {
-  count = var.enable_availability_zones ? 1 : 0
-  
   state                  = "available"
   all_availability_zones = var.all_availability_zones
   exclude_names          = var.exclude_availability_zone_names
@@ -39,18 +37,6 @@ data "aws_availability_zones" "available" {
     name   = "zone-type"
     values = ["availability-zone"]
   }
-}
-
-locals {
-  availability_zone_names = (
-    var.availability_zone_names == null ?
-    (
-      var.enable_availability_zones ?
-      data.aws_availability_zones.available[0].names :
-      []
-    ) :
-    var.availability_zone_names
-  )
 }
 
 resource "aws_vpc" "vpc_instance" {
@@ -184,10 +170,10 @@ resource "aws_subnet" "private_subnet" {
   vpc_id            = aws_vpc.vpc_instance.id
   cidr_block        = cidrsubnet(aws_vpc.vpc_instance.cidr_block, var.subnet_cidrsubnet_newbits, count.index + 1)
 
-  availability_zone = element(local.availability_zone_names, count.index % length(local.availability_zone_names))
+  availability_zone = element(data.aws_availability_zones.available.names, count.index % length(data.aws_availability_zones.available.names))
 
   tags = merge({
-    AvailabilityZone = element(local.availability_zone_names, count.index % length(local.availability_zone_names))
+    AvailabilityZone = element(data.aws_availability_zones.available.names, count.index % length(data.aws_availability_zones.available.names))
     Environment      = var.environment
     InventoryGroup   = var.inventory_group
     Name             = format("%s-%s-%s-%s-%s", local.vpc_name_kebab_case, "public", var.environment, "sn", count.index)
@@ -227,10 +213,10 @@ resource "aws_subnet" "public_subnet" {
   # This allows the ip range of the public subnet to begin after
   # the private subnet range.
   cidr_block        = cidrsubnet(aws_vpc.vpc_instance.cidr_block, var.subnet_cidrsubnet_newbits, var.subnet_count + count.index + 1)
-  availability_zone = element(local.availability_zone_names, count.index % length(local.availability_zone_names))
+  availability_zone = element(data.aws_availability_zones.available.names, count.index % length(data.aws_availability_zones.available.names))
 
   tags = merge({
-    AvailabilityZone = element(local.availability_zone_names, count.index % length(local.availability_zone_names))
+    AvailabilityZone = element(data.aws_availability_zones.available.names, count.index % length(data.aws_availability_zones.available.names))
     Environment      = var.environment
     InventoryGroup   = var.inventory_group
     Name             = format("%s-%s-%s-%s-%s", local.vpc_name_kebab_case, "public", var.environment, "sn", count.index)

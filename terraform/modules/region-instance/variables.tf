@@ -35,12 +35,6 @@ variable "availability_zone_count" {
   default = 2
 }
 
-variable "enable_availability_zones" {
-  type = bool
-  nullable = false
-  default = true
-}
-
 variable "all_availability_zones" {
   type = bool
   nullable = false
