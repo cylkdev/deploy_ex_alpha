@@ -206,7 +206,7 @@ module "scaling_instance" {
 
   vpc_id         = module.vpc_instance.vpc_instance.id
   instance_group = each.value.instance_group
-  target_id      = each.value.ec2_instance.id
+  target_id      = each.value.ec2_eip != null ? each.value.ec2_eip[0].public_ip : each.value.ec2_instance.public_ip
 
   vpc_security_group_ids = [
     module.vpc_instance.security_group_allow_ssh.id,
