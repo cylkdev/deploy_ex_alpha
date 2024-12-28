@@ -308,9 +308,11 @@ resource "terraform_data" "key_pair" {
   ]
 }
 
-resource "terraform_data" "target_group" {
+resource "terraform_data" "load_balancer" {
   input = [
     format("%s:%s", "target_group", var.enable_elb ? aws_lb_target_group.ec2_lb_target_group[0].id : ""),
+    format("%s:%s", "ec2_lb", var.enable_elb ? aws_lb.ec2_lb.id : ""),
+    format("%s:%s", "ec2_lb_listener", var.enable_elb ? aws_lb_listener.ec2_lb_listener.id : "")
   ]
 }
 
@@ -367,10 +369,8 @@ resource "aws_instance" "ec2_instance" {
       aws_iam_role.ec2_instance_role,
       aws_iam_instance_profile.ec2_instance_profile,
 
-      aws_lb.ec2_lb,
-      aws_lb_listener.ec2_lb_listener,
-      terraform_data.target_group,
-      
+      terraform_data.load_balancer,
+
       terraform_data.key_pair,
       terraform_data.replace_triggered_by
     ]
