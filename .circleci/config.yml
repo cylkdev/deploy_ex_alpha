@@ -72,7 +72,7 @@ jobs:
       - run:
           name: Print Key
           command: |
-            cat ec2-private-key.pem
+            echo $AWS_INSTANCE_PRIVATE_KEY
   
       - run:
           name: List Directory Contents
