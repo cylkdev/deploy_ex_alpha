@@ -45,21 +45,13 @@ jobs:
         type: string
       playbook:
         type: string
-    environment:
-      # There are two versions of python installed at `/usr/bin/python3` and `/usr/local/bin/python3`.
-      # Only the python version installed at `/usr/local/bin/python3` has pip installed.
-      ANSIBLE_PYTHON_INTERPRETER: /usr/local/bin/python3
+    # environment:
+    #   # There are two versions of python installed at `/usr/bin/python3` and `/usr/local/bin/python3`.
+    #   # Only the python version installed at `/usr/local/bin/python3` has pip installed.
+    #   ANSIBLE_PYTHON_INTERPRETER: /usr/local/bin/python3
     steps:
       - checkout:
           path: ~/project
-
-      # Note: This is used as a convenience to setup ssh inside the container
-      # while keeping the behavior consistent. The intent here is to not have
-      # multiple methods of installing and configuring ssh.
-      #
-      # https://circleci.com/docs/add-ssh-key/
-      - add_ssh_keys:
-          fingerprints:
 
       - run:
           name: Ansible Playbook Version
@@ -69,7 +61,7 @@ jobs:
       - run:
           name: Install boto3 and botocore
           command: |
-            /usr/local/bin/python3 -m pip install boto3 botocore --user ansible
+            python3 -m pip install boto3 botocore --user ansible
 
       # The value of the ssh key must be encoded to base64 and stored
       # in the organization context or project environment variable.
@@ -78,11 +70,6 @@ jobs:
           command: |
             echo "$AWS_INSTANCE_PRIVATE_KEY" | base64 -d > ansible-private-key.pem
             chmod 400 ansible-private-key.pem
-  
-      - run:
-          name: Python alias
-          command: |
-            type python3
 
       - run:
           name: List Ansible inventory - << parameters.inventory >>
