@@ -189,8 +189,8 @@ module "ec2_instance" {
   ]
 }
 
-module "load_balancer_instance" {
-  source = "../load-balancer-instance"
+module "scaling_instance" {
+  source = "../scaling-instance"
 
   for_each = module.ec2_instance
 

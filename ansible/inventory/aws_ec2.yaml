@@ -13,7 +13,7 @@ filters:
 
 # Add hosts to group based on the values of a variable.
 keyed_groups:
-  - key: tags['Group']
+  - key: tags['InventoryGroup']
     prefix: "group"
 
   - key: tags['InstanceGroup']

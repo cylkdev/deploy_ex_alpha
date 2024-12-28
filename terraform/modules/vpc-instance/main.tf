@@ -47,7 +47,7 @@ resource "aws_vpc" "vpc_instance" {
 
   tags = merge({
     Environment    = var.environment
-    Group = var.inventory_group
+    InventoryGroup = var.inventory_group
     Name           = "${lower(replace(var.vpc_name, " ", "-"))}-${var.environment}-vpc"
     Region         = var.region
   }, var.tags)
@@ -62,7 +62,7 @@ resource "aws_security_group" "allow_ssh" {
 
   tags = merge({
     Environment    = var.environment
-    Group = var.inventory_group
+    InventoryGroup = var.inventory_group
     Name           = "${lower(replace(var.vpc_name, " ", "_"))}_${var.environment}_allow_ssh"
     Region         = var.region
   }, var.tags)
@@ -75,7 +75,7 @@ resource "aws_security_group" "allow_tls" {
 
   tags = merge({
     Environment    = var.environment
-    Group = var.inventory_group
+    InventoryGroup = var.inventory_group
     Name           = "${lower(replace(var.vpc_name, " ", "_"))}_${var.environment}_allow_tls"
     Region         = var.region
   }, var.tags)
@@ -98,7 +98,7 @@ resource "aws_vpc_security_group_ingress_rule" "allow_ssh_ingress_rule_ipv4" {
   ip_protocol       = var.allow_ssh_ingress_rule_ipv4_ip_protocol # "TCP"
 
   tags = merge({
-    Group = var.inventory_group
+    InventoryGroup = var.inventory_group
     Name           = "allow_ssh_ingress_rule_ipv4"
     Region         = var.region
   }, var.tags)
@@ -116,7 +116,7 @@ resource "aws_vpc_security_group_ingress_rule" "allow_https_ingress_rule_ipv4" {
   to_port           = var.allow_https_ingress_rule_ipv4_to_port # 443
 
   tags = merge({
-    Group = var.inventory_group
+    InventoryGroup = var.inventory_group
     Name           = "allow_https_ingress_rule_ipv4"
     Region         = var.region
   }, var.tags)
@@ -130,7 +130,7 @@ resource "aws_vpc_security_group_egress_rule" "allow_traffic_egress_rule_ipv4" {
   ip_protocol       = var.allow_traffic_egress_rule_ipv4_ip_protocol # "-1"
 
   tags = merge({
-    Group = var.inventory_group
+    InventoryGroup = var.inventory_group
     Name           = "allow_traffic_egress_rule_ipv4"
     Region         = var.region
   }, var.tags)
@@ -175,7 +175,7 @@ resource "aws_subnet" "private_subnet" {
   tags = merge({
     AvailabilityZone = element(data.aws_availability_zones.available.names, count.index % length(data.aws_availability_zones.available.names))
     Environment      = var.environment
-    Group   = var.inventory_group
+    InventoryGroup   = var.inventory_group
     Name             = format("%s-%s-%s-%s-%s", local.vpc_name_kebab_case, "private", var.environment, "sn", count.index)
     Region           = var.region
   }, var.tags)
@@ -188,7 +188,7 @@ resource "aws_route_table" "private_route_table" {
 
   tags = merge({
     Environment = var.environment
-    Group   = var.inventory_group
+    InventoryGroup   = var.inventory_group
     Name        = format("%s-%s-%s", local.vpc_name_kebab_case, var.environment, "private-rt")
     Region      = var.region
   }, var.tags)
@@ -218,7 +218,7 @@ resource "aws_subnet" "public_subnet" {
   tags = merge({
     AvailabilityZone = element(data.aws_availability_zones.available.names, count.index % length(data.aws_availability_zones.available.names))
     Environment      = var.environment
-    Group   = var.inventory_group
+    InventoryGroup   = var.inventory_group
     Name             = format("%s-%s-%s-%s-%s", local.vpc_name_kebab_case, "public", var.environment, "sn", count.index)
     Region           = var.region
   }, var.tags)
@@ -231,7 +231,7 @@ resource "aws_internet_gateway" "public_internet_gateway" {
 
   tags = merge({
     Environment    = var.environment
-    Group = var.inventory_group
+    InventoryGroup = var.inventory_group
     Name           = format("%s-%s-%s-%s", local.vpc_name_kebab_case, "public", var.environment, "igw")
     Region         = var.region
   }, var.tags)
@@ -251,7 +251,7 @@ resource "aws_route_table" "public_route_table" {
   tags = merge({
     Name           = format("%s-%s-%s", local.vpc_name_kebab_case, var.environment, "public-rt")
     Environment    = var.environment
-    Group = var.inventory_group
+    InventoryGroup = var.inventory_group
     Region         = var.region
   }, var.tags)
 }
