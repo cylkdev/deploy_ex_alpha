@@ -8,5 +8,4 @@
   vars:
     app_name: health_check
   roles:
-    - check_python_version
     - deploy_health_check

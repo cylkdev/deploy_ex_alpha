@@ -2,12 +2,12 @@ environment = "development"
 
 deployments = {
   requis_us_west_1 = {
-    region          = "us-west-1"
+    region = "us-west-1"
     inventory_group = "requis_backend"
-    vpc_name        = "Requis Backend"
-    tags            = {}
+    vpc_name = "Requis Backend"
+    tags = {}
 
-    subnet_count    = 2
+    subnet_count = 2
 
     ec2_instances = {
       sentry = {
