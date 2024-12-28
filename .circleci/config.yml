@@ -45,10 +45,6 @@ jobs:
         type: string
       playbook:
         type: string
-    # environment:
-    #   # There are two versions of python installed at `/usr/bin/python3` and `/usr/local/bin/python3`.
-    #   # Only the python version installed at `/usr/local/bin/python3` has pip installed.
-    #   ANSIBLE_PYTHON_INTERPRETER: /usr/local/bin/python3
     steps:
       - checkout:
           path: ~/project
@@ -79,7 +75,7 @@ jobs:
       - run:
           name: Run Ansible Playbook - << parameters.playbook >>
           command: |
-            ansible-playbook -vvv -i inventory/<< parameters.inventory >>.yaml ./playbooks/<< parameters.playbook >>.yaml
+            ansible-playbook -i inventory/<< parameters.inventory >>.yaml ./playbooks/<< parameters.playbook >>.yaml
 
   terraform_provision_load_balancer:
     executor: terraform
@@ -110,23 +106,22 @@ jobs:
 workflows:
   deploy:
     jobs:
-      # - terraform_provision_ec2:
-      #     context:
-      #       - aws_deploy
-      #     environment: development
-
-      - ansible_playbook:
+      - terraform_provision_ec2:
           context:
             - aws_deploy
+          environment: development
+
+      - ansible_playbook:
           inventory: aws_ec2
           playbook: health_check
-          
-          # requires:
-          #   - terraform_provision_ec2
+          context:
+            - aws_deploy
+          requires:
+            - terraform_provision_ec2
 
-      # - terraform_provision_load_balancer:
-      #     context:
-      #       - aws_deploy
-      #     requires:
-      #       - ansible_playbook
-      #     environment: development
+      - terraform_provision_load_balancer:
+          context:
+            - aws_deploy
+          requires:
+            - ansible_playbook
+          environment: development
