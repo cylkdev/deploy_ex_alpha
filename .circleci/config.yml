@@ -80,7 +80,7 @@ jobs:
       - run:
           name: Run Ansible Playbook
           command: |
-            ansible-playbook -vvv -i inventory/<< parameters.inventory >>.yaml ./playbooks/<< parameters.playbook >>.yaml
+            ansible-playbook -i inventory/<< parameters.inventory >>.yaml ./playbooks/<< parameters.playbook >>.yaml
 
   # This job applies the deployment strategy. This job can run tests
   # against a deployed resource before moving the traffic from the

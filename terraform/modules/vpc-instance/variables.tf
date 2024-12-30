@@ -3,11 +3,6 @@ variable "environment" {
   nullable = false
 }
 
-variable "region" {
-  type = string
-  nullable = false
-}
-
 variable "inventory_group" {
   type = string
   nullable = false

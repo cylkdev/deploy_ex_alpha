@@ -1,17 +1,16 @@
 environment = "development"
 
 deployments = {
-  requis_us_west_1 = {
-    region = "us-west-1"
+  requis_us_west = {
     inventory_group = "requis_backend"
     vpc_name = "Requis Backend"
     tags = {}
 
     subnet_count = 2
 
-    ec2_instances = {
+    instances = {
       sentry = {
-        instance_group            = "Sentry"
+        name                      = "Sentry"
         placement_group_strategy  = "cluster"
         key_pair_name             = "kurt-deploy-key"
 

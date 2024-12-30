@@ -3,11 +3,6 @@ variable "environment" {
   nullable = false
 }
 
-variable "region" {
-  type = string
-  nullable = false
-}
-
 variable "tags" {
   type = map(string)
   nullable = false
@@ -93,46 +88,68 @@ variable "enable_dns_hostnames" {
   default = true
 }
 
-variable "enable_elb" {
+variable "enable_load_balancer" {
   type = bool
   nullable = false
   default = true
 }
 
-variable "elb_listener_port" {
+variable "listener_port" {
   type = number
   default = 443
 }
 
-variable "elb_target_group_port" {
+variable "target_group_port" {
   type = number
   default = 443
 }
 
 variable "attach_target_group" {
-  type        = bool
-  nullable    = false
-  default     = false
+  type     = bool
+  nullable = false
+  default  = false
 }
 
-variable "ec2_instances" {
+variable "attach_blue_target_group" {
+  type     = bool
+  nullable = false
+  default  = false
+}
+
+variable "attach_green_target_group" {
+  type     = bool
+  nullable = false
+  default  = false
+}
+
+
+variable "instances" {
   type = map(object({
-    instance_group           = string
+    name = string
     placement_group_strategy = optional(string)
 
-    create_key_pair          = optional(bool)
-    key_pair_name            = optional(string)
+    create_key_pair        = optional(bool)
+    key_pair_name          = optional(string)
 
-    enable_auto_scaling      = optional(bool)
-    desired_count            = optional(number)
-    minimum_instance_count   = optional(number)
-    maximum_instance_count   = optional(number)
+    enable_auto_scaling    = optional(bool)
+    desired_count          = optional(number)
+    minimum_instance_count = optional(number)
+    maximum_instance_count = optional(number)
 
-    enable_ebs               = optional(bool)
-    ebs_volume_size          = optional(number)
+    enable_ebs             = optional(bool)
+    ebs_volume_size        = optional(number)
 
-    enable_sqs               = optional(bool)
+    listener_port      = optional(number)
+    target_group_port  = optional(number)
+
+    enable_sqs             = optional(bool)
   }))
 
   nullable = false
+}
+
+variable "enable_listener" {
+  type        = bool
+  nullable    = false
+  default     = true
 }

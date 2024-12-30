@@ -6,6 +6,6 @@ output "ec2_instance" {
   value = module.ec2_instance
 }
 
-output "scaling_instance" {
-  value = module.scaling_instance
+output "load_balancer_instance" {
+  value = module.load_balancer_instance
 }

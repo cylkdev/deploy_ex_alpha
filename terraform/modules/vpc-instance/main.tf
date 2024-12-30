@@ -1,18 +1,6 @@
 # module: vpc-instance
 # version: 0.1.0
 
-locals {
-  vpc_name_kebab_case = lower(
-    replace(
-      replace(
-        replace(var.vpc_name, " ", "-"), 
-        "/[^a-zA-Z0-9-]/", ""
-      ), 
-      "_", "-"
-    )
-  )
-}
-
 data "aws_availability_zones" "available" {
   state                  = "available"
   all_availability_zones = var.all_availability_zones
@@ -27,12 +15,7 @@ data "aws_availability_zones" "available" {
       values = [each.value]
     }
   }
-
-  filter {
-    name   = "region-name"
-    values = [var.region]
-  }
-
+  
   filter {
     name   = "zone-type"
     values = ["availability-zone"]
@@ -46,38 +29,41 @@ resource "aws_vpc" "vpc_instance" {
   enable_dns_hostnames = var.enable_dns_hostnames
 
   tags = merge({
-    Environment    = var.environment
-    InventoryGroup = var.inventory_group
-    Name           = "${lower(replace(var.vpc_name, " ", "-"))}-${var.environment}-vpc"
-    Region         = var.region
+    Environment = var.environment
+    Group       = var.inventory_group
+    Name        = format("%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), var.environment, "vpc")
+    Vendor      = "Self"
+    Type        = "Self Made"
   }, var.tags)
 }
 
 ### SECURITY GROUP
 
 resource "aws_security_group" "allow_ssh" {
-  name        = "${lower(replace(var.vpc_name, " ", "_"))}_allow_ssh"
+  name        = format("%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), var.environment, "allow_ssh")
   description = "Allow SSH inbound traffic"
   vpc_id      = aws_vpc.vpc_instance.id
 
   tags = merge({
-    Environment    = var.environment
-    InventoryGroup = var.inventory_group
-    Name           = "${lower(replace(var.vpc_name, " ", "_"))}_${var.environment}_allow_ssh"
-    Region         = var.region
+    Environment = var.environment
+    Group       = var.inventory_group
+    Name        = format("%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), var.environment, "allow_ssh")
+    Vendor      = "Self"
+    Type        = "Self Made"
   }, var.tags)
 }
 
 resource "aws_security_group" "allow_tls" {
-  name        = "${lower(replace(var.vpc_name, " ", "_"))}_allow_tls"
+  name        = format("%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), var.environment, "allow_tls")
   description = "Allow TLS inbound traffic and all outbound traffic"
   vpc_id      = aws_vpc.vpc_instance.id
 
   tags = merge({
-    Environment    = var.environment
-    InventoryGroup = var.inventory_group
-    Name           = "${lower(replace(var.vpc_name, " ", "_"))}_${var.environment}_allow_tls"
-    Region         = var.region
+    Environment = var.environment
+    Group       = var.inventory_group
+    Name        = format("%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), var.environment, "allow_tls")
+    Vendor      = "Self"
+    Type        = "Self Made"
   }, var.tags)
 }
 
@@ -98,9 +84,11 @@ resource "aws_vpc_security_group_ingress_rule" "allow_ssh_ingress_rule_ipv4" {
   ip_protocol       = var.allow_ssh_ingress_rule_ipv4_ip_protocol # "TCP"
 
   tags = merge({
-    InventoryGroup = var.inventory_group
-    Name           = "allow_ssh_ingress_rule_ipv4"
-    Region         = var.region
+    Environment = var.environment
+    Group       = var.inventory_group
+    Name        = format("%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), var.environment, "allow_ssh_ingress_rule_ipv4")
+    Vendor      = "Self"
+    Type        = "Self Made"
   }, var.tags)
 }
 
@@ -110,15 +98,17 @@ resource "aws_vpc_security_group_ingress_rule" "allow_https_ingress_rule_ipv4" {
   security_group_id = aws_security_group.allow_tls.id
 
   # Rule 0.0.0.0/0 and ::/0 allow any ip to access the instance. 
-  cidr_ipv4         = var.allow_https_ingress_rule_ipv4_cidr # "0.0.0.0/0"
-  from_port         = var.allow_https_ingress_rule_ipv4_from_port # 443
-  ip_protocol       = var.allow_https_ingress_rule_ipv4_ip_protocol # "TCP"
-  to_port           = var.allow_https_ingress_rule_ipv4_to_port # 443
+  cidr_ipv4   = var.allow_https_ingress_rule_ipv4_cidr # "0.0.0.0/0"
+  from_port   = var.allow_https_ingress_rule_ipv4_from_port # 443
+  ip_protocol = var.allow_https_ingress_rule_ipv4_ip_protocol # "TCP"
+  to_port     = var.allow_https_ingress_rule_ipv4_to_port # 443
 
   tags = merge({
-    InventoryGroup = var.inventory_group
-    Name           = "allow_https_ingress_rule_ipv4"
-    Region         = var.region
+    Environment = var.environment
+    Group       = var.inventory_group
+    Name        = format("%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), var.environment, "allow_https_ingress_rule_ipv4")
+    Vendor      = "Self"
+    Type        = "Self Made"
   }, var.tags)
 }
 
@@ -130,9 +120,11 @@ resource "aws_vpc_security_group_egress_rule" "allow_traffic_egress_rule_ipv4" {
   ip_protocol       = var.allow_traffic_egress_rule_ipv4_ip_protocol # "-1"
 
   tags = merge({
-    InventoryGroup = var.inventory_group
-    Name           = "allow_traffic_egress_rule_ipv4"
-    Region         = var.region
+    Environment = var.environment
+    Group       = var.inventory_group
+    Name        = format("%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), var.environment, "allow_traffic_egress_rule_ipv4")
+    Vendor      = "Self"
+    Type        = "Self Made"
   }, var.tags)
 }
 
@@ -169,15 +161,15 @@ resource "aws_subnet" "private_subnet" {
 
   vpc_id            = aws_vpc.vpc_instance.id
   cidr_block        = cidrsubnet(aws_vpc.vpc_instance.cidr_block, var.subnet_cidrsubnet_newbits, count.index + 1)
-
   availability_zone = element(data.aws_availability_zones.available.names, count.index % length(data.aws_availability_zones.available.names))
 
   tags = merge({
     AvailabilityZone = element(data.aws_availability_zones.available.names, count.index % length(data.aws_availability_zones.available.names))
     Environment      = var.environment
-    InventoryGroup   = var.inventory_group
-    Name             = format("%s-%s-%s-%s-%s", local.vpc_name_kebab_case, "private", var.environment, "sn", count.index)
-    Region           = var.region
+    Group            = var.inventory_group
+    Name             = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), var.environment, "private-sn", count.index)
+    Vendor           = "Self"
+    Type             = "Self Made"
   }, var.tags)
 }
 
@@ -188,9 +180,10 @@ resource "aws_route_table" "private_route_table" {
 
   tags = merge({
     Environment = var.environment
-    InventoryGroup   = var.inventory_group
-    Name        = format("%s-%s-%s", local.vpc_name_kebab_case, var.environment, "private-rt")
-    Region      = var.region
+    Group       = var.inventory_group
+    Name        = format("%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), var.environment, "private-rt")
+    Vendor      = "Self"
+    Type        = "Self Made"
   }, var.tags)
 }
 
@@ -218,9 +211,10 @@ resource "aws_subnet" "public_subnet" {
   tags = merge({
     AvailabilityZone = element(data.aws_availability_zones.available.names, count.index % length(data.aws_availability_zones.available.names))
     Environment      = var.environment
-    InventoryGroup   = var.inventory_group
-    Name             = format("%s-%s-%s-%s-%s", local.vpc_name_kebab_case, "public", var.environment, "sn", count.index)
-    Region           = var.region
+    Group            = var.inventory_group
+    Name             = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), var.environment, "public-sn", count.index)
+    Vendor           = "Self"
+    Type             = "Self Made"
   }, var.tags)
 }
 
@@ -230,10 +224,11 @@ resource "aws_internet_gateway" "public_internet_gateway" {
   vpc_id = aws_vpc.vpc_instance.id
 
   tags = merge({
-    Environment    = var.environment
-    InventoryGroup = var.inventory_group
-    Name           = format("%s-%s-%s-%s", local.vpc_name_kebab_case, "public", var.environment, "igw")
-    Region         = var.region
+    Environment = var.environment
+    Group       = var.inventory_group
+    Name        = format("%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), var.environment, "public-igw")
+    Vendor      = "Self"
+    Type        = "Self Made"
   }, var.tags)
 }
 
@@ -249,10 +244,11 @@ resource "aws_route_table" "public_route_table" {
   }
 
   tags = merge({
-    Name           = format("%s-%s-%s", local.vpc_name_kebab_case, var.environment, "public-rt")
-    Environment    = var.environment
-    InventoryGroup = var.inventory_group
-    Region         = var.region
+    Name        = format("%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), var.environment, "public-rt")
+    Environment = var.environment
+    Group       = var.inventory_group
+    Vendor      = "Self"
+    Type        = "Self Made"
   }, var.tags)
 }
 

@@ -3,11 +3,6 @@ variable "environment" {
   nullable = false
 }
 
-variable "region" {
-  type = string
-  nullable = false
-}
-
 variable "tags" {
   type = map(string)
   nullable = false
@@ -284,24 +279,3 @@ variable "vpc_security_group_ids" {
   and SSH traffic.
   EOF
 }
-
-# variable "enable_elb" {
-#   type        = bool
-#   nullable    = false
-#   default     = false
-#   description = "Enables instance to generate an elastic load balancer for itself"
-# }
-
-# variable "elb_listener_port" {
-#   type        = number
-#   nullable    = false
-#   default     = 443
-#   description = "The port that the load balancer will listen on for incoming traffic."
-# }
-
-# variable "elb_target_group_port" {
-#   type        = number
-#   nullable    = false
-#   default     = 443
-#   description = "The port on which the load balancer should forward traffic to the targets (e.g. ec2 instances) that are registered in the target group."
-# }

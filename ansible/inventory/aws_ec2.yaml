@@ -9,11 +9,11 @@ hostnames:
 
 # Only target hosts that are a part of this deployment group.
 filters:
-  tag:InventoryGroup: 'requis_backend'
+  tag:Group: 'requis_backend'
 
 # Add hosts to group based on the values of a variable.
 keyed_groups:
-  - key: tags['InventoryGroup']
+  - key: tags['Group']
     prefix: "group"
 
   - key: tags['InstanceGroup']
