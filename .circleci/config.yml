@@ -53,11 +53,9 @@ jobs:
             libc-dev \
             libffi-dev \
             openssl-dev \
-            && curl -vvv https://awscli.amazonaws.com/awscli-<< parameters.aws_cli_version >>.tar.gz | tar -xz \
-            && cd awscli-<< parameters.aws_cli_version >> \
-            && ./configure --prefix=/opt/aws-cli/ --with-download-deps \
-            && make \
-            && make install
+            && curl -vvv "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.0.30.zip" -o "awscliv2.zip" \
+            && unzip awscliv2.zip \
+            && sudo ./aws/install
 
       - run:
           name: Verify AWS CLI Installation
