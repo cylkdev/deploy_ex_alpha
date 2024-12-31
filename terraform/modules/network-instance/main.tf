@@ -290,7 +290,6 @@ module "ec2_instance" {
   key_pair_name = each.value.arg.key_pair_name
 
   enable_load_balancer = each.value.arg.enable_load_balancer
-  enable_listener = var.enable_listener != null ? var.enable_listener : each.value.arg.enable_listener
   target_group_port = each.value.arg.target_group_port
   listener_port = each.value.arg.listener_port
 

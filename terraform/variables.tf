@@ -16,11 +16,6 @@ variable "tags" {
   default = {}
 }
 
-variable "enable_listener" {
-  type = bool
-  default = null
-}
-
 variable "deploys" {
   type = map(object({
     vpc_name = string
@@ -58,7 +53,6 @@ variable "deploys" {
         user_data = optional(string)
 
         enable_load_balancer = optional(bool)
-        enable_listener = optional(bool)
         target_group_port = optional(number)
         listener_port = optional(number)
 

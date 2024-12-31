@@ -184,7 +184,7 @@ resource "aws_eip_association" "ec2_eip_association" {
 resource "aws_lb_target_group" "ec2_lb_target_group" {
   count = var.enable_load_balancer ? 1 : 0
 
-  name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb-tg")
+  name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb-tg")
 
   vpc_id   = var.vpc_id
   protocol = "HTTP"
@@ -194,7 +194,7 @@ resource "aws_lb_target_group" "ec2_lb_target_group" {
     Environment   = var.environment
     InstanceGroup = var.instance_group
     Group         = var.inventory_group
-    Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb-tg")
+    Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb-tg")
     NetworkGroup  = var.network_group
     Region        = var.region
     Type          = "Self Made"
@@ -213,7 +213,7 @@ resource "aws_lb_target_group_attachment" "ec2_lb_target_group_attachment" {
 resource "aws_lb" "load_balancer" {
   count = var.enable_load_balancer ? 1 : 0
 
-  name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb")
+  name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb")
   load_balancer_type = "application"
 
   subnets = [ for subnet in var.public_subnets : subnet.id ]
@@ -231,7 +231,7 @@ resource "aws_lb" "load_balancer" {
     Environment   = var.environment
     Group         = provider::corefunc::str_kebab(var.inventory_group)
     InstanceGroup = var.instance_group
-    Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb")
+    Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb")
     NetworkGroup  = var.network_group
     Region        = var.region
     Type          = "Self Made"
@@ -255,7 +255,7 @@ resource "aws_lb" "load_balancer" {
 # logic. If the listener protocol is HTTPS, you must deploy at least one SSL
 # server certificate on the listener.
 resource "aws_lb_listener" "ec2_lb_listener" {
-  count = var.enable_load_balancer && var.enable_listener ? 1 : 0 
+  count = var.enable_load_balancer ? 1 : 0 
 
   load_balancer_arn = aws_lb.load_balancer[0].arn
   port              = var.listener_port
@@ -267,52 +267,55 @@ resource "aws_lb_listener" "ec2_lb_listener" {
   }
 }
 
-# ### Simple Queue Service
+# Simple Queue Service
 
-# resource "aws_sqs_queue" "ec2_sqs" {
-#   count                     = (var.enable_sqs && var.desired_count > 1) ? 1 : 0
+resource "aws_sqs_queue" "ec2_sqs" {
+  count                     = var.enable_auto_scaling ? 1 : 0
 
-#   name                      = format("%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), var.environment, "sqs")
-#   delay_seconds             = var.sqs_delay_seconds
-#   max_message_size          = var.max_message_size
-#   message_retention_seconds = var.message_retention_seconds
-#   receive_wait_time_seconds = var.sqs_receive_wait_time_seconds
+  name                      = format("%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), var.environment, "sqs")
+  delay_seconds             = var.sqs_delay_seconds
+  max_message_size          = var.sqs_max_message_size
+  message_retention_seconds = var.sqs_message_retention_seconds
+  receive_wait_time_seconds = var.sqs_receive_wait_time_seconds
 
-#   tags = merge({
-#     Environment   = var.environment
-#     Group         = var.inventory_group
-#     InstanceGroup = var.instance_group
-#     Name          = format("%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), var.environment, "sqs")
-#     Type          = "Self Made"
-#     Vendor        = "Self"
-#   }, var.tags)
-# }
+  # Note: Ensure the visibility_timeout is greater than the average processing
+  # time for messages but less than the `message_retention_seconds` to avoid
+  # duplicate processing.
+  visibility_timeout_seconds = var.sqs_visibility_timeout_seconds
 
-# # Attach redrive policy for sqs queue
-# resource "aws_sqs_queue_redrive_policy" "ec2_sqs_redrive" {
-#   count                 = (var.enable_sqs && var.desired_count > 1) ? 1 : 0
+  tags = merge({
+    Environment   = var.environment
+    Group         = var.inventory_group
+    InstanceGroup = var.instance_group
+    Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "sqs")
+    Type          = "Self Made"
+    Vendor        = "Self"
+  }, var.tags)
+}
 
-#   queue_url             = aws_sqs_queue.ec2_sqs[0].id
+# Create a dead letter queue (DLQ) to handle messages that could
+# not be processed after a specific number of retries.
+resource "aws_sqs_queue_redrive_policy" "ec2_sqs_redrive" {
+  count = var.enable_auto_scaling ? 1 : 0
 
-#   redrive_policy        = jsonencode({
-#     deadLetterTargetArn = aws_sqs_queue.ec2_sqs_dlq[0].arn
-#     maxReceiveCount     = 4
-#   })
-# }
+  queue_url = aws_sqs_queue.ec2_sqs[0].id
 
-# # Create SQS dead letter queue
-# resource "aws_sqs_queue" "ec2_sqs_dlq" {
-#   count = (var.enable_sqs && var.desired_count > 1) ? 1 : 0
+  redrive_policy        = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.ec2_sqs_dlq[0].arn
+    maxReceiveCount     = var.sqs_dlq_max_receive_count 
+  })
+}
 
-#   name = format("%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), var.environment, "sqs-dlq")
+resource "aws_sqs_queue" "ec2_sqs_dlq" {
+  count = var.enable_auto_scaling ? 1 : 0
 
-#   redrive_allow_policy = jsonencode({
-#     redrivePermission  = "byQueue",
-#     sourceQueueArns    = [ aws_sqs_queue.ec2_sqs[0].arn ]
-#   })
-# }
+  name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "sqs-dlq")
 
-# ### AUTO SCALING
+  redrive_allow_policy = jsonencode({
+    redrivePermission  = "byQueue",
+    sourceQueueArns    = [ aws_sqs_queue.ec2_sqs[0].arn ]
+  })
+}
 
 # resource "aws_launch_template" "ec2_instance_template" {
 #   count = (var.enable_auto_scaling && var.desired_count > 1) ? 1 : 0

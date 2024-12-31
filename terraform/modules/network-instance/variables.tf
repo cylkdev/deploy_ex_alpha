@@ -89,10 +89,6 @@ variable "exclude_availability_zone_ids" {
   default = []
 }
 
-variable "enable_listener" {
-  type = bool
-}
-
 variable "instances" {
   type = map(object({
     instance_name = string
@@ -119,7 +115,6 @@ variable "instances" {
 
     # LOAD BALANCER
     enable_load_balancer = optional(bool)
-    enable_listener = optional(bool)
     target_group_port = optional(number)
     listener_port = optional(number)
 

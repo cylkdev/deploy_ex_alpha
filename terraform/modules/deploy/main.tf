@@ -33,8 +33,6 @@ module "network_instance" {
   cidrsubnet_newbits = each.value.cidrsubnet_newbits
 
   subnet_count = each.value.subnet_count
-
-  enable_listener = var.enable_listener
   
   instances = each.value.instances
 }

@@ -11,7 +11,5 @@ module "deploy" {
   vpc_name        = each.value.vpc_name
   cidr_block      = each.value.cidr_block
 
-  enable_listener = var.enable_listener
-
   networks = each.value.networks
 }

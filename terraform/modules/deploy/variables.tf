@@ -57,10 +57,6 @@ variable "cidr_block" {
 #   default = true
 # }
 
-variable "enable_listener" {
-  type = bool
-}
-
 variable "networks" {
   type = map(object({
     availability_zone_names = optional(list(string))
@@ -96,7 +92,6 @@ variable "networks" {
 
       # LOAD BALANCER
       enable_load_balancer = optional(bool)
-      enable_listener = optional(bool)
       target_group_port = optional(number)
       listener_port = optional(number)
 

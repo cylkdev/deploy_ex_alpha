@@ -1,138 +1,171 @@
 version: 2.1
 
 executors:
-  terraform:
+  controller:
     docker:
       - image: hashicorp/terraform:1.9.6
         name: terraform
-  ansible:
-    docker:
       - image: alpine/ansible:2.17.0
         name: ansible
 
 jobs:
-  # This job only provisions AWS resources. When EC2 instances
-  # are created they are in an unhealthy state and will be
-  # configured by the `ansible_playbook` job.
-  terraform_provision:
-    executor: terraform
-    working_directory: ~/project/terraform
+  deploy:
+    executor: controller
     parameters:
       environment:
         type: string
     steps:
-      - checkout:
-          path: ~/project
-      - run:
-          name: Terraform Version
-          command: |
-            terraform --version
-      - run:
-          name: Terraform Init
-          command: |
-            terraform init
-      - run:
-          name: Terraform Plan
-          command: |
-            terraform plan -var-file="vars/<< parameters.environment >>.tfvars" -out << parameters.environment >>.tfplan
-      - run:
-          name: Terraform Apply
-          command: |
-            terraform apply << parameters.environment >>.tfplan
-
-  # This job spawns a Ansible controller to run a playbook.
-  ansible_playbook:
-    executor: ansible
-    working_directory: ~/project/ansible
-    parameters:
-      inventory:
-        type: string
-      playbook:
-        type: string
-    steps:
-      - checkout:
-          path: ~/project
-
-      - run:
-          name: Ansible Playbook Version
-          command: |
-            ansible-playbook --version
+      - checkout
 
       - run:
           name: Install boto3 and botocore
           command: |
             python3 -m pip install boto3 botocore --user ansible
 
-      # The SSH key is not committed to the repository, instead it is encoded to
-      # base64 and stored as an environment variable in the organization context.
+      - run:
+          name: Terraform Init
+          working_directory: terraform
+          command: |
+            terraform init
+
+      - run:
+          name: Terraform Plan
+          working_directory: terraform
+          command: |
+            terraform plan -var-file="vars/<< parameters.environment >>.tfvars" -out << parameters.environment >>.tfplan
+
+      - run:
+          name: Terraform Apply
+          working_directory: terraform
+          command: |
+            terraform apply << parameters.environment >>.tfplan
+
       - run:
           name: Save Ansible SSH Key
+          working_directory: ansible
           command: |
             echo "$AWS_INSTANCE_PRIVATE_KEY" | base64 -d > ansible-private-key.pem
             chmod 400 ansible-private-key.pem
 
-      # Pre-check to ensure we can retrieve the inventory and it is correct.
       - run:
           name: List Ansible Inventory
+          working_directory: ansible
           command: |
-            ansible-inventory -i ./inventory/<< parameters.inventory >>.yaml --list
+            ansible-inventory -i ./inventory/aws_ec2.yaml --list
 
       - run:
           name: Run Ansible Playbook
+          working_directory: ansible
           command: |
-            ansible-playbook -i inventory/<< parameters.inventory >>.yaml ./playbooks/<< parameters.playbook >>.yaml
-
-  # This job applies the deployment strategy. This job can run tests
-  # against a deployed resource before moving the traffic from the
-  # old EC2 instances.
-  terraform_promote:
-    executor: terraform
-    working_directory: ~/project/terraform
-    parameters:
-      environment:
-        type: string
-    steps:
-      - checkout:
-          path: ~/project
-      - run:
-          name: Terraform Version
-          command: |
-            terraform --version
-      - run:
-          name: Terraform Init
-          command: |
-            terraform init
-      - run:
-          name: Terraform Plan
-          command: |
-            terraform plan -var-file="vars/<< parameters.environment >>.tfvars" -var='enable_listener=true' -out << parameters.environment >>.tfplan
-      - run:
-          name: Terraform Apply
-          command: |
-            terraform apply << parameters.environment >>.tfplan
+            ansible-playbook -i inventory/aws_ec2.yaml ./playbooks/health_check.yaml
 
 workflows:
   deploy:
     jobs:
-      # 1. Provision resources.
-      - terraform_provision:
+      - deploy:
           context:
             - aws_deploy
           environment: development
 
-      # 2. Configure resources.
-      - ansible_playbook:
-          inventory: aws_ec2
-          playbook: health_check
-          context:
-            - aws_deploy
-          requires:
-            - terraform_provision
 
-      # 2. Promote resources.
-      - terraform_promote:
-          context:
-            - aws_deploy
-          requires:
-            - ansible_playbook
-          environment: development
+# version: 2.1
+
+# executors:
+#   terraform:
+#     docker:
+#       - image: hashicorp/terraform:1.9.6
+#         name: terraform
+#   ansible:
+#     docker:
+#       - image: alpine/ansible:2.17.0
+#         name: ansible
+
+# jobs:
+#   # This job only provisions AWS resources. When EC2 instances
+#   # are created they are in an unhealthy state and will be
+#   # configured by the `ansible_playbook` job.
+#   terraform_provision:
+#     executor: terraform
+#     working_directory: ~/project/terraform
+#     parameters:
+#       environment:
+#         type: string
+#     steps:
+#       - checkout:
+#           path: ~/project
+#       - run:
+#           name: Terraform Version
+#           command: |
+#             terraform --version
+#       - run:
+#           name: Terraform Init
+#           command: |
+#             terraform init
+#       - run:
+#           name: Terraform Plan
+#           command: |
+#             terraform plan -var-file="vars/<< parameters.environment >>.tfvars" -out << parameters.environment >>.tfplan
+#       - run:
+#           name: Terraform Apply
+#           command: |
+#             terraform apply << parameters.environment >>.tfplan
+
+#   # This job spawns a Ansible controller to run a playbook.
+#   ansible_playbook:
+#     executor: ansible
+#     working_directory: ~/project/ansible
+#     parameters:
+#       inventory:
+#         type: string
+#       playbook:
+#         type: string
+#     steps:
+#       - checkout:
+#           path: ~/project
+
+#       - run:
+#           name: Ansible Playbook Version
+#           command: |
+#             ansible-playbook --version
+
+#       - run:
+#           name: Install boto3 and botocore
+#           command: |
+#             python3 -m pip install boto3 botocore --user ansible
+
+#       # The SSH key is not committed to the repository, instead it is encoded to
+#       # base64 and stored as an environment variable in the organization context.
+#       - run:
+#           name: Save Ansible SSH Key
+#           command: |
+#             echo "$AWS_INSTANCE_PRIVATE_KEY" | base64 -d > ansible-private-key.pem
+#             chmod 400 ansible-private-key.pem
+
+#       # Pre-check to ensure we can retrieve the inventory and it is correct.
+#       - run:
+#           name: List Ansible Inventory
+#           command: |
+#             ansible-inventory -i ./inventory/aws_ec2.yaml --list
+
+#       - run:
+#           name: Run Ansible Playbook
+#           command: |
+#             ansible-playbook -i inventory/aws_ec2.yaml ./playbooks/<< parameters.playbook >>.yaml
+
+# workflows:
+#   deploy:
+#     jobs:
+#       # 1. Provision resources.
+#       - terraform_provision:
+#           context:
+#             - aws_deploy
+#           environment: development
+
+#       # 2. Configure resources.
+#       - ansible_playbook:
+#           inventory: aws_ec2
+#           playbook: health_check
+#           context:
+#             - aws_deploy
+#           requires:
+#             - terraform_provision

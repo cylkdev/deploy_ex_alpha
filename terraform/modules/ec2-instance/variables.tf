@@ -286,14 +286,51 @@ variable "target_group_port" {
   default = 443
 }
 
-variable "enable_listener" {
-  type = bool
-  nullable = false
-  default = false
-}
-
 variable "listener_port" {
   type = number
   nullable = false
   default = 443
+}
+
+
+variable "enable_auto_scaling" {
+  type = bool
+  nullable = false
+  default = true
+}
+
+variable "sqs_delay_seconds" {
+  type = number
+  nullable = false
+  default = 0
+}
+
+variable "sqs_max_message_size" {
+  type = number
+  nullable = false
+  default = 262144 # 256 KB
+}
+
+variable "sqs_message_retention_seconds" {
+  type = number
+  nullable = false
+  default = 43200 # 12 hours (seconds)
+}
+
+variable "sqs_visibility_timeout_seconds" {
+  type = number
+  nullable = false
+  default = 60 # 60 seconds
+}
+
+variable "sqs_receive_wait_time_seconds" {
+  type = number
+  nullable = false
+  default = 10 # 10 seconds (maximum allowed value for long polling)
+}
+
+variable "sqs_dlq_max_receive_count" {
+  type = number
+  nullable = false
+  default = 5
 }
