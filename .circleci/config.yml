@@ -43,8 +43,8 @@ jobs:
           command: |
             cd /tmp && \
             apk add --no-cache unzip python3 py3-pip && \
-            wget -o awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && \
-            unzip awscliv2.zip && \
+            wget "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && \
+            unzip awscli-exe-linux-x86_64.zip && \
             ./aws/install
 
       - run:
