@@ -38,7 +38,8 @@ jobs:
           command: |
             terraform --version
 
-      - run: Install Ansible
+      - run:
+          name: Install Ansible
           command: |
             apk add --no-cache python3 boto3 botocore && \
             python3 -m pip install boto3 botocore && \
