@@ -26,13 +26,13 @@ jobs:
 
       - run:
           name: Download Terraform Binaries
-          command: wget https://releases.hashicorp.com/terraform/1.9.6/terraform_1.9.6_linux_amd64.zip
+          command: wget -P binaries https://releases.hashicorp.com/terraform/1.9.6/terraform_1.9.6_linux_amd64.zip
 
       - run:
           name: Unzip Terraform
           command: |
-            unzip terraform_1.9.6_linux_amd64.zip
-            mv terraform /usr/local/bin/
+            unzip binaries/terraform_1.9.6_linux_amd64.zip
+            mv binaries/terraform /usr/local/bin/
             chmod +x /usr/local/bin/terraform
 
       - run:
