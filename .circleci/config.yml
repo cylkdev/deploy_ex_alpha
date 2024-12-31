@@ -105,7 +105,7 @@ jobs:
       - run:
           name: Terraform Plan
           command: |
-            terraform plan -var-file="vars/<< parameters.environment >>.tfvars" -var='attach_target_group=true' -out << parameters.environment >>.tfplan
+            terraform plan -var-file="vars/<< parameters.environment >>.tfvars" -var='enable_listener=true' -out << parameters.environment >>.tfplan
       - run:
           name: Terraform Apply
           command: |

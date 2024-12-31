@@ -4,7 +4,7 @@
 # specific versions of software, configuring settings
 # such as environment variables, or updating systems.
 - name: Setup Health App
-  hosts: group_requis_backend
+  hosts: group_orange_backend
   vars:
     app_name: health_check
   roles:

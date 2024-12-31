@@ -12,17 +12,10 @@
 ################################################################
 #
 # The key pair is a combination of a public key and a private
-# key that enables secure communication between a system and the
-# EC2 instance over SSH.
-#
-#################################################################
+# key that enables secure communication between a system and
+# the EC2 instance over SSH.
 
-# ---
-#
-# Creates a TLS private key.
-#
-# *** IMPORTANT ***
-#
+# ** IMPORTANT **
 # Do not output this resource as it will save the result in
 # plaintext to the terraform state which is a security risk.
 resource "tls_private_key" "ssh_key" {
@@ -32,12 +25,7 @@ resource "tls_private_key" "ssh_key" {
   rsa_bits = 4096
 }
 
-# ---
-#
-# Creates a tls private key.
-#
-# *** IMPORTANT ***
-#
+# ** IMPORTANT **
 # Do not output this resource as it will save the result in
 # plaintext to the terraform state which is a security risk.
 resource "aws_key_pair" "key_pair" {
@@ -47,9 +35,6 @@ resource "aws_key_pair" "key_pair" {
   public_key = tls_private_key.ssh_key[0].public_key_openssh
 }
 
-# ---
-#
-# Saves the TLS private key to a file.
 resource "local_file" "ssh_key" {
   count = var.create_key_pair ? 1 : 0
 
@@ -59,202 +44,15 @@ resource "local_file" "ssh_key" {
 }
 
 ################################################################
-# IAM (Identity and Access Management)
-################################################################
-#
-# > *** IMPORTANT ***
-# > The metadata service is used to securely provide temporary
-# > credentials. Any changes to this section may disrupt other
-# > components. See the documentation below for information on
-# > the behavior.
-#
-# An IAM role is a virtual identity that grants access to AWS
-# resources. The role itself doesn’t define permissions and
-# relies on IAM policies to define its behavior. These roles
-# are required to obtain temporary security credentials via
-# the metadata service.
-#
-# An instance profile is a container for an IAM role, allowing an
-# EC2 instance to assume that role. When an instance profile is
-# associated with an IAM role, the EC2 instance automatically
-# assumes the role at runtime. Temporary credentials (access key,
-# secret key, session token) are securely provided to the
-# instance through the metadata service.
-#
-# The permissions available via temporary credentials are defined
-# by IAM policies attached to the role. These permissions dictate
-# actions the instance can perform, such as accessing S3 or
-# DynamoDB.
-#
-# Temporary credentials are scoped to the IAM policies of the
-# role, ensuring the instance can only execute explicitly
-# allowed actions.
-#
-# IAM policies are like rules specifying allowed or denied
-# actions for users, groups, or roles within your AWS account.
-#
-# Policies tell AWS:
-#
-#   * Who can access something.
-#
-#   * What they can do (e.g., read, write, delete).
-#
-#   * Where they can do it (specific resources like an S3 bucket
-#     or EC2 instance).
-#
-#   * When or how they can do it (optional conditions).
-#
-# IAM role has the following policies:
-#
-#   * Trust policy - Define who/what can assume the role.
-#
-#   * Role policy - Specify actions, accessible resources, and
-#     conditions.
-#
-#################################################################
-
-# ---
-#
-# Creates a IAM policy document (Trust Policy) that defines
-# who or what is allowed to assume the role
-# (e.g EC2 instance / AWS Account).
-data "aws_iam_policy_document" "trust_policy_document" {
-  statement {
-    effect  = "Allow"
-    actions = [
-      # An entity with the role can use the AWS Security Token Service
-      # to get a set of temporary security credentials that can be
-      # used to access AWS resources. 
-      "sts:AssumeRole"
-    ]
-
-    # These services can assume this role.
-    principals {
-      type        = "Service"
-      identifiers = [
-        "autoscaling.amazonaws.com",
-        "ec2.amazonaws.com"
-      ]
-    }
-  }
-}
-
-# ---
-#
-# Creates a IAM role that defines the permissions available
-# to the ec2 instance at runtime.
-resource "aws_iam_role" "ec2_instance_role" {
-  name = format("%s-%s", provider::corefunc::str_kebab(var.instance_name), "role")
-  assume_role_policy = data.aws_iam_policy_document.trust_policy_document.json
-
-  tags = merge({
-    Environment    = var.environment
-    InstanceGroup  = provider::corefunc::str_snake(var.instance_group)
-    Group          = provider::corefunc::str_snake(var.inventory_group)
-    Name           = format("%s-%s", provider::corefunc::str_kebab(var.instance_name), "role")
-    Type           = "Self Made"
-    Vendor         = "Self"
-  }, var.tags)
-}
-
-# ---
-#
-# Creates a IAM instance profile that the EC2 instance will
-# assume on launch.
-resource "aws_iam_instance_profile" "ec2_instance_profile" {
-  # The name attribute must always be unique. This means that even
-  # if you have different role or path values, duplicating an
-  # existing instance profile name will lead to an
-  # EntityAlreadyExists error.
-  name = format("%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), var.environment, "profile")
-
-  role = aws_iam_role.ec2_instance_role.name
-}
-
-# ---
-#
-# Creates a IAM policy document for the IAM role policy.
-# These permissions define what the IAM role can do, as
-# well as the actions and resources the role can access.
-data "aws_iam_policy_document" "role_policy_document" {
-  statement {
-    effect = "Allow"
-    actions = ["autoscaling:*"]
-    resources = ["*"]
-  }
-
-  statement {
-    effect = "Allow"
-    actions = ["sns:*"]
-    resources = ["*"]
-  }
-
-  statement {
-    effect = "Allow"
-    actions = ["sqs:*"]
-    resources = ["*"]
-  }
-
-  statement {
-    effect = "Allow"
-    actions = ["s3:*"]
-    resources = ["*"]
-  }
-}
-
-# ---
-#
-# Creates a IAM role policy which defines what the role can do,
-# as well as the actions and resources the role can access.
-resource "aws_iam_role_policy" "role_policy" {
-  name = format("%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), var.environment, "policy")
-
-  role = aws_iam_role.ec2_instance_role.id
-
-  policy = data.aws_iam_policy_document.role_policy_document.json
-}
-
-################################################################
 # SUBNET
 ################################################################
 
-data "aws_subnet" "private_subnet" {
-  count = length(var.private_subnet_ids)
-
-  id = var.private_subnet_ids[count.index]
-}
-
-data "aws_subnet" "public_subnet" {
-  count = length(var.public_subnet_ids)
-
-  id = var.public_subnet_ids[count.index]
-}
-
-################################################################
-# AWS INSTANCE (EC2)
-################################################################
-
-resource "terraform_data" "replace_triggered_by" {
-  # Resources cannot be passed across modules which means
-  # you cannot track resources directly to detect changes that
-  # would require another resource to be destroyed before the
-  # instance.
-  input = var.replace_triggered_by
-}
-
-resource "terraform_data" "key_pair" {
-  input = [
-    format("%s:%s", "id", var.create_key_pair ? aws_key_pair.key_pair[0].id : ""),
-    format("%s:%s", "key_name", var.key_pair_name == null ? aws_key_pair.key_pair[0].key_name : var.key_pair_name)
-  ]
-}
-
 resource "aws_instance" "ec2_instance" {
-  ami = var.instance_ami_id
+  for_each = { for index in range(var.desired_count) : "${var.instance_name}-${var.network_group}-${index}" => index }
 
-  availability_zone = var.availability_zone_name
-
-  instance_type = var.instance_type
+  ami               = var.instance_ami_id
+  availability_zone = var.availability_zone_names[each.value % length(var.availability_zone_names)]
+  instance_type     = var.instance_type
 
   # After attaching an Amazon EBS volume to an EC2 instance,
   # the disk needs to be prepared before it can be used. This is
@@ -269,7 +67,7 @@ resource "aws_instance" "ec2_instance" {
     ""
   )
 
-  key_name = var.key_pair_name == null ? aws_key_pair.key_pair[0].key_name : var.key_pair_name
+  key_name = var.key_pair_name == null ? (var.create_key_pair ? aws_key_pair.key_pair[0].key_name : null) : var.key_pair_name
 
   # The IAM instance profile is required to use the instance
   # metadata service. This profile is loaded at runtime with
@@ -278,11 +76,24 @@ resource "aws_instance" "ec2_instance" {
   # This functionality is utilized by other services to get
   # temporary credentials and changing this field may break
   # things.
-  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
+  iam_instance_profile = var.instance_profile_name
   
   vpc_security_group_ids = var.vpc_security_group_ids
+
   associate_public_ip_address = var.associate_public_ip_address
-  subnet_id = (var.enable_public_subnet ? var.public_subnet_id : var.private_subnet_id)
+
+  subnet_id = (
+    var.enable_public_subnet ?
+    element(
+      lookup({ for subnet in var.public_subnets : subnet.availability_zone_name => subnet... }, var.availability_zone_names[each.value % length(var.availability_zone_names)]),
+      each.value % length({ for subnet in var.public_subnets : subnet.availability_zone_name => subnet... })
+    ).id
+    :
+    element(
+      lookup({ for subnet in var.private_subnets : subnet.availability_zone_name => subnet... }, var.availability_zone_names[each.value % length(var.availability_zone_names)]),
+      each.value % length({ for subnet in var.private_subnets : subnet.availability_zone_name => subnet... })
+    ).id
+  )
 
   cpu_options {
     core_count = var.cpu_core_count
@@ -290,158 +101,171 @@ resource "aws_instance" "ec2_instance" {
   }
 
   private_dns_name_options {
-    hostname_type = var.hostname_type
+    hostname_type = "resource-name"
     enable_resource_name_dns_a_record = var.enable_resource_name_dns_a_record
   }
 
-  lifecycle {
-    replace_triggered_by = [
-      aws_iam_role_policy.role_policy,
-      aws_iam_role.ec2_instance_role,
-      aws_iam_instance_profile.ec2_instance_profile,
-
-      terraform_data.key_pair,
-      terraform_data.replace_triggered_by
-    ]
-  }
-
   tags = merge({
-    AvailabilityZone = var.availability_zone_name
+    AvailabilityZone = var.availability_zone_names[each.value % length(var.availability_zone_names)]
     Environment      = var.environment
-    InstanceGroup    = provider::corefunc::str_snake(var.instance_group)
-    Group   = provider::corefunc::str_snake(var.inventory_group)
-    Name             = var.instance_name
-    Vendor           = "Self"
+    Group            = var.inventory_group
+    InstanceGroup    = var.instance_group
+    Name             = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), each.value)
+    NetworkGroup     = var.network_group
+    Region           = var.region
     Type             = "Self Made"
+    Vendor           = "Self"
   }, var.tags)
 }
 
 resource "aws_ebs_volume" "ec2_ebs" {
-  count = var.enable_ebs ? 1 : 0
+  for_each = (
+    var.enable_ebs ?
+    { for index in range(var.desired_count) : "${var.instance_name}-${var.network_group}-${index}" => index }
+    :
+    {}
+  )
 
-  availability_zone  = var.availability_zone_name
+  availability_zone  = var.availability_zone_names[each.value % length(var.availability_zone_names)]
   size               = var.ebs_volume_size
 
   tags = merge({
-    AvailabilityZone = var.availability_zone_name
+    AvailabilityZone = var.availability_zone_names[each.value % length(var.availability_zone_names)]
     Environment      = var.environment
-    InstanceGroup    = provider::corefunc::str_snake(var.instance_group)
-    Group            = provider::corefunc::str_snake(var.inventory_group)
-    Name             = format("%s-%s", provider::corefunc::str_kebab(var.instance_name), "ebs")
-    Vendor           = "Self"
+    Group            = var.inventory_group
+    InstanceGroup    = var.instance_group
+    Name             = format("%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), "ebs")
+    NetworkGroup     = var.network_group
+    Region           = var.region
     Type             = "Self Made"
+    Vendor           = "Self"
   }, var.tags)
 }
 
 resource "aws_volume_attachment" "ec2_ebs_association" {
-  count = var.enable_ebs ? 1 : 0
+  for_each = (
+    var.enable_ebs ?
+    { for index in range(var.desired_count) : "${var.instance_name}-${var.network_group}-${index}" => index }
+    :
+    {}
+  )
 
   device_name = "/dev/sdh"
-  volume_id   = aws_ebs_volume.ec2_ebs[0].id
-  instance_id = aws_instance.ec2_instance.id
+  volume_id   = aws_ebs_volume.ec2_ebs[each.key].id
+  instance_id = aws_instance.ec2_instance[each.key].id
 }
-
+ 
 ### ELASTIC IP
 
 resource "aws_eip" "ec2_eip" {
-  count = var.enable_eip ? 1 : 0
+  for_each = var.enable_eip ? { for index in range(var.desired_count) : "${var.instance_name}-${var.network_group}-${index}" => index } : {}
 
   domain = "vpc"
 
   tags = merge({
     Environment   = var.environment
-    InstanceGroup = provider::corefunc::str_snake(var.instance_group)
-    Group         = provider::corefunc::str_snake(var.inventory_group)
-    Name          = format("%s-%s", provider::corefunc::str_kebab(var.instance_name), "eip")
-    Vendor        = "Self"
+    Group         = var.inventory_group
+    InstanceGroup = var.instance_group
+    Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "eip")
+    NetworkGroup  = var.network_group
+    Region        = var.region
     Type          = "Self Made"
+    Vendor        = "Self"
   }, var.tags)
 }
 
 resource "aws_eip_association" "ec2_eip_association" {
-  count = var.enable_eip ? 1 : 0
+  for_each = var.enable_eip ? { for index in range(var.desired_count) : "${var.instance_name}-${var.network_group}-${index}" => index } : {}
 
-  instance_id = aws_instance.ec2_instance.id
-  allocation_id = aws_eip.ec2_eip[0].id
+  instance_id = aws_instance.ec2_instance[each.key].id
+  allocation_id = aws_eip.ec2_eip[each.key].id
 }
 
-# # ---
+resource "aws_lb_target_group" "ec2_lb_target_group" {
+  count = var.enable_load_balancer ? 1 : 0
 
-# resource "aws_lb_target_group" "ec2_lb_target_group" {
-#   count = var.enable_load_balancer ? 1 : 0
+  name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb-tg")
 
-#   name = substr(format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb-tg"), 0, 32)
+  vpc_id   = var.vpc_id
+  protocol = "HTTP"
+  port     = var.target_group_port
 
-#   vpc_id = var.vpc_id
-#   protocol = "HTTP"
-#   port = var.target_group_port
+  tags = merge({
+    Environment   = var.environment
+    InstanceGroup = var.instance_group
+    Group         = var.inventory_group
+    Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb-tg")
+    NetworkGroup  = var.network_group
+    Region        = var.region
+    Type          = "Self Made"
+    Vendor        = "Self"
+  }, var.tags)
+}
 
-#   tags = merge({
-#     Environment    = var.environment
-#     InstanceGroup  = provider::corefunc::str_snake(var.instance_group)
-#     Group          = provider::corefunc::str_snake(var.inventory_group)
-#     Name           = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb-tg")
-#     Region         = var.region
-#     Vendor         = "Self"
-#     Type           = "Self Made"
-#   }, var.tags)
-# }
+resource "aws_lb_target_group_attachment" "ec2_lb_target_group_attachment" {
+  for_each = var.enable_load_balancer ? { for index in range(var.desired_count) : "${var.instance_name}-${var.network_group}-${index}" => index } : {}
 
-# resource "aws_lb" "ec2_lb" {
-#   count = var.enable_load_balancer ? 1 : 0
+  target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
+  target_id        = aws_instance.ec2_instance[each.key].id
+  port             = var.target_group_port
+}
 
-#   name               = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb")
-#   load_balancer_type = "application"
-#   subnets            = [ for subnet in data.aws_subnet.public_subnet : subnet.id ]
-#   security_groups    = var.vpc_security_group_ids
+resource "aws_lb" "load_balancer" {
+  count = var.enable_load_balancer ? 1 : 0
 
-#   tags = merge({
-#     Environment    = var.environment
-#     InstanceGroup  = provider::corefunc::str_snake(var.instance_group)
-#     Group          = provider::corefunc::str_snake(var.inventory_group)
-#     Name           = format("%s-%s-%s", local.instance_group_kebab_case, var.environment, "lb")
-#     Region         = var.region
-#     Vendor         = "Self"
-#     Type           = "Self Made"
-#   }, var.tags)
-# }
+  name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb")
+  load_balancer_type = "application"
 
-# # Attach each ec2 instance to the target group
-# resource "aws_lb_target_group_attachment" "ec2_lb_target_group_attachment" {
-#   count = var.enable_load_balancer ? 1 : 0
+  subnets = [ for subnet in var.public_subnets : subnet.id ]
 
-#   target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
-#   target_id        = aws_instance.ec2_instance.id
-#   port             = var.target_group_port
-# }
+  security_groups = var.vpc_security_group_ids
 
-# # LOAD BALANCER LISTENER
-# #
-# # A listener checks for connection requests using the configured protocol and port.
-# # Before you start using your load balancer you must add at least one listener.
-# # If your load balancer has no listeners, it can't receive incoming traffic.
-# #
-# # Listeners support the following protocols and ports:
-# #
-# # Protocols: HTTP, HTTPS
-# # Ports: 1-65535
-# #
-# # You can use an HTTPS listener to offload the work of encryption and decryption
-# # to your load balancer so that your applications can focus on their business
-# # logic. If the listener protocol is HTTPS, you must deploy at least one SSL
-# # server certificate on the listener.
-# resource "aws_lb_listener" "ec2_lb_listener" {
-#   count = var.enable_load_balancer ? 1 : 0 
+  lifecycle {
+    replace_triggered_by = [
+      aws_lb_target_group.ec2_lb_target_group,
+      aws_lb_target_group_attachment.ec2_lb_target_group_attachment
+    ]
+  }
 
-#   load_balancer_arn = aws_lb.ec2_lb[0].arn
-#   port              = var.listener_port
-#   protocol          = aws_lb_target_group.ec2_lb_target_group[0].protocol
+  tags = merge({
+    Environment   = var.environment
+    Group         = provider::corefunc::str_kebab(var.inventory_group)
+    InstanceGroup = var.instance_group
+    Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb")
+    NetworkGroup  = var.network_group
+    Region        = var.region
+    Type          = "Self Made"
+    Vendor        = "Self"
+  }, var.tags)
+}
 
-#   default_action {
-#     type             = "forward"
-#     target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
-#   }
-# }
+# LOAD BALANCER LISTENER
+#
+# A listener checks for connection requests using the configured protocol and port.
+# Before you start using your load balancer you must add at least one listener.
+# If your load balancer has no listeners, it can't receive incoming traffic.
+#
+# Listeners support the following protocols and ports:
+#
+# Protocols: HTTP, HTTPS
+# Ports: 1-65535
+#
+# You can use an HTTPS listener to offload the work of encryption and decryption
+# to your load balancer so that your applications can focus on their business
+# logic. If the listener protocol is HTTPS, you must deploy at least one SSL
+# server certificate on the listener.
+resource "aws_lb_listener" "ec2_lb_listener" {
+  count = var.enable_load_balancer && var.enable_listener ? 1 : 0 
+
+  load_balancer_arn = aws_lb.load_balancer[0].arn
+  port              = var.listener_port
+  protocol          = aws_lb_target_group.ec2_lb_target_group[0].protocol
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
+  }
+}
 
 # ### Simple Queue Service
 
@@ -456,8 +280,8 @@ resource "aws_eip_association" "ec2_eip_association" {
 
 #   tags = merge({
 #     Environment   = var.environment
-#     Group         = provider::corefunc::str_snake(var.inventory_group)
-#     InstanceGroup = provider::corefunc::str_snake(var.instance_group)
+#     Group         = var.inventory_group
+#     InstanceGroup = var.instance_group
 #     Name          = format("%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), var.environment, "sqs")
 #     Type          = "Self Made"
 #     Vendor        = "Self"
@@ -546,8 +370,8 @@ resource "aws_eip_association" "ec2_eip_association" {
 #       payload = merge({
 #                   AvailabilityZone = var.availability_zone_name
 #                   Environment      = var.environment
-#                   Group            = provider::corefunc::str_snake(var.inventory_group)
-#                   InstanceGroup    = provider::corefunc::str_snake(var.instance_group)
+#                   Group            = var.inventory_group
+#                   InstanceGroup    = var.instance_group
 #                   Name             = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), var.environment, "asg", count.index)
 #                   Region           = var.region
 #                   Vendor           = "Self"
@@ -567,8 +391,8 @@ resource "aws_eip_association" "ec2_eip_association" {
 #     for_each = merge({
 #       AvailabilityZone = var.availability_zone_name
 #       Environment      = var.environment
-#       Group            = provider::corefunc::str_snake(var.inventory_group)
-#       InstanceGroup    = provider::corefunc::str_snake(var.instance_group)
+#       Group            = var.inventory_group
+#       InstanceGroup    = var.instance_group
 #       Name             = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), var.environment, "asg", count.index)
 #       Region           = var.region
 #       Vendor           = "Self"

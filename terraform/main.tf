@@ -1,13 +1,17 @@
-module "deployment" {
-  source = "./modules/deployment"
-
-  for_each = var.deployments
+module "deploy" {
+  source = "./modules/deploy"
+  
+  for_each = var.deploys
 
   environment     = var.environment
-  inventory_group = each.value.inventory_group
-  vpc_name        = each.value.vpc_name
+  region          = var.region
+  tags            = var.tags
 
-  enable_load_balancer                = try(var.enable_load_balancer, null)
-  
-  instances = try(each.value.instances, null)
+  inventory_group = each.key
+  vpc_name        = each.value.vpc_name
+  cidr_block      = each.value.cidr_block
+
+  enable_listener = var.enable_listener
+
+  networks = each.value.networks
 }

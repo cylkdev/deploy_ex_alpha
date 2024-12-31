@@ -3,22 +3,26 @@ variable "environment" {
   nullable = false
 }
 
+variable "region" {
+  type = string
+  nullable = false
+}
+
 variable "tags" {
   type = map(string)
   nullable = false
   default  = {}
 }
 
-variable "availability_zone_name" {
-  type = string
-  nullable = false
-  description = "Name of the availability zone."
-}
-
 variable "inventory_group" {
   type = string
   nullable = false
   description = "The group this resource was deployed into."
+}
+
+variable "network_group" {
+  type = string
+  nullable = false
 }
 
 variable "instance_group" {
@@ -45,6 +49,66 @@ variable "instance_type" {
   default = "t3.micro"
 }
 
+variable "desired_count" {
+  type = number
+  nullable = false
+  default = 2
+}
+
+variable "vpc_id" {
+  type = string
+  nullable = false
+  description = "VPC identifier."
+}
+
+variable "vpc_security_group_ids" {
+  type = list(string)
+  nullable = false
+  description = <<EOF
+  The list of security group IDs to associate with the instance.
+  This defines the firewall rules for things like HTTP/HTTPS
+  and SSH traffic.
+  EOF
+}
+
+variable "private_subnets" {
+  type = list(object({
+    availability_zone_name = string
+    id = string
+  }))
+
+  nullable = false
+}
+
+variable "public_subnets" {
+  type = list(object({
+    availability_zone_name = string
+    id = string
+  }))
+
+  nullable = false
+}
+
+variable "availability_zone_names" {
+  type = list(string)
+  nullable = false
+}
+
+variable "associate_public_ip_address" {
+  type = bool
+
+  nullable = false
+
+  default = true
+
+  description = <<EOF
+  When `true` the instance will be assigned a public IP
+  address that can be used to communicate with the internet
+  directly, otherwise if `false` the instance will only have
+  a private IP address.
+  EOF
+}
+
 variable "create_key_pair" {
   description = "If true, a key pair is created; if false, it is not."
   type = bool
@@ -56,40 +120,6 @@ variable "key_pair_name" {
   description = "Name of a EC2 key pair."
   type = string
   default = null
-}
-
-variable "private_subnet_id" {
-  type = string
-  nullable = false
-}
-
-variable "private_subnet_ids" {
-  type = list(string)
-  nullable = false
-  default = []
-}
-
-variable "public_subnet_id" {
-  type = string
-  nullable = false
-}
-
-variable "public_subnet_ids" {
-  type = list(string)
-  nullable = false
-  default = []
-}
-
-variable "replace_triggered_by" {
-  type = list(string)
-  description = <<EOF
-  Replaces the instance when any of the given values change.
-
-  Note: Resources cannot be passed across modules which means
-  you cannot track resources directly to detect changes that
-  would require another resource to be destroyed before the
-  instance.
-  EOF
 }
 
 variable "enable_user_data" {
@@ -112,28 +142,10 @@ variable "user_data" {
   default = ""
 }
 
-variable "associate_public_ip_address" {
-  type = bool
-
-  nullable = false
-
-  default = true
-
-  description = <<EOF
-  When `true` the instance will be assigned a public IP
-  address that can be used to communicate with the internet
-  directly, otherwise if `false` the instance will only have
-  a private IP address.
-  EOF
-}
-
 variable "enable_public_subnet" {
   type     = bool
-
   nullable = false
-
   default  = true
-
   description = <<EOF
   When `true` the instance is placed in a public subnet,
   otherwise if `false` the instance is placed in a
@@ -174,11 +186,8 @@ variable "enable_public_subnet" {
 
 variable "cpu_core_count" {
   type = number
-
   nullable = false
-
   default = 1
-
   description = <<EOF
   Sets the number of CPU cores for the instance.
 
@@ -260,22 +269,31 @@ variable "enable_eip" {
   description = "Enables instance to generate an elastic ip for itself"
 }
 
-# # Elastic Load Balancer
-
-
-# variable "vpc_id" {
-#   type = string
-#   nullable = false
-#   description = "VPC identifier."
-# }
-
-variable "vpc_security_group_ids" {
-  type = list(string)
+variable "instance_profile_name" {
+  type = string
   nullable = false
-  default = []
-  description = <<EOF
-  The list of security group IDs to associate with the instance.
-  This defines the firewall rules for things like HTTP/HTTPS
-  and SSH traffic.
-  EOF
+}
+
+variable "enable_load_balancer" {
+  type = bool
+  nullable = false
+  default = true
+}
+
+variable "target_group_port" {
+  type = number
+  nullable = false
+  default = 443
+}
+
+variable "enable_listener" {
+  type = bool
+  nullable = false
+  default = false
+}
+
+variable "listener_port" {
+  type = number
+  nullable = false
+  default = 443
 }

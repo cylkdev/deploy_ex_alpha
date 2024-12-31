@@ -9,7 +9,7 @@ hostnames:
 
 # Only target hosts that are a part of this deployment group.
 filters:
-  tag:Group: 'requis_backend'
+  tag:Group: 'orange_backend'
 
 # Add hosts to group based on the values of a variable.
 keyed_groups:
@@ -17,6 +17,9 @@ keyed_groups:
     prefix: "group"
 
   - key: tags['InstanceGroup']
+    prefix: "group"
+
+  - key: tags['NetworkGroup']
     prefix: "group"
 
 # Use the public IP address to connect to the host

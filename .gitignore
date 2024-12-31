@@ -29,6 +29,8 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-# Ignore SSH keys
-secrets/*
+# Ignore private keys
 *.pem
+
+# Ignore Ansible log
+**/ansible/*.log

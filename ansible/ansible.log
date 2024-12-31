@@ -397,3 +397,513 @@
         ]
     }
 }
+2024-12-31 11:33:39,058 p=44156 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-31 11:33:40,018 p=44156 u=kurthogarth n=ansible | {
+    "_meta": {
+        "hostvars": {
+            "sentry-alpha-development-0": {
+                "ami_launch_index": 0,
+                "ansible_host": "52.53.76.54",
+                "architecture": "x86_64",
+                "aws_credentials": {
+                    "AWS_ACCESS_KEY_ID": "<AWS_ACCESS_KEY_ID>",
+                    "AWS_SECRET_ACCESS_KEY": "<AWS_SECRET_ACCESS_KEY>"
+                },
+                "block_device_mappings": [
+                    {
+                        "device_name": "/dev/xvda",
+                        "ebs": {
+                            "attach_time": "2024-12-31T16:06:34+00:00",
+                            "delete_on_termination": true,
+                            "status": "attached",
+                            "volume_id": "vol-0a0abe3626421b833"
+                        }
+                    },
+                    {
+                        "device_name": "/dev/sdh",
+                        "ebs": {
+                            "attach_time": "2024-12-31T16:06:58+00:00",
+                            "delete_on_termination": false,
+                            "status": "attached",
+                            "volume_id": "vol-049be25ef680dec7e"
+                        }
+                    }
+                ],
+                "boot_mode": "uefi-preferred",
+                "capacity_reservation_specification": {
+                    "capacity_reservation_preference": "open"
+                },
+                "client_token": "terraform-20241231160633327500000002",
+                "cpu_options": {
+                    "core_count": 1,
+                    "threads_per_core": 2
+                },
+                "current_instance_boot_mode": "uefi",
+                "ebs_optimized": false,
+                "ena_support": true,
+                "enclave_options": {
+                    "enabled": false
+                },
+                "hibernation_options": {
+                    "configured": false
+                },
+                "hypervisor": "xen",
+                "iam_instance_profile": {
+                    "arn": "arn:aws:iam::750872578221:instance-profile/sentry-alpha-development-profile",
+                    "id": "AIPA25U36JCWTRPBPTVLJ"
+                },
+                "image_id": "ami-047d7c33f6e7b4bc4",
+                "instance_id": "i-0151c7792bd6d0e03",
+                "instance_type": "t3.micro",
+                "key_name": "kurt-deploy-key",
+                "launch_time": "2024-12-31T16:06:34+00:00",
+                "maintenance_options": {
+                    "auto_recovery": "default"
+                },
+                "metadata_options": {
+                    "http_endpoint": "enabled",
+                    "http_protocol_ipv6": "disabled",
+                    "http_put_response_hop_limit": 2,
+                    "http_tokens": "required",
+                    "instance_metadata_tags": "disabled",
+                    "state": "applied"
+                },
+                "monitoring": {
+                    "state": "disabled"
+                },
+                "network_interfaces": [
+                    {
+                        "association": {
+                            "ip_owner_id": "750872578221",
+                            "public_dns_name": "ec2-52-53-76-54.us-west-1.compute.amazonaws.com",
+                            "public_ip": "52.53.76.54"
+                        },
+                        "attachment": {
+                            "attach_time": "2024-12-31T16:06:34+00:00",
+                            "attachment_id": "eni-attach-09ee3ebdd3a6620cf",
+                            "delete_on_termination": true,
+                            "device_index": 0,
+                            "network_card_index": 0,
+                            "status": "attached"
+                        },
+                        "description": "",
+                        "groups": [
+                            {
+                                "group_id": "sg-04b633f7b1ffef120",
+                                "group_name": "orange-alpha-development-allow_ssh"
+                            },
+                            {
+                                "group_id": "sg-090d6a5929cf56290",
+                                "group_name": "orange-alpha-development-allow_tls"
+                            }
+                        ],
+                        "interface_type": "interface",
+                        "ipv6_addresses": [],
+                        "mac_address": "06:f0:93:68:ca:21",
+                        "network_interface_id": "eni-05d80430d8b899b0b",
+                        "owner_id": "750872578221",
+                        "private_dns_name": "i-0151c7792bd6d0e03.us-west-1.compute.internal",
+                        "private_ip_address": "10.100.2.238",
+                        "private_ip_addresses": [
+                            {
+                                "association": {
+                                    "ip_owner_id": "750872578221",
+                                    "public_dns_name": "ec2-52-53-76-54.us-west-1.compute.amazonaws.com",
+                                    "public_ip": "52.53.76.54"
+                                },
+                                "primary": true,
+                                "private_dns_name": "i-0151c7792bd6d0e03.us-west-1.compute.internal",
+                                "private_ip_address": "10.100.2.238"
+                            }
+                        ],
+                        "source_dest_check": true,
+                        "status": "in-use",
+                        "subnet_id": "subnet-09970ed93bb41ad2f",
+                        "vpc_id": "vpc-0b5a12565b00ee50f"
+                    }
+                ],
+                "owner_id": "750872578221",
+                "placement": {
+                    "availability_zone": "us-west-1a",
+                    "group_name": "",
+                    "region": "us-west-1",
+                    "tenancy": "default"
+                },
+                "platform_details": "Linux/UNIX",
+                "private_dns_name": "i-0151c7792bd6d0e03.us-west-1.compute.internal",
+                "private_dns_name_options": {
+                    "enable_resource_name_dns_a_record": true,
+                    "enable_resource_name_dns_aaaa_record": false,
+                    "hostname_type": "resource-name"
+                },
+                "private_ip_address": "10.100.2.238",
+                "product_codes": [],
+                "public_dns_name": "ec2-52-53-76-54.us-west-1.compute.amazonaws.com",
+                "public_ip_address": "52.53.76.54",
+                "requester_id": "",
+                "reservation_id": "r-0a695cc28a12b7be6",
+                "root_device_name": "/dev/xvda",
+                "root_device_type": "ebs",
+                "security_groups": [
+                    {
+                        "group_id": "sg-04b633f7b1ffef120",
+                        "group_name": "orange-alpha-development-allow_ssh"
+                    },
+                    {
+                        "group_id": "sg-090d6a5929cf56290",
+                        "group_name": "orange-alpha-development-allow_tls"
+                    }
+                ],
+                "source_dest_check": true,
+                "state": {
+                    "code": 16,
+                    "name": "running"
+                },
+                "state_transition_reason": "",
+                "subnet_id": "subnet-09970ed93bb41ad2f",
+                "tags": {
+                    "AvailabilityZone": "us-west-1a",
+                    "Environment": "development",
+                    "Group": "orange_backend",
+                    "InstanceGroup": "sentry",
+                    "Name": "sentry-alpha-development-0",
+                    "NetworkGroup": "alpha",
+                    "Region": "us-west-1",
+                    "Repository": "https://github.com/RequisDev/requis_backend_umbrella/",
+                    "Type": "Self Made",
+                    "Vendor": "Self"
+                },
+                "usage_operation": "RunInstances",
+                "usage_operation_update_time": "2024-12-31T16:06:34+00:00",
+                "virtualization_type": "hvm",
+                "vpc_id": "vpc-0b5a12565b00ee50f"
+            },
+            "sentry-alpha-development-1": {
+                "ami_launch_index": 0,
+                "ansible_host": "184.169.196.117",
+                "architecture": "x86_64",
+                "aws_credentials": {
+                    "AWS_ACCESS_KEY_ID": "<AWS_ACCESS_KEY_ID>",
+                    "AWS_SECRET_ACCESS_KEY": "<AWS_SECRET_ACCESS_KEY>"
+                },
+                "block_device_mappings": [
+                    {
+                        "device_name": "/dev/xvda",
+                        "ebs": {
+                            "attach_time": "2024-12-31T16:06:25+00:00",
+                            "delete_on_termination": true,
+                            "status": "attached",
+                            "volume_id": "vol-0f08d6b23d18916ad"
+                        }
+                    },
+                    {
+                        "device_name": "/dev/sdh",
+                        "ebs": {
+                            "attach_time": "2024-12-31T16:06:58.734000+00:00",
+                            "delete_on_termination": false,
+                            "status": "attached",
+                            "volume_id": "vol-0c66dcfb82e7dabdb"
+                        }
+                    }
+                ],
+                "boot_mode": "uefi-preferred",
+                "capacity_reservation_specification": {
+                    "capacity_reservation_preference": "open"
+                },
+                "client_token": "terraform-20241231160624342000000001",
+                "cpu_options": {
+                    "core_count": 1,
+                    "threads_per_core": 2
+                },
+                "current_instance_boot_mode": "uefi",
+                "ebs_optimized": false,
+                "ena_support": true,
+                "enclave_options": {
+                    "enabled": false
+                },
+                "hibernation_options": {
+                    "configured": false
+                },
+                "hypervisor": "xen",
+                "iam_instance_profile": {
+                    "arn": "arn:aws:iam::750872578221:instance-profile/sentry-alpha-development-profile",
+                    "id": "AIPA25U36JCWTRPBPTVLJ"
+                },
+                "image_id": "ami-047d7c33f6e7b4bc4",
+                "instance_id": "i-0ca200524ad514460",
+                "instance_type": "t3.micro",
+                "key_name": "kurt-deploy-key",
+                "launch_time": "2024-12-31T16:06:25+00:00",
+                "maintenance_options": {
+                    "auto_recovery": "default"
+                },
+                "metadata_options": {
+                    "http_endpoint": "enabled",
+                    "http_protocol_ipv6": "disabled",
+                    "http_put_response_hop_limit": 2,
+                    "http_tokens": "required",
+                    "instance_metadata_tags": "disabled",
+                    "state": "applied"
+                },
+                "monitoring": {
+                    "state": "disabled"
+                },
+                "network_interfaces": [
+                    {
+                        "association": {
+                            "ip_owner_id": "750872578221",
+                            "public_dns_name": "ec2-184-169-196-117.us-west-1.compute.amazonaws.com",
+                            "public_ip": "184.169.196.117"
+                        },
+                        "attachment": {
+                            "attach_time": "2024-12-31T16:06:25+00:00",
+                            "attachment_id": "eni-attach-031e031c057c2002a",
+                            "delete_on_termination": true,
+                            "device_index": 0,
+                            "network_card_index": 0,
+                            "status": "attached"
+                        },
+                        "description": "",
+                        "groups": [
+                            {
+                                "group_id": "sg-04b633f7b1ffef120",
+                                "group_name": "orange-alpha-development-allow_ssh"
+                            },
+                            {
+                                "group_id": "sg-090d6a5929cf56290",
+                                "group_name": "orange-alpha-development-allow_tls"
+                            }
+                        ],
+                        "interface_type": "interface",
+                        "ipv6_addresses": [],
+                        "mac_address": "02:ff:d1:d4:90:f9",
+                        "network_interface_id": "eni-0e28db95114bcdebe",
+                        "owner_id": "750872578221",
+                        "private_dns_name": "i-0ca200524ad514460.us-west-1.compute.internal",
+                        "private_ip_address": "10.100.3.48",
+                        "private_ip_addresses": [
+                            {
+                                "association": {
+                                    "ip_owner_id": "750872578221",
+                                    "public_dns_name": "ec2-184-169-196-117.us-west-1.compute.amazonaws.com",
+                                    "public_ip": "184.169.196.117"
+                                },
+                                "primary": true,
+                                "private_dns_name": "i-0ca200524ad514460.us-west-1.compute.internal",
+                                "private_ip_address": "10.100.3.48"
+                            }
+                        ],
+                        "source_dest_check": true,
+                        "status": "in-use",
+                        "subnet_id": "subnet-019a2af716a94632b",
+                        "vpc_id": "vpc-0b5a12565b00ee50f"
+                    }
+                ],
+                "owner_id": "750872578221",
+                "placement": {
+                    "availability_zone": "us-west-1b",
+                    "group_name": "",
+                    "region": "us-west-1",
+                    "tenancy": "default"
+                },
+                "platform_details": "Linux/UNIX",
+                "private_dns_name": "i-0ca200524ad514460.us-west-1.compute.internal",
+                "private_dns_name_options": {
+                    "enable_resource_name_dns_a_record": true,
+                    "enable_resource_name_dns_aaaa_record": false,
+                    "hostname_type": "resource-name"
+                },
+                "private_ip_address": "10.100.3.48",
+                "product_codes": [],
+                "public_dns_name": "ec2-184-169-196-117.us-west-1.compute.amazonaws.com",
+                "public_ip_address": "184.169.196.117",
+                "requester_id": "",
+                "reservation_id": "r-0732e9185eafb3859",
+                "root_device_name": "/dev/xvda",
+                "root_device_type": "ebs",
+                "security_groups": [
+                    {
+                        "group_id": "sg-04b633f7b1ffef120",
+                        "group_name": "orange-alpha-development-allow_ssh"
+                    },
+                    {
+                        "group_id": "sg-090d6a5929cf56290",
+                        "group_name": "orange-alpha-development-allow_tls"
+                    }
+                ],
+                "source_dest_check": true,
+                "state": {
+                    "code": 16,
+                    "name": "running"
+                },
+                "state_transition_reason": "",
+                "subnet_id": "subnet-019a2af716a94632b",
+                "tags": {
+                    "AvailabilityZone": "us-west-1b",
+                    "Environment": "development",
+                    "Group": "orange_backend",
+                    "InstanceGroup": "sentry",
+                    "Name": "sentry-alpha-development-1",
+                    "NetworkGroup": "alpha",
+                    "Region": "us-west-1",
+                    "Repository": "https://github.com/RequisDev/requis_backend_umbrella/",
+                    "Type": "Self Made",
+                    "Vendor": "Self"
+                },
+                "usage_operation": "RunInstances",
+                "usage_operation_update_time": "2024-12-31T16:06:25+00:00",
+                "virtualization_type": "hvm",
+                "vpc_id": "vpc-0b5a12565b00ee50f"
+            }
+        }
+    },
+    "all": {
+        "children": [
+            "ungrouped",
+            "aws_ec2",
+            "group_orange_backend",
+            "group_sentry",
+            "group_alpha"
+        ]
+    },
+    "aws_ec2": {
+        "hosts": [
+            "sentry-alpha-development-0",
+            "sentry-alpha-development-1"
+        ]
+    },
+    "group_alpha": {
+        "hosts": [
+            "sentry-alpha-development-0",
+            "sentry-alpha-development-1"
+        ]
+    },
+    "group_orange_backend": {
+        "hosts": [
+            "sentry-alpha-development-0",
+            "sentry-alpha-development-1"
+        ]
+    },
+    "group_sentry": {
+        "hosts": [
+            "sentry-alpha-development-0",
+            "sentry-alpha-development-1"
+        ]
+    }
+}
+2024-12-31 11:33:56,110 p=44180 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-31 11:33:57,264 p=44180 u=kurthogarth n=ansible | [WARNING]: Could not match supplied host pattern, ignoring: group_requis_backend
+
+2024-12-31 11:33:57,264 p=44180 u=kurthogarth n=ansible | PLAY [Setup Health App] ****************************************************************************************************************************
+2024-12-31 11:33:57,264 p=44180 u=kurthogarth n=ansible | skipping: no hosts matched
+2024-12-31 11:33:57,264 p=44180 u=kurthogarth n=ansible | PLAY RECAP *****************************************************************************************************************************************
+2024-12-31 11:34:12,963 p=44204 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-31 11:34:13,799 p=44204 u=kurthogarth n=ansible | PLAY [Setup Health App] ****************************************************************************************************************************
+2024-12-31 11:34:13,806 p=44204 u=kurthogarth n=ansible | TASK [Gathering Facts] *****************************************************************************************************************************
+2024-12-31 11:34:14,731 p=44204 u=kurthogarth n=ansible | fatal: [sentry-alpha-development-0]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: Warning: Permanently added '52.53.76.54' (ED25519) to the list of known hosts.\r\nno such identity: /Users/kurthogarth/Documents/GitHub/requis_deploy/ansible/ansible-private-key.pem: No such file or directory\r\nec2-user@52.53.76.54: Permission denied (publickey,gssapi-keyex,gssapi-with-mic).", "unreachable": true}
+2024-12-31 11:34:14,860 p=44204 u=kurthogarth n=ansible | fatal: [sentry-alpha-development-1]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: Warning: Permanently added '184.169.196.117' (ED25519) to the list of known hosts.\r\nno such identity: /Users/kurthogarth/Documents/GitHub/requis_deploy/ansible/ansible-private-key.pem: No such file or directory\r\nec2-user@184.169.196.117: Permission denied (publickey,gssapi-keyex,gssapi-with-mic).", "unreachable": true}
+2024-12-31 11:34:14,864 p=44204 u=kurthogarth n=ansible | PLAY RECAP *****************************************************************************************************************************************
+2024-12-31 11:34:14,864 p=44204 u=kurthogarth n=ansible | sentry-alpha-development-0 : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
+2024-12-31 11:34:14,864 p=44204 u=kurthogarth n=ansible | sentry-alpha-development-1 : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
+2024-12-31 11:39:18,097 p=44339 u=kurthogarth n=botocore.credentials | Found credentials in shared credentials file: ~/.aws/credentials
+2024-12-31 11:39:19,393 p=44339 u=kurthogarth n=ansible | PLAY [Setup Health App] ****************************************************************************************************************************
+2024-12-31 11:39:19,399 p=44339 u=kurthogarth n=ansible | TASK [Gathering Facts] *****************************************************************************************************************************
+2024-12-31 11:39:34,280 p=44339 u=kurthogarth n=ansible | [WARNING]: Platform linux on host sentry-alpha-development-1 is using the discovered Python interpreter at /usr/bin/python3.9, but future
+installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-
+core/2.17/reference_appendices/interpreter_discovery.html for more information.
+
+2024-12-31 11:39:34,281 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-1]
+2024-12-31 11:39:34,282 p=44339 u=kurthogarth n=ansible | [WARNING]: Platform linux on host sentry-alpha-development-0 is using the discovered Python interpreter at /usr/bin/python3.9, but future
+installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-
+core/2.17/reference_appendices/interpreter_discovery.html for more information.
+
+2024-12-31 11:39:34,282 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-0]
+2024-12-31 11:39:34,287 p=44339 u=kurthogarth n=ansible | TASK [deploy_health_check : Check whoami] **********************************************************************************************************
+2024-12-31 11:39:46,222 p=44339 u=kurthogarth n=ansible | changed: [sentry-alpha-development-1]
+2024-12-31 11:39:46,963 p=44339 u=kurthogarth n=ansible | changed: [sentry-alpha-development-0]
+2024-12-31 11:39:46,974 p=44339 u=kurthogarth n=ansible | TASK [deploy_health_check : Display whoami] ********************************************************************************************************
+2024-12-31 11:39:46,997 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-0] => {
+    "msg": "The effective user is root"
+}
+2024-12-31 11:39:47,005 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-1] => {
+    "msg": "The effective user is root"
+}
+2024-12-31 11:39:47,011 p=44339 u=kurthogarth n=ansible | TASK [deploy_health_check : Get stats for directory '/srv'] ****************************************************************************************
+2024-12-31 11:39:58,097 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-1]
+2024-12-31 11:39:59,324 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-0]
+2024-12-31 11:39:59,334 p=44339 u=kurthogarth n=ansible | TASK [deploy_health_check : Print message if directory exists] *************************************************************************************
+2024-12-31 11:39:59,353 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-0] => {
+    "msg": "Directory '/srv' exists."
+}
+2024-12-31 11:39:59,359 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-1] => {
+    "msg": "Directory '/srv' exists."
+}
+2024-12-31 11:39:59,366 p=44339 u=kurthogarth n=ansible | TASK [deploy_health_check : Fail if directory not found] *******************************************************************************************
+2024-12-31 11:39:59,379 p=44339 u=kurthogarth n=ansible | skipping: [sentry-alpha-development-0]
+2024-12-31 11:39:59,386 p=44339 u=kurthogarth n=ansible | skipping: [sentry-alpha-development-1]
+2024-12-31 11:39:59,389 p=44339 u=kurthogarth n=ansible | TASK [deploy_health_check : Create the app directory] **********************************************************************************************
+2024-12-31 11:40:10,627 p=44339 u=kurthogarth n=ansible | changed: [sentry-alpha-development-0]
+2024-12-31 11:40:10,666 p=44339 u=kurthogarth n=ansible | changed: [sentry-alpha-development-1]
+2024-12-31 11:40:10,673 p=44339 u=kurthogarth n=ansible | TASK [deploy_health_check : Check if the app directory was created] ********************************************************************************
+2024-12-31 11:40:10,700 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-0] => {
+    "msg": "Created app directory."
+}
+2024-12-31 11:40:10,703 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-1] => {
+    "msg": "Created app directory."
+}
+2024-12-31 11:40:10,708 p=44339 u=kurthogarth n=ansible | TASK [deploy_health_check : Report failure if the app directory does not exist] ********************************************************************
+2024-12-31 11:40:10,721 p=44339 u=kurthogarth n=ansible | skipping: [sentry-alpha-development-0]
+2024-12-31 11:40:10,727 p=44339 u=kurthogarth n=ansible | skipping: [sentry-alpha-development-1]
+2024-12-31 11:40:10,732 p=44339 u=kurthogarth n=ansible | TASK [deploy_health_check : Copy server python script] *********************************************************************************************
+2024-12-31 11:40:33,546 p=44339 u=kurthogarth n=ansible | changed: [sentry-alpha-development-0]
+2024-12-31 11:40:33,629 p=44339 u=kurthogarth n=ansible | changed: [sentry-alpha-development-1]
+2024-12-31 11:40:33,640 p=44339 u=kurthogarth n=ansible | TASK [deploy_health_check : Check if the copy task was successful] *********************************************************************************
+2024-12-31 11:40:33,664 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-0] => {
+    "msg": "Copied file to: /srv/health_check/http_server.py"
+}
+2024-12-31 11:40:33,671 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-1] => {
+    "msg": "Copied file to: /srv/health_check/http_server.py"
+}
+2024-12-31 11:40:33,676 p=44339 u=kurthogarth n=ansible | TASK [deploy_health_check : Report failure if copy task failed] ************************************************************************************
+2024-12-31 11:40:33,688 p=44339 u=kurthogarth n=ansible | skipping: [sentry-alpha-development-0]
+2024-12-31 11:40:33,694 p=44339 u=kurthogarth n=ansible | skipping: [sentry-alpha-development-1]
+2024-12-31 11:40:33,698 p=44339 u=kurthogarth n=ansible | TASK [Start HTTP Service] **************************************************************************************************************************
+2024-12-31 11:40:33,723 p=44339 u=kurthogarth n=ansible | included: systemd-service for sentry-alpha-development-0, sentry-alpha-development-1
+2024-12-31 11:40:33,727 p=44339 u=kurthogarth n=ansible | TASK [systemd-service : Create service file] *******************************************************************************************************
+2024-12-31 11:40:56,746 p=44339 u=kurthogarth n=ansible | changed: [sentry-alpha-development-1]
+2024-12-31 11:40:56,797 p=44339 u=kurthogarth n=ansible | changed: [sentry-alpha-development-0]
+2024-12-31 11:40:56,807 p=44339 u=kurthogarth n=ansible | TASK [systemd-service : Get service file stats] ****************************************************************************************************
+2024-12-31 11:41:08,205 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-1]
+2024-12-31 11:41:08,822 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-0]
+2024-12-31 11:41:08,833 p=44339 u=kurthogarth n=ansible | TASK [systemd-service : Check if service file exists] **********************************************************************************************
+2024-12-31 11:41:08,856 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-0] => {
+    "msg": "Successfully created service health-check file."
+}
+2024-12-31 11:41:08,863 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-1] => {
+    "msg": "Successfully created service health-check file."
+}
+2024-12-31 11:41:08,869 p=44339 u=kurthogarth n=ansible | TASK [systemd-service : Fail if the service file does not exist] ***********************************************************************************
+2024-12-31 11:41:08,880 p=44339 u=kurthogarth n=ansible | skipping: [sentry-alpha-development-0]
+2024-12-31 11:41:08,885 p=44339 u=kurthogarth n=ansible | skipping: [sentry-alpha-development-1]
+2024-12-31 11:41:08,889 p=44339 u=kurthogarth n=ansible | TASK [systemd-service : Reload systemd configuration to recognize the new service] *****************************************************************
+2024-12-31 11:41:20,606 p=44339 u=kurthogarth n=ansible | changed: [sentry-alpha-development-1]
+2024-12-31 11:41:21,155 p=44339 u=kurthogarth n=ansible | changed: [sentry-alpha-development-0]
+2024-12-31 11:41:21,164 p=44339 u=kurthogarth n=ansible | TASK [systemd-service : Start systemd service] *****************************************************************************************************
+2024-12-31 11:41:32,935 p=44339 u=kurthogarth n=ansible | changed: [sentry-alpha-development-1]
+2024-12-31 11:41:35,483 p=44339 u=kurthogarth n=ansible | changed: [sentry-alpha-development-0]
+2024-12-31 11:41:35,492 p=44339 u=kurthogarth n=ansible | TASK [systemd-service : Get the status of the service] *********************************************************************************************
+2024-12-31 11:41:46,560 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-1]
+2024-12-31 11:41:46,943 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-0]
+2024-12-31 11:41:46,952 p=44339 u=kurthogarth n=ansible | TASK [systemd-service : Print message if service is running] ***************************************************************************************
+2024-12-31 11:41:46,974 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-0] => {
+    "msg": "Started service health-check."
+}
+2024-12-31 11:41:46,984 p=44339 u=kurthogarth n=ansible | ok: [sentry-alpha-development-1] => {
+    "msg": "Started service health-check."
+}
+2024-12-31 11:41:46,989 p=44339 u=kurthogarth n=ansible | TASK [systemd-service : Fail if the service is not running] ****************************************************************************************
+2024-12-31 11:41:47,002 p=44339 u=kurthogarth n=ansible | skipping: [sentry-alpha-development-0]
+2024-12-31 11:41:47,008 p=44339 u=kurthogarth n=ansible | skipping: [sentry-alpha-development-1]
+2024-12-31 11:41:47,022 p=44339 u=kurthogarth n=ansible | PLAY RECAP *****************************************************************************************************************************************
+2024-12-31 11:41:47,022 p=44339 u=kurthogarth n=ansible | sentry-alpha-development-0 : ok=17   changed=6    unreachable=0    failed=0    skipped=5    rescued=0    ignored=0   
+2024-12-31 11:41:47,022 p=44339 u=kurthogarth n=ansible | sentry-alpha-development-1 : ok=17   changed=6    unreachable=0    failed=0    skipped=5    rescued=0    ignored=0   
