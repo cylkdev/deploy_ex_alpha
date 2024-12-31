@@ -1,51 +1,37 @@
 version: 2.1
 
 executors:
-  controller:
+  alpine:
     docker:
       - image: alpine:3.21.0
 
 jobs:
-  deploy:
-    executor: controller
+  provision_and_configure:
+    executor: alpine
     parameters:
       environment:
         type: string
+      terraform_version:
+        type: string
     steps:
-      - checkout
-
       - run:
           name: Update Package Index
-          command: apk update
+          command: apk add --update --virtual .deps --no-cache gnupg
 
       - run:
           name: Install Dependencies
           command: |
-            apk add --no-cache \
-            unzip
-
-      - run:
-          name: Download Terraform Binaries
-          command: |
-            mkdir temp
-            wget -P temp https://releases.hashicorp.com/terraform/1.9.6/terraform_1.9.6_linux_amd64.zip
-
-      - run:
-          name: Unzip Terraform
-          command: |
-            unzip temp/terraform_1.9.6_linux_amd64.zip
-            mv temp/terraform /usr/local/bin/
-            chmod +x /usr/local/bin/terraform
-
-      - run:
-          name: Verify Terraform Installation
-          command: |
-            terraform version
-
-      - run:
-          name: Cleanup
-          command: |
-            rm -rf temp/
+            cd /tmp && \
+            wget https://releases.hashicorp.com/terraform/<< parameters.terraform_version >>/terraform_<< parameters.terraform_version >>_linux_amd64.zip && \
+            wget https://releases.hashicorp.com/terraform/<< parameters.terraform_version >>/terraform_<< parameters.terraform_version >>_SHA256SUMS && \
+            wget https://releases.hashicorp.com/terraform/<< parameters.terraform_version >>/terraform_<< parameters.terraform_version >>_SHA256SUMS.sig && \
+            wget -qO- https://www.hashicorp.com/.well-known/pgp-key.txt | gpg --import && \
+            gpg --verify terraform_<< parameters.terraform_version >>_SHA256SUMS.sig terraform_<< parameters.terraform_version >>_SHA256SUMS && \
+            grep terraform_<< parameters.terraform_version >>_linux_amd64.zip terraform_<< parameters.terraform_version >>_SHA256SUMS | sha256sum -c && \
+            unzip /tmp/terraform_<< parameters.terraform_version >>_linux_amd64.zip -d /tmp && \
+            mv /tmp/terraform /usr/local/bin/terraform && \
+            rm -f /tmp/terraform_<< parameters.terraform_version >>_linux_amd64.zip terraform_<< parameters.terraform_version >>_SHA256SUMS << parameters.terraform_version >>/terraform_<< parameters.terraform_version >>_SHA256SUMS.sig && \
+            apk del .deps
 
       # - run:
       #     name: Install boto3 and botocore
@@ -92,10 +78,11 @@ jobs:
 workflows:
   deploy:
     jobs:
-      - deploy:
+      - provision_and_configure:
           context:
             - aws_deploy
           environment: development
+          terraform_version: "1.9.6"
 
 
 # version: 2.1
