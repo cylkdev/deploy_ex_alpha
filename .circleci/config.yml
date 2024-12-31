@@ -43,10 +43,11 @@ jobs:
           command: |
             cd /tmp && \
             apk add --no-cache unzip python3 py3-pip && \
-            wget "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && \
-            unzip awscli-exe-linux-x86_64.zip && \
+            wget -O awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && \
+            unzip awscliv2.zip && \
             ./aws/install && \
-            echo "export PATH=$PATH:/usr/local/bin" > /etc/profile
+            echo "export PATH=$PATH:/usr/local/bin" > ~/.profile && \
+            source ~/.profile
 
       - run:
           name: Verify AWS CLI Installation
