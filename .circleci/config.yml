@@ -26,19 +26,26 @@ jobs:
 
       - run:
           name: Download Terraform Binaries
-          command: wget -P binaries https://releases.hashicorp.com/terraform/1.9.6/terraform_1.9.6_linux_amd64.zip
+          command: |
+            mkdir temp
+            wget -P temp https://releases.hashicorp.com/terraform/1.9.6/terraform_1.9.6_linux_amd64.zip
 
       - run:
           name: Unzip Terraform
           command: |
-            unzip binaries/terraform_1.9.6_linux_amd64.zip
-            mv binaries/terraform /usr/local/bin/
+            unzip temp/terraform_1.9.6_linux_amd64.zip
+            mv temp/terraform /usr/local/bin/
             chmod +x /usr/local/bin/terraform
 
       - run:
           name: Verify Terraform Installation
           command: |
             terraform version
+
+      - run:
+          name: Cleanup
+          command: |
+            rm -rf temp/
 
       # - run:
       #     name: Install boto3 and botocore
