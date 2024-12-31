@@ -45,6 +45,7 @@ jobs:
           command: |
             cd /tmp && \
             apk add --no-cache \
+            tar \
             curl \
             make \
             cmake \
