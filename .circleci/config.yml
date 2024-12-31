@@ -45,7 +45,8 @@ jobs:
             apk add --no-cache unzip python3 py3-pip && \
             wget "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && \
             unzip awscli-exe-linux-x86_64.zip && \
-            ./aws/install
+            ./aws/install && \
+            echo "export PATH=$PATH:/usr/local/bin" > /etc/profile
 
       - run:
           name: Verify AWS CLI Installation
