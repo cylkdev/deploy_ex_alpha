@@ -3,10 +3,7 @@ version: 2.1
 executors:
   controller:
     docker:
-      - image: hashicorp/terraform:1.9.6
-        name: terraform
-      - image: alpine/ansible:2.17.0
-        name: ansible
+      - image: alpine:3.21.0
 
 jobs:
   deploy:
@@ -18,46 +15,72 @@ jobs:
       - checkout
 
       - run:
-          name: Install boto3 and botocore
-          command: |
-            python3 -m pip install boto3 botocore --user ansible
+          name: Update Package Index
+          command: apk update
 
       - run:
-          name: Terraform Init
-          working_directory: terraform
+          name: Install Dependencies
           command: |
-            terraform init
+            apk add --no-cache \
+            unzip
 
       - run:
-          name: Terraform Plan
-          working_directory: terraform
-          command: |
-            terraform plan -var-file="vars/<< parameters.environment >>.tfvars" -out << parameters.environment >>.tfplan
+          name: Download Terraform Binaries
+          command: wget https://releases.hashicorp.com/terraform/1.9.6/terraform_1.9.6_linux_amd64.zip
 
       - run:
-          name: Terraform Apply
-          working_directory: terraform
+          name: Unzip Terraform
           command: |
-            terraform apply << parameters.environment >>.tfplan
+            unzip terraform_1.9.6_linux_amd64.zip
+            mv terraform /usr/local/bin/
+            chmod +x /usr/local/bin/terraform
 
       - run:
-          name: Save Ansible SSH Key
-          working_directory: ansible
+          name: Verify Terraform Installation
           command: |
-            echo "$AWS_INSTANCE_PRIVATE_KEY" | base64 -d > ansible-private-key.pem
-            chmod 400 ansible-private-key.pem
+            terraform version
 
-      - run:
-          name: List Ansible Inventory
-          working_directory: ansible
-          command: |
-            ansible-inventory -i ./inventory/aws_ec2.yaml --list
+      # - run:
+      #     name: Install boto3 and botocore
+      #     command: |
+      #       python3 -m pip install boto3 botocore --user ansible
 
-      - run:
-          name: Run Ansible Playbook
-          working_directory: ansible
-          command: |
-            ansible-playbook -i inventory/aws_ec2.yaml ./playbooks/health_check.yaml
+      # - run:
+      #     name: Terraform Init
+      #     working_directory: terraform
+      #     command: |
+      #       terraform init
+
+      # - run:
+      #     name: Terraform Plan
+      #     working_directory: terraform
+      #     command: |
+      #       terraform plan -var-file="vars/<< parameters.environment >>.tfvars" -out << parameters.environment >>.tfplan
+
+      # - run:
+      #     name: Terraform Apply
+      #     working_directory: terraform
+      #     command: |
+      #       terraform apply << parameters.environment >>.tfplan
+
+      # - run:
+      #     name: Save Ansible SSH Key
+      #     working_directory: ansible
+      #     command: |
+      #       echo "$AWS_INSTANCE_PRIVATE_KEY" | base64 -d > ansible-private-key.pem
+      #       chmod 400 ansible-private-key.pem
+
+      # - run:
+      #     name: List Ansible Inventory
+      #     working_directory: ansible
+      #     command: |
+      #       ansible-inventory -i ./inventory/aws_ec2.yaml --list
+
+      # - run:
+      #     name: Run Ansible Playbook
+      #     working_directory: ansible
+      #     command: |
+      #       ansible-playbook -i inventory/aws_ec2.yaml ./playbooks/health_check.yaml
 
 workflows:
   deploy:
