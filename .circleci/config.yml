@@ -19,7 +19,7 @@ jobs:
           command: apk add --update --virtual .deps --no-cache gnupg
 
       - run:
-          name: Install Dependencies
+          name: Install Terraform
           command: |
             cd /tmp && \
             wget https://releases.hashicorp.com/terraform/<< parameters.terraform_version >>/terraform_<< parameters.terraform_version >>_linux_amd64.zip && \
@@ -32,6 +32,24 @@ jobs:
             mv /tmp/terraform /usr/local/bin/terraform && \
             rm -f /tmp/terraform_<< parameters.terraform_version >>_linux_amd64.zip terraform_<< parameters.terraform_version >>_SHA256SUMS << parameters.terraform_version >>/terraform_<< parameters.terraform_version >>_SHA256SUMS.sig && \
             apk del .deps
+
+      - run:
+          name: Validate Terraform Installation
+          command: |
+            terraform --version
+
+      - run: Install Ansible
+          command: |
+            apk add --no-cache python3 boto3 botocore && \
+            python3 -m pip install boto3 botocore && \
+            apk add ansible
+
+      - run:
+          name: Validate Ansible Installation
+          command: |
+            ansible --version
+
+
 
       # - run:
       #     name: Install boto3 and botocore
