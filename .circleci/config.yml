@@ -39,14 +39,26 @@ jobs:
             terraform --version
 
       - run:
+          name: Install AWS CLI
+          command: |
+            cd /tmp && \
+            apk add --no-cache unzip python3 py3-pip && \
+            wget -o awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && \
+            unzip awscliv2.zip && \
+            ./aws/install
+
+      - run:
+          name: Verify AWS CLI Installation
+          command: |
+            aws --version
+
+      - run:
           name: Install Ansible
           command: |
-            apk add --no-cache python3 boto3 botocore && \
-            python3 -m pip install boto3 botocore && \
             apk add ansible
 
       - run:
-          name: Validate Ansible Installation
+          name: Verify Ansible Installation
           command: |
             ansible --version
 
