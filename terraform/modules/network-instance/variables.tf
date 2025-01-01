@@ -14,7 +14,7 @@ variable "tags" {
   default = {}
 }
 
-variable "inventory_group" {
+variable "vpc_group" {
   type = string
   nullable = false
 }
@@ -42,7 +42,7 @@ variable "cidr_block" {
 variable "cidrsubnet_newbits" {
   type = number
   nullable = false
-  default = 8
+  default = 4
 }
 
 variable "cidrsubnet_netnum" {
@@ -91,8 +91,8 @@ variable "exclude_availability_zone_ids" {
 
 variable "instances" {
   type = map(object({
-    instance_name = string
-    instance_ami_id = optional(string)
+    name = string
+    ami = optional(string)
     instance_type = optional(string)
     tags = optional(map(string))
 

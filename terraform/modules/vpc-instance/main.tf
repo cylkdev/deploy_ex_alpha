@@ -7,7 +7,7 @@ resource "aws_vpc" "vpc_instance" {
   tags = merge({
     Environment = var.environment
     Region      = var.region
-    Group       = var.inventory_group
+    Group       = provider::corefunc::str_snake(var.vpc_group)
     Name        = format("%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), var.environment, "vpc")
     Vendor      = "Self"
     Type        = "Self Made"
@@ -24,7 +24,7 @@ resource "aws_internet_gateway" "public_internet_gateway" {
 
   tags = merge({
     Environment = var.environment
-    Group       = var.inventory_group
+    Group       = provider::corefunc::str_snake(var.vpc_group)
     Name        = format("%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), var.environment, "igw")
     Region      = var.region
     Vendor      = "Self"

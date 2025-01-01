@@ -27,18 +27,18 @@ data "aws_availability_zones" "available" {
 
 # SECURITY GROUP - SSH
 resource "aws_security_group" "allow_ssh" {
-  name        = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "allow_ssh")
+  name        = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "allow_ssh")
   description = "Allow SSH inbound traffic"
   vpc_id      = var.vpc_id
 
   tags = merge({
-    Environment = var.environment
-    Region      = var.region
-    Group       = var.inventory_group
-    NetworkGroup = var.network_group
-    Name        = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "allow_ssh")
-    Vendor      = "Self"
-    Type        = "Self Made"
+    Environment  = var.environment
+    Region       = var.region
+    Group        = provider::corefunc::str_snake(var.network_group)
+    NetworkGroup = provider::corefunc::str_snake(var.network_group)
+    Name         = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "allow_ssh")
+    Vendor       = "Self"
+    Type         = "Self Made"
   }, var.tags)
 }
 
@@ -46,36 +46,36 @@ resource "aws_vpc_security_group_ingress_rule" "allow_ssh_ingress_rule_ipv4" {
   security_group_id = aws_security_group.allow_ssh.id
   
   # Rules 0.0.0.0/0 or ::/0 allow all IP addresses to access your instance. 
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 22
-  to_port           = 22
-  ip_protocol       = "TCP"
+  cidr_ipv4   = "0.0.0.0/0"
+  from_port   = 22
+  to_port     = 22
+  ip_protocol = "TCP"
 
   tags = merge({
-    Environment = var.environment
-    Region      = var.region
-    Group       = var.inventory_group
-    NetworkGroup = var.network_group
-    Name        = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "allow_ssh_ingress_rule_ipv4")
-    Vendor      = "Self"
-    Type        = "Self Made"
+    Environment  = var.environment
+    Region       = var.region
+    Group        = provider::corefunc::str_snake(var.network_group)
+    NetworkGroup = provider::corefunc::str_snake(var.network_group)
+    Name         = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "allow_ssh_ingress_rule_ipv4")
+    Vendor       = "Self"
+    Type         = "Self Made"
   }, var.tags)
 }
 
 # SECURITY GROUP - TLS
 resource "aws_security_group" "allow_tls" {
-  name        = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name),  provider::corefunc::str_kebab(var.network_group),  provider::corefunc::str_kebab(var.environment), "allow_tls")
+  name        = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "allow_tls")
   description = "Allow TLS inbound traffic and all outbound traffic"
   vpc_id      = var.vpc_id
 
   tags = merge({
-    Environment = var.environment
-    Region      = var.region
-    Group       = var.inventory_group
-    NetworkGroup = var.network_group
-    Name        = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "allow_tls")
-    Vendor      = "Self"
-    Type        = "Self Made"
+    Environment  = var.environment
+    Region       = var.region
+    Group        = provider::corefunc::str_snake(var.network_group)
+    NetworkGroup = provider::corefunc::str_snake(var.network_group)
+    Name         = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "allow_tls")
+    Vendor       = "Self"
+    Type         = "Self Made"
   }, var.tags)
 }
 
@@ -89,13 +89,13 @@ resource "aws_vpc_security_group_ingress_rule" "allow_https_ingress_rule_ipv4" {
   ip_protocol = "TCP"
 
   tags = merge({
-    Environment = var.environment
-    Region      = var.region
-    Group       = var.inventory_group
-    NetworkGroup = var.network_group
-    Name        = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "allow_https_ingress_rule_ipv4")
-    Vendor      = "Self"
-    Type        = "Self Made"
+    Environment  = var.environment
+    Region       = var.region
+    Group        = provider::corefunc::str_snake(var.network_group)
+    NetworkGroup = provider::corefunc::str_snake(var.network_group)
+    Name         = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "allow_https_ingress_rule_ipv4")
+    Vendor       = "Self"
+    Type         = "Self Made"
   }, var.tags)
 }
 
@@ -105,19 +105,19 @@ resource "aws_vpc_security_group_egress_rule" "allow_traffic_egress_rule_ipv4" {
   ip_protocol       = "-1"
 
   tags = merge({
-    Environment = var.environment
-    Region      = var.region
-    Group       = var.inventory_group
-    NetworkGroup = var.network_group
-    Name        = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "allow_traffic_egress_rule_ipv4")
-    Vendor      = "Self"
-    Type        = "Self Made"
+    Environment  = var.environment
+    Region       = var.region
+    Group        = provider::corefunc::str_snake(var.network_group)
+    NetworkGroup = provider::corefunc::str_snake(var.network_group)
+    Name         = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "allow_traffic_egress_rule_ipv4")
+    Vendor       = "Self"
+    Type         = "Self Made"
   }, var.tags)
 }
 
 # SUBNET - PRIVATE
 resource "aws_subnet" "private_subnet" {
-  for_each = { for i in range(var.subnet_count) : "${var.vpc_name}-${var.network_group}-${var.environment}-${i}" => i }
+  for_each = { for i in range(var.subnet_count) : "${var.vpc_group}-${var.network_group}-${var.environment}-${i}" => i }
 
   vpc_id            = var.vpc_id
   cidr_block        = cidrsubnet(var.cidr_block, var.cidrsubnet_newbits, var.cidrsubnet_netnum + each.value)
@@ -126,9 +126,9 @@ resource "aws_subnet" "private_subnet" {
   tags = merge({
     AvailabilityZone = data.aws_availability_zones.available.names[each.value % length(data.aws_availability_zones.available.names)]
     Environment      = var.environment
-    Group            = var.inventory_group
-    NetworkGroup = var.network_group
-    Name             = format("%s-%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "private-sn", each.value)
+    Group            = provider::corefunc::str_snake(var.network_group)
+    NetworkGroup     = provider::corefunc::str_snake(var.network_group)
+    Name             = format("%s-%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "private-sn", each.value)
     Vendor           = "Self"
     Type             = "Self Made"
   }, var.tags)
@@ -138,36 +138,36 @@ resource "aws_route_table" "private_route_table" {
   vpc_id = var.vpc_id
 
   tags = merge({
-    Environment = var.environment
-    Group       = var.inventory_group
-    NetworkGroup = var.network_group
-    Name        = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "private-rt")
-    Vendor      = "Self"
-    Type        = "Self Made"
+    Environment  = var.environment
+    Group        = provider::corefunc::str_snake(var.network_group)
+    NetworkGroup = provider::corefunc::str_snake(var.network_group)
+    Name         = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "private-rt")
+    Vendor       = "Self"
+    Type         = "Self Made"
   }, var.tags)
 }
 
 resource "aws_route_table_association" "private_route_table_association" {
-  for_each = { for i in range(var.subnet_count) : "${var.vpc_name}-${var.network_group}-${var.environment}-${i}" => i }
+  for_each = { for i in range(var.subnet_count) : "${var.vpc_group}-${var.network_group}-${var.environment}-${i}" => i }
   
   subnet_id      = aws_subnet.private_subnet[each.key].id
   route_table_id = aws_route_table.private_route_table.id
 }
 
 resource "aws_subnet" "public_subnet" {
-  for_each = { for i in range(var.subnet_count) : "${var.vpc_name}-${var.network_group}-${var.environment}-${i}" => i }
+  for_each = { for i in range(var.subnet_count) : "${var.vpc_group}-${var.network_group}-${var.environment}-${i}" => i }
 
   vpc_id            = var.vpc_id
-  cidr_block        = cidrsubnet(var.cidr_block, var.cidrsubnet_newbits, var.subnet_count + var.cidrsubnet_netnum + each.value)
+  cidr_block        = cidrsubnet(var.cidr_block, var.cidrsubnet_newbits, var.cidrsubnet_netnum + each.value + var.subnet_count)
   availability_zone = data.aws_availability_zones.available.names[each.value % length(data.aws_availability_zones.available.names)]
 
   tags = merge({
     AvailabilityZone = data.aws_availability_zones.available.names[each.value % length(data.aws_availability_zones.available.names)]
     Environment      = var.environment
     Region           = var.region
-    Group            = var.inventory_group
-    NetworkGroup     = var.network_group
-    Name             = format("%s-%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "public-sn", each.value)
+    Group            = provider::corefunc::str_snake(var.network_group)
+    NetworkGroup     = provider::corefunc::str_snake(var.network_group)
+    Name             = format("%s-%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "public-sn", each.value)
     Vendor           = "Self"
     Type             = "Self Made"
   }, var.tags)
@@ -188,69 +188,68 @@ resource "aws_route_table" "public_route_table" {
   }
 
   tags = merge({
-    Name        = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "public-rt")
-    Environment = var.environment
-    Group       = var.inventory_group
-    NetworkGroup = var.network_group
-    Region      = var.region
-    Vendor      = "Self"
-    Type        = "Self Made"
+    Environment  = var.environment
+    Group        = provider::corefunc::str_snake(var.vpc_group)
+    Name         = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "public-rt")
+    NetworkGroup = provider::corefunc::str_snake(var.network_group)
+    Region       = var.region
+    Type         = "Self Made"
+    Vendor       = "Self"
   }, var.tags)
 }
 
 resource "aws_route_table_association" "public_route_table_association" {
-  for_each = { for i in range(var.subnet_count) : "${var.vpc_name}-${var.network_group}-${var.environment}-${i}" => i }
+  for_each = { for i in range(var.subnet_count) : "${var.vpc_group}-${var.network_group}-${var.environment}-${i}" => i }
   
   subnet_id      = aws_subnet.public_subnet[each.key].id
   route_table_id = aws_route_table.public_route_table.id
 }
 
-module "ec2_instance_credentials" {
-  source = "../ec2-instance-credentials"
+module "ec2_iam_instance" {
+  source = "../ec2-iam-instance"
 
   for_each = {
     for instance_group, instance in var.instances :
       "${instance_group}-${var.network_group}" => {
         instance_group = instance_group
-        arg = instance
+        instance = instance
       }
   }
 
-  environment     = var.environment
-  region          = var.region
-  inventory_group = var.inventory_group
-  network_group   = var.network_group
+  environment    = var.environment
+  region         = var.region
+  vpc_group      = provider::corefunc::str_snake(var.vpc_group)
+  network_group  = provider::corefunc::str_snake(var.network_group)
 
-  instance_group  = each.value.instance_group
-  instance_name   = each.value.arg.instance_name
+  instance_group = each.value.instance_group
+
+  instance_name  = each.value.instance.name
 }
 
 module "ec2_instance" {
   source = "../ec2-instance"
 
-  depends_on = [ module.ec2_instance_credentials ]
-
   for_each = {
     for instance_group, instance in var.instances :
       "${instance_group}-${var.network_group}" => {
         instance_group = instance_group
-        arg = instance
+        instance = instance
       }
   }
 
-  environment     = var.environment
-  region          = var.region
-  inventory_group = var.inventory_group
-  network_group   = var.network_group
+  environment   = var.environment
+  region        = var.region
+  vpc_group     = provider::corefunc::str_snake(var.vpc_group)
+  network_group = provider::corefunc::str_snake(var.network_group)
 
   vpc_id = var.vpc_id
-
+  
   vpc_security_group_ids = [
     aws_security_group.allow_ssh.id,
     aws_security_group.allow_tls.id
   ]
 
-  availability_zone_names = data.aws_availability_zones.available.names
+  availability_zones = data.aws_availability_zones.available.names
 
   public_subnets = [
     for subnet in aws_subnet.public_subnet : {
@@ -266,36 +265,33 @@ module "ec2_instance" {
     }
   ]
 
-  instance_group  = each.value.instance_group
-  instance_name   = each.value.arg.instance_name
-  instance_ami_id = each.value.arg.instance_ami_id
-  instance_type   = each.value.arg.instance_type
+  instance_group              = each.value.instance_group
+  name                        = each.value.instance.name
+  ami                         = each.value.instance.ami
+  instance_type               = each.value.instance.instance_type
+  instance_profile_name       = module.ec2_iam_instance[each.key].ec2_instance_profile.name
 
-  instance_profile_name = module.ec2_instance_credentials[each.key].ec2_instance_profile.name
+  desired_count               = each.value.instance.desired_count
+  cpu_core_count              = each.value.instance.cpu_core_count
+  cpu_threads_per_core        = each.value.instance.cpu_threads_per_core
 
-  desired_count   = each.value.arg.desired_count
+  enable_public_subnet        = each.value.instance.enable_public_subnet
+  associate_public_ip_address = each.value.instance.associate_public_ip_address
+  enable_eip                  = each.value.instance.enable_eip
 
-  cpu_core_count = each.value.arg.cpu_core_count
-  cpu_threads_per_core = each.value.arg.cpu_threads_per_core
-
-  enable_public_subnet = each.value.arg.enable_public_subnet
-  associate_public_ip_address = each.value.arg.associate_public_ip_address
-
-  enable_eip = each.value.arg.enable_eip
-
-  hostname_type = each.value.arg.hostname_type
-  enable_resource_name_dns_a_record = each.value.arg.enable_resource_name_dns_a_record
+  hostname_type                     = each.value.instance.hostname_type
+  enable_resource_name_dns_a_record = each.value.instance.enable_resource_name_dns_a_record
   
-  create_key_pair = each.value.arg.create_key_pair
-  key_pair_name = each.value.arg.key_pair_name
+  create_key_pair      = each.value.instance.create_key_pair
+  key_pair_name        = each.value.instance.key_pair_name
 
-  enable_load_balancer = each.value.arg.enable_load_balancer
-  target_group_port = each.value.arg.target_group_port
-  listener_port = each.value.arg.listener_port
+  enable_load_balancer = each.value.instance.enable_load_balancer
+  target_group_port    = each.value.instance.target_group_port
+  listener_port        = each.value.instance.listener_port
 
-  enable_ebs = each.value.arg.enable_ebs
-  ebs_volume_size = each.value.arg.ebs_volume_size
+  enable_ebs           = each.value.instance.enable_ebs
+  ebs_volume_size      = each.value.instance.ebs_volume_size
 
-  enable_user_data = each.value.arg.enable_user_data
-  user_data = each.value.arg.user_data
+  enable_user_data     = each.value.instance.enable_user_data
+  user_data            = each.value.instance.user_data
 }

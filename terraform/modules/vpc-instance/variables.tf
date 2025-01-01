@@ -14,7 +14,7 @@ variable "tags" {
   default = {}
 }
 
-variable "inventory_group" {
+variable "vpc_group" {
   type = string
   nullable = false
 }

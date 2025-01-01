@@ -31,7 +31,7 @@ resource "tls_private_key" "ssh_key" {
 resource "aws_key_pair" "key_pair" {
   count = var.create_key_pair ? 1 : 0
 
-  key_name = "${var.instance_name}-key-pair"
+  key_name = "${var.name}-key-pair"
   public_key = tls_private_key.ssh_key[0].public_key_openssh
 }
 
@@ -48,10 +48,10 @@ resource "local_file" "ssh_key" {
 ################################################################
 
 resource "aws_instance" "ec2_instance" {
-  for_each = { for index in range(var.desired_count) : "${var.instance_name}-${var.network_group}-${index}" => index }
+  for_each = { for index in range(var.desired_count) : "${var.vpc_group}-${var.network_group}-${var.instance_group}-${index}" => index }
 
-  ami               = var.instance_ami_id
-  availability_zone = var.availability_zone_names[each.value % length(var.availability_zone_names)]
+  ami               = var.ami
+  availability_zone = var.availability_zones[each.value % length(var.availability_zones)]
   instance_type     = var.instance_type
 
   # After attaching an Amazon EBS volume to an EC2 instance,
@@ -85,12 +85,12 @@ resource "aws_instance" "ec2_instance" {
   subnet_id = (
     var.enable_public_subnet ?
     element(
-      lookup({ for subnet in var.public_subnets : subnet.availability_zone_name => subnet... }, var.availability_zone_names[each.value % length(var.availability_zone_names)]),
+      lookup({ for subnet in var.public_subnets : subnet.availability_zone_name => subnet... }, var.availability_zones[each.value % length(var.availability_zones)]),
       each.value % length({ for subnet in var.public_subnets : subnet.availability_zone_name => subnet... })
     ).id
     :
     element(
-      lookup({ for subnet in var.private_subnets : subnet.availability_zone_name => subnet... }, var.availability_zone_names[each.value % length(var.availability_zone_names)]),
+      lookup({ for subnet in var.private_subnets : subnet.availability_zone_name => subnet... }, var.availability_zones[each.value % length(var.availability_zones)]),
       each.value % length({ for subnet in var.private_subnets : subnet.availability_zone_name => subnet... })
     ).id
   )
@@ -106,12 +106,12 @@ resource "aws_instance" "ec2_instance" {
   }
 
   tags = merge({
-    AvailabilityZone = var.availability_zone_names[each.value % length(var.availability_zone_names)]
+    AvailabilityZone = var.availability_zones[each.value % length(var.availability_zones)]
     Environment      = var.environment
-    Group            = var.inventory_group
+    Group            = provider::corefunc::str_snake(var.vpc_group)
     InstanceGroup    = var.instance_group
-    Name             = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), each.value)
-    NetworkGroup     = var.network_group
+    Name             = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), each.value)
+    NetworkGroup     = provider::corefunc::str_snake(var.network_group)
     Region           = var.region
     Type             = "Self Made"
     Vendor           = "Self"
@@ -121,21 +121,21 @@ resource "aws_instance" "ec2_instance" {
 resource "aws_ebs_volume" "ec2_ebs" {
   for_each = (
     var.enable_ebs ?
-    { for index in range(var.desired_count) : "${var.instance_name}-${var.network_group}-${index}" => index }
+    { for index in range(var.desired_count) : "${var.vpc_group}-${var.network_group}-${var.instance_group}-${index}" => index }
     :
     {}
   )
 
-  availability_zone  = var.availability_zone_names[each.value % length(var.availability_zone_names)]
+  availability_zone  = var.availability_zones[each.value % length(var.availability_zones)]
   size               = var.ebs_volume_size
 
   tags = merge({
-    AvailabilityZone = var.availability_zone_names[each.value % length(var.availability_zone_names)]
+    AvailabilityZone = var.availability_zones[each.value % length(var.availability_zones)]
     Environment      = var.environment
-    Group            = var.inventory_group
+    Group            = provider::corefunc::str_snake(var.vpc_group)
     InstanceGroup    = var.instance_group
-    Name             = format("%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), "ebs")
-    NetworkGroup     = var.network_group
+    Name             = format("%s-%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "ebs", each.value)
+    NetworkGroup     = provider::corefunc::str_snake(var.network_group)
     Region           = var.region
     Type             = "Self Made"
     Vendor           = "Self"
@@ -145,7 +145,7 @@ resource "aws_ebs_volume" "ec2_ebs" {
 resource "aws_volume_attachment" "ec2_ebs_association" {
   for_each = (
     var.enable_ebs ?
-    { for index in range(var.desired_count) : "${var.instance_name}-${var.network_group}-${index}" => index }
+    { for index in range(var.desired_count) : "${var.vpc_group}-${var.network_group}-${var.instance_group}-${index}" => index }
     :
     {}
   )
@@ -158,16 +158,16 @@ resource "aws_volume_attachment" "ec2_ebs_association" {
 ### ELASTIC IP
 
 resource "aws_eip" "ec2_eip" {
-  for_each = var.enable_eip ? { for index in range(var.desired_count) : "${var.instance_name}-${var.network_group}-${index}" => index } : {}
+  for_each = var.enable_eip ? { for index in range(var.desired_count) : "${var.vpc_group}-${var.network_group}-${var.instance_group}-${index}" => index } : {}
 
   domain = "vpc"
 
   tags = merge({
     Environment   = var.environment
-    Group         = var.inventory_group
+    Group         = provider::corefunc::str_snake(var.vpc_group)
     InstanceGroup = var.instance_group
-    Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "eip")
-    NetworkGroup  = var.network_group
+    Name          = format("%s-%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "eip", each.value)
+    NetworkGroup  = provider::corefunc::str_snake(var.network_group)
     Region        = var.region
     Type          = "Self Made"
     Vendor        = "Self"
@@ -175,7 +175,7 @@ resource "aws_eip" "ec2_eip" {
 }
 
 resource "aws_eip_association" "ec2_eip_association" {
-  for_each = var.enable_eip ? { for index in range(var.desired_count) : "${var.instance_name}-${var.network_group}-${index}" => index } : {}
+  for_each = var.enable_eip ? { for index in range(var.desired_count) : "${var.vpc_group}-${var.network_group}-${var.instance_group}-${index}" => index } : {}
 
   instance_id = aws_instance.ec2_instance[each.key].id
   allocation_id = aws_eip.ec2_eip[each.key].id
@@ -184,7 +184,7 @@ resource "aws_eip_association" "ec2_eip_association" {
 resource "aws_lb_target_group" "ec2_lb_target_group" {
   count = var.enable_load_balancer ? 1 : 0
 
-  name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb-tg")
+  name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb-tg")
 
   vpc_id   = var.vpc_id
   protocol = "HTTP"
@@ -193,9 +193,9 @@ resource "aws_lb_target_group" "ec2_lb_target_group" {
   tags = merge({
     Environment   = var.environment
     InstanceGroup = var.instance_group
-    Group         = var.inventory_group
-    Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb-tg")
-    NetworkGroup  = var.network_group
+    Group         = provider::corefunc::str_snake(var.vpc_group)
+    Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb-tg")
+    NetworkGroup  = provider::corefunc::str_snake(var.network_group)
     Region        = var.region
     Type          = "Self Made"
     Vendor        = "Self"
@@ -203,7 +203,7 @@ resource "aws_lb_target_group" "ec2_lb_target_group" {
 }
 
 resource "aws_lb_target_group_attachment" "ec2_lb_target_group_attachment" {
-  for_each = var.enable_load_balancer ? { for index in range(var.desired_count) : "${var.instance_name}-${var.network_group}-${index}" => index } : {}
+  for_each = var.enable_load_balancer ? { for index in range(var.desired_count) : "${var.vpc_group}-${var.network_group}-${var.instance_group}-${index}" => index } : {}
 
   target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
   target_id        = aws_instance.ec2_instance[each.key].id
@@ -213,11 +213,10 @@ resource "aws_lb_target_group_attachment" "ec2_lb_target_group_attachment" {
 resource "aws_lb" "load_balancer" {
   count = var.enable_load_balancer ? 1 : 0
 
-  name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb")
   load_balancer_type = "application"
-
-  subnets = [ for subnet in var.public_subnets : subnet.id ]
-
+  
+  name            = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb")
+  subnets         = [ for subnet in var.public_subnets : subnet.id ]
   security_groups = var.vpc_security_group_ids
 
   lifecycle {
@@ -229,10 +228,10 @@ resource "aws_lb" "load_balancer" {
 
   tags = merge({
     Environment   = var.environment
-    Group         = provider::corefunc::str_kebab(var.inventory_group)
+    Group         = provider::corefunc::str_kebab(var.vpc_group)
     InstanceGroup = var.instance_group
-    Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb")
-    NetworkGroup  = var.network_group
+    Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb")
+    NetworkGroup  = provider::corefunc::str_snake(var.network_group)
     Region        = var.region
     Type          = "Self Made"
     Vendor        = "Self"
@@ -270,9 +269,9 @@ resource "aws_lb_listener" "ec2_lb_listener" {
 # Simple Queue Service
 
 resource "aws_sqs_queue" "ec2_sqs" {
-  count                     = var.enable_auto_scaling ? 1 : 0
+  count = var.enable_auto_scaling ? 1 : 0
 
-  name                      = format("%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), var.environment, "sqs")
+  name                      = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "sqs")
   delay_seconds             = var.sqs_delay_seconds
   max_message_size          = var.sqs_max_message_size
   message_retention_seconds = var.sqs_message_retention_seconds
@@ -285,9 +284,10 @@ resource "aws_sqs_queue" "ec2_sqs" {
 
   tags = merge({
     Environment   = var.environment
-    Group         = var.inventory_group
+    Group         = provider::corefunc::str_snake(var.vpc_group)
     InstanceGroup = var.instance_group
-    Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "sqs")
+    Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "sqs")
+    NetworkGroup  = provider::corefunc::str_snake(var.network_group)
     Type          = "Self Made"
     Vendor        = "Self"
   }, var.tags)
@@ -309,7 +309,7 @@ resource "aws_sqs_queue_redrive_policy" "ec2_sqs_redrive" {
 resource "aws_sqs_queue" "ec2_sqs_dlq" {
   count = var.enable_auto_scaling ? 1 : 0
 
-  name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "sqs-dlq")
+  name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "sqs_dlq")
 
   redrive_allow_policy = jsonencode({
     redrivePermission  = "byQueue",
@@ -321,23 +321,23 @@ resource "aws_sqs_queue" "ec2_sqs_dlq" {
 #   count = (var.enable_auto_scaling && var.desired_count > 1) ? 1 : 0
 
 #   # <instance_group>-<environment>-lt
-#   name_prefix   = format("%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), var.environment, "lt")
-#   image_id      = var.instance_ami_id
-#   instance_type = var.instance_type
+#   name_prefix   = format("%s-%s-%s", provider::corefunc::str_kebab(var.name), var.environment, "lt")
+#   image_id      = var.ami
+#   instance_type = var.type
 # }
 
 # resource "aws_placement_group" "ec2_placement_group" {
 #   count = (var.enable_auto_scaling && var.desired_count > 1) ? length(var.availability_zone_name_names) : 0
 
 #   # <instance_group>-<environment>-pg
-#   name     = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), var.environment, "pg", count.index)
+#   name     = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), var.environment, "pg", count.index)
 #   strategy = var.placement_group_strategy
 # }
 
 # resource "aws_autoscaling_group" "ec2_autoscaling_group" {
 #   count = (var.enable_auto_scaling && var.desired_count > 1) ? length(var.availability_zone_name_names) : 0
   
-#   name                      = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), var.environment, "asg", count.index)
+#   name                      = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), var.environment, "asg", count.index)
 #   placement_group           = aws_placement_group.ec2_placement_group[count.index].id
 #   desired_capacity          = var.desired_count
 #   min_size                  = var.minimum_instance_count
@@ -363,7 +363,7 @@ resource "aws_sqs_queue" "ec2_sqs_dlq" {
 #   }
 
 #   initial_lifecycle_hook {
-#     name                 = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), var.environment, "lck", count.index)
+#     name                 = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), var.environment, "lck", count.index)
 #     default_result       = "CONTINUE"
 #     heartbeat_timeout    = 2000
 #     lifecycle_transition = "autoscaling:EC2_INSTANCE_LAUNCHING"
@@ -373,9 +373,9 @@ resource "aws_sqs_queue" "ec2_sqs_dlq" {
 #       payload = merge({
 #                   AvailabilityZone = var.availability_zone_name
 #                   Environment      = var.environment
-#                   Group            = var.inventory_group
+#                   Group            = provider::corefunc::str_snake(var.vpc_group)
 #                   InstanceGroup    = var.instance_group
-#                   Name             = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), var.environment, "asg", count.index)
+#                   Name             = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), var.environment, "asg", count.index)
 #                   Region           = var.region
 #                   Vendor           = "Self"
 #                   Type             = "Self Made"
@@ -394,9 +394,9 @@ resource "aws_sqs_queue" "ec2_sqs_dlq" {
 #     for_each = merge({
 #       AvailabilityZone = var.availability_zone_name
 #       Environment      = var.environment
-#       Group            = var.inventory_group
+#       Group            = provider::corefunc::str_snake(var.vpc_group)
 #       InstanceGroup    = var.instance_group
-#       Name             = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), var.environment, "asg", count.index)
+#       Name             = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), var.environment, "asg", count.index)
 #       Region           = var.region
 #       Vendor           = "Self"
 #       Type             = "Self Made"

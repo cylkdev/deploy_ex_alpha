@@ -85,16 +85,16 @@ data "aws_iam_policy_document" "trust_policy_document" {
 # Creates a IAM role that defines the permissions available
 # to the ec2 instance at runtime.
 resource "aws_iam_role" "ec2_iam_role" {
-  name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "role")
+  name = format("%s-%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.instance_group), provider::corefunc::str_kebab(var.environment), "role")
   assume_role_policy = data.aws_iam_policy_document.trust_policy_document.json
 
   tags = merge({
     Environment    = var.environment
-    Region         = var.region
-    NetworkGroup   = var.network_group
     InstanceGroup  = var.instance_group
-    Group          = var.inventory_group
-    Name           = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "role")
+    Group          = var.vpc_group
+    Name           = format("%s-%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.instance_group), provider::corefunc::str_kebab(var.environment), "role")
+    NetworkGroup   = var.network_group
+    Region         = var.region
     Type           = "Self Made"
     Vendor         = "Self"
   }, var.tags)
@@ -109,7 +109,7 @@ resource "aws_iam_instance_profile" "ec2_instance_profile" {
   # if you have different role or path values, duplicating an
   # existing instance profile name will lead to an
   # EntityAlreadyExists error.
-  name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), var.network_group, var.environment, "profile")
+  name = format("%s-%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.instance_group), provider::corefunc::str_kebab(var.environment), "profile")
   role = aws_iam_role.ec2_iam_role.name
 }
 
@@ -149,7 +149,7 @@ data "aws_iam_policy_document" "role_policy_document" {
 # Creates a IAM role policy which defines what the role can do,
 # as well as the actions and resources the role can access.
 resource "aws_iam_role_policy" "role_policy" {
-  name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.instance_name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "role_policy")
+  name = format("%s-%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.instance_group), provider::corefunc::str_kebab(var.environment), "role_policy")
 
   role = aws_iam_role.ec2_iam_role.id
 

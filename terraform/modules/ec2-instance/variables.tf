@@ -14,7 +14,7 @@ variable "tags" {
   default  = {}
 }
 
-variable "inventory_group" {
+variable "vpc_group" {
   type = string
   nullable = false
   description = "The group this resource was deployed into."
@@ -31,13 +31,13 @@ variable "instance_group" {
   description = "Sets the `InstanceGroup` tag on the instance."
 }
 
-variable "instance_name" {
+variable "name" {
   type = string
   nullable = false
   description = "Sets the `Name` tag on the instance."
 }
 
-variable "instance_ami_id" {
+variable "ami" {
   type = string
   nullable = false
   default = "ami-047d7c33f6e7b4bc4"
@@ -89,7 +89,7 @@ variable "public_subnets" {
   nullable = false
 }
 
-variable "availability_zone_names" {
+variable "availability_zones" {
   type = list(string)
   nullable = false
 }
@@ -277,7 +277,7 @@ variable "instance_profile_name" {
 variable "enable_load_balancer" {
   type = bool
   nullable = false
-  default = true
+  default = false
 }
 
 variable "target_group_port" {
@@ -291,7 +291,6 @@ variable "listener_port" {
   nullable = false
   default = 443
 }
-
 
 variable "enable_auto_scaling" {
   type = bool

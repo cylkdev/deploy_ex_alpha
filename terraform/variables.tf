@@ -1,13 +1,11 @@
 variable "environment" {
   type = string
   nullable = false
-  default = "development"
 }
 
 variable "region" {
   type = string
   nullable = false
-  default = "us-west-1"
 }
 
 variable "tags" {
@@ -16,22 +14,23 @@ variable "tags" {
   default = {}
 }
 
-variable "deploys" {
+variable "stack" {
   type = map(object({
-    vpc_name = string
-    cidr_block = string
-    cidrsubnet_netnum = optional(number)
-    cidrsubnet_newbits = optional(number)
+    vpc_name         = string
+    vpc_cidr         = string
+    vpc_cidr_netnum  = optional(number)
+    vpc_cidr_newbits = optional(number)
 
     networks = map(object({
+      replicas = optional(list(string))
       availability_zone_names = optional(list(string))
       subnet_count = optional(number)
       cidrsubnet_netnum = optional(number)
       cidrsubnet_newbits = optional(number)
 
       instances = map(object({
-        instance_name = string
-        instance_ami_id = optional(string)
+        name = string
+        ami = optional(string)
         instance_type = optional(string)
         tags = optional(map(string))
 
@@ -65,25 +64,4 @@ variable "deploys" {
   }))
 
   nullable = false
-
-  default = {
-    orange_backend = {
-      vpc_name        = "Orange"
-      cidr_block      = "10.100.0.0/16"
-
-      networks = {
-        alpha = {
-          instances = {
-            sentry = {
-              instance_name = "Sentry"
-              key_pair_name = "kurt-deploy-key"
-
-              enable_ebs = true
-              enable_user_data = true
-            }
-          }
-        }
-      }
-    }
-  }
 }
