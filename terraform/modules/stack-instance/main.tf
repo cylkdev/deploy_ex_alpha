@@ -10,31 +10,16 @@ module "vpc_instance" {
   vpc_name    = var.vpc_name
 }
 
-locals {
-  network_set = flatten([
-    for network_group, network in var.networks : [
-      for replica in network.replicas : [
-        {
-          network_group = "${network_group}-${replica}"
-          replica_index = index(network.replicas, replica)
-          network = network
-        }
-      ]
-    ]
-  ])
-}
-
 module "network_instance" {
   source = "../network-instance"
 
   for_each = {
-    for index in range(length(local.network_set)) :
-    local.network_set[index].network_group => {
-      index = index
-      replica_index = local.network_set[index].replica_index
-      network_group = local.network_set[index].network_group
-      network = local.network_set[index].network
-    }
+    for network_group, network in var.networks :
+      "${var.vpc_group}-${network_group}" => {
+        index = index(keys(var.networks), network_group)
+        network_group = network_group
+        network = network
+      }
   }
 
   environment = var.environment
@@ -50,9 +35,10 @@ module "network_instance" {
   network_group           = each.value.network_group
   availability_zone_names = each.value.network.availability_zone_names
   subnet_count            = each.value.network.subnet_count
-  cidr_block              = cidrsubnet(var.vpc_cidr, var.vpc_cidr_newbits + each.value.replica_index, var.vpc_cidr_netnum + each.value.index)
-  cidrsubnet_netnum       = each.value.network.cidrsubnet_netnum
-  cidrsubnet_newbits      = each.value.network.cidrsubnet_newbits
+
+  cidr_block         = cidrsubnet(var.vpc_cidr, var.vpc_cidr_newbits , var.vpc_cidr_netnum + each.value.index)
+  cidrsubnet_netnum  = each.value.network.cidrsubnet_netnum
+  cidrsubnet_newbits = each.value.network.cidrsubnet_newbits
 
   instances = each.value.network.instances
 }

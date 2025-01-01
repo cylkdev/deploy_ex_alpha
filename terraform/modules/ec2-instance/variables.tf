@@ -46,7 +46,7 @@ variable "ami" {
 variable "instance_type" {
   type = string
   nullable = false
-  default = "t3.micro"
+  default = "t2.micro"
 }
 
 variable "desired_count" {
@@ -277,6 +277,18 @@ variable "instance_profile_name" {
 variable "enable_load_balancer" {
   type = bool
   nullable = false
+  default = true
+}
+
+variable "enable_target_group" {
+  type = bool
+  nullable = false
+  default = true
+}
+
+variable "attach_target_group" {
+  type = bool
+  nullable = false
   default = false
 }
 
@@ -286,16 +298,22 @@ variable "target_group_port" {
   default = 443
 }
 
+variable "enable_listener" {
+  type = bool
+  nullable = false
+  default = true
+}
+
 variable "listener_port" {
   type = number
   nullable = false
   default = 443
 }
 
-variable "enable_auto_scaling" {
+variable "enable_autoscaling" {
   type = bool
   nullable = false
-  default = true
+  default = false
 }
 
 variable "sqs_delay_seconds" {
@@ -332,4 +350,39 @@ variable "sqs_dlq_max_receive_count" {
   type = number
   nullable = false
   default = 5
+}
+
+variable "placement_group_strategy" {
+  type = string
+  nullable = false
+  default = "cluster"
+}
+
+variable "minimum_instance_count" {
+  type = number
+  nullable = false
+  default = 1
+}
+
+variable "maximum_instance_count" {
+  type = number
+  nullable = false
+  default = 2
+}
+
+variable "min_healthy_percentage" {
+  type = number
+  nullable = false
+  default = 90
+}
+
+variable "max_healthy_percentage" {
+  type = number
+  nullable = false
+  default = 120
+}
+
+variable "iam_role_arn" {
+  type = string
+  nullable = false
 }

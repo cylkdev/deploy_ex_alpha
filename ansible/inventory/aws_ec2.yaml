@@ -9,7 +9,7 @@ hostnames:
 
 # Only target hosts that are a part of this deployment group.
 filters:
-  tag:Group: 'orange_backend'
+  tag:Group: 'olympus_backend'
 
 # Add hosts to group based on the values of a variable.
 keyed_groups:
@@ -17,12 +17,11 @@ keyed_groups:
     prefix: "group"
 
   - key: tags['InstanceGroup']
-    prefix: "group"
+    prefix: "instance_group"
 
   - key: tags['NetworkGroup']
-    prefix: "group"
+    prefix: "network_group"
 
-# Use the public IP address to connect to the host
-# (note: this does not modify inventory_hostname)
+# Use the public IP address to connect to the host (This does not modify inventory_hostname)
 compose:
   ansible_host: public_ip_address

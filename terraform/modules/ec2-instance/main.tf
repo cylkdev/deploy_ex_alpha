@@ -163,9 +163,9 @@ resource "aws_eip" "ec2_eip" {
   domain = "vpc"
 
   tags = merge({
-    Environment   = var.environment
+    Environment   = provider::corefunc::str_snake(var.environment)
     Group         = provider::corefunc::str_snake(var.vpc_group)
-    InstanceGroup = var.instance_group
+    InstanceGroup = provider::corefunc::str_snake(var.instance_group)
     Name          = format("%s-%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "eip", each.value)
     NetworkGroup  = provider::corefunc::str_snake(var.network_group)
     Region        = var.region
@@ -182,7 +182,7 @@ resource "aws_eip_association" "ec2_eip_association" {
 }
 
 resource "aws_lb_target_group" "ec2_lb_target_group" {
-  count = var.enable_load_balancer ? 1 : 0
+  count = var.enable_target_group ? 1 : 0
 
   name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb-tg")
 
@@ -190,9 +190,27 @@ resource "aws_lb_target_group" "ec2_lb_target_group" {
   protocol = "HTTP"
   port     = var.target_group_port
 
+  # Target groups are often referenced by other resources, such
+  # as load balancer listeners, rules, or auto-scaling groups.
+  # When a target group is destroyed before a new one is created,
+  # any associated load balancer listeners or rules lose their
+  # references, causing potential disruption in routing traffic.
+  #
+  # By setting create_before_destroy = true, Terraform creates
+  # the new target group first and updates references to it
+  # before destroying the old one, maintaining continuous
+  # service availability.
+  #
+  # The new target group is provisioned and connected to the
+  # load balancer before the old one is removed, allowing
+  # for rolling updates.
+  lifecycle {
+    create_before_destroy = true
+  }
+
   tags = merge({
-    Environment   = var.environment
-    InstanceGroup = var.instance_group
+    Environment   = provider::corefunc::str_snake(var.environment)
+    InstanceGroup = provider::corefunc::str_snake(var.instance_group)
     Group         = provider::corefunc::str_snake(var.vpc_group)
     Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb-tg")
     NetworkGroup  = provider::corefunc::str_snake(var.network_group)
@@ -200,14 +218,6 @@ resource "aws_lb_target_group" "ec2_lb_target_group" {
     Type          = "Self Made"
     Vendor        = "Self"
   }, var.tags)
-}
-
-resource "aws_lb_target_group_attachment" "ec2_lb_target_group_attachment" {
-  for_each = var.enable_load_balancer ? { for index in range(var.desired_count) : "${var.vpc_group}-${var.network_group}-${var.instance_group}-${index}" => index } : {}
-
-  target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
-  target_id        = aws_instance.ec2_instance[each.key].id
-  port             = var.target_group_port
 }
 
 resource "aws_lb" "load_balancer" {
@@ -219,23 +229,29 @@ resource "aws_lb" "load_balancer" {
   subnets         = [ for subnet in var.public_subnets : subnet.id ]
   security_groups = var.vpc_security_group_ids
 
-  lifecycle {
-    replace_triggered_by = [
-      aws_lb_target_group.ec2_lb_target_group,
-      aws_lb_target_group_attachment.ec2_lb_target_group_attachment
-    ]
-  }
-
   tags = merge({
-    Environment   = var.environment
+    Environment   = provider::corefunc::str_snake(var.environment)
     Group         = provider::corefunc::str_kebab(var.vpc_group)
-    InstanceGroup = var.instance_group
+    InstanceGroup = provider::corefunc::str_snake(var.instance_group)
     Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb")
     NetworkGroup  = provider::corefunc::str_snake(var.network_group)
     Region        = var.region
     Type          = "Self Made"
     Vendor        = "Self"
   }, var.tags)
+}
+
+resource "aws_lb_target_group_attachment" "ec2_lb_target_group_attachment" {
+  for_each = (
+    (var.enable_target_group && var.attach_target_group) ?
+    { for index in range(var.desired_count) : "${var.vpc_group}-${var.network_group}-${var.instance_group}-${index}" => index }
+    :
+    {}
+  )
+
+  target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
+  target_id        = aws_instance.ec2_instance[each.key].id
+  port             = var.target_group_port
 }
 
 # LOAD BALANCER LISTENER
@@ -254,22 +270,21 @@ resource "aws_lb" "load_balancer" {
 # logic. If the listener protocol is HTTPS, you must deploy at least one SSL
 # server certificate on the listener.
 resource "aws_lb_listener" "ec2_lb_listener" {
-  count = var.enable_load_balancer ? 1 : 0 
+  count = (var.enable_target_group && var.enable_listener) ? 1 : 0
 
   load_balancer_arn = aws_lb.load_balancer[0].arn
   port              = var.listener_port
   protocol          = aws_lb_target_group.ec2_lb_target_group[0].protocol
 
+  # AWS requires that listeners have a defined action to process incoming requests.
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
   }
 }
 
-# Simple Queue Service
-
 resource "aws_sqs_queue" "ec2_sqs" {
-  count = var.enable_auto_scaling ? 1 : 0
+  count = var.enable_autoscaling ? 1 : 0
 
   name                      = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "sqs")
   delay_seconds             = var.sqs_delay_seconds
@@ -283,9 +298,9 @@ resource "aws_sqs_queue" "ec2_sqs" {
   visibility_timeout_seconds = var.sqs_visibility_timeout_seconds
 
   tags = merge({
-    Environment   = var.environment
+    Environment   = provider::corefunc::str_snake(var.environment)
     Group         = provider::corefunc::str_snake(var.vpc_group)
-    InstanceGroup = var.instance_group
+    InstanceGroup = provider::corefunc::str_snake(var.instance_group)
     Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "sqs")
     NetworkGroup  = provider::corefunc::str_snake(var.network_group)
     Type          = "Self Made"
@@ -295,19 +310,8 @@ resource "aws_sqs_queue" "ec2_sqs" {
 
 # Create a dead letter queue (DLQ) to handle messages that could
 # not be processed after a specific number of retries.
-resource "aws_sqs_queue_redrive_policy" "ec2_sqs_redrive" {
-  count = var.enable_auto_scaling ? 1 : 0
-
-  queue_url = aws_sqs_queue.ec2_sqs[0].id
-
-  redrive_policy        = jsonencode({
-    deadLetterTargetArn = aws_sqs_queue.ec2_sqs_dlq[0].arn
-    maxReceiveCount     = var.sqs_dlq_max_receive_count 
-  })
-}
-
 resource "aws_sqs_queue" "ec2_sqs_dlq" {
-  count = var.enable_auto_scaling ? 1 : 0
+  count = var.enable_autoscaling ? 1 : 0
 
   name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "sqs_dlq")
 
@@ -317,95 +321,148 @@ resource "aws_sqs_queue" "ec2_sqs_dlq" {
   })
 }
 
-# resource "aws_launch_template" "ec2_instance_template" {
-#   count = (var.enable_auto_scaling && var.desired_count > 1) ? 1 : 0
+resource "aws_sqs_queue_redrive_policy" "ec2_sqs_redrive" {
+  count = var.enable_autoscaling ? 1 : 0
 
-#   # <instance_group>-<environment>-lt
-#   name_prefix   = format("%s-%s-%s", provider::corefunc::str_kebab(var.name), var.environment, "lt")
-#   image_id      = var.ami
-#   instance_type = var.type
-# }
+  queue_url = aws_sqs_queue.ec2_sqs[0].id
 
-# resource "aws_placement_group" "ec2_placement_group" {
-#   count = (var.enable_auto_scaling && var.desired_count > 1) ? length(var.availability_zone_name_names) : 0
+  redrive_policy        = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.ec2_sqs_dlq[0].arn
+    maxReceiveCount     = var.sqs_dlq_max_receive_count 
+  })
+}
 
-#   # <instance_group>-<environment>-pg
-#   name     = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), var.environment, "pg", count.index)
-#   strategy = var.placement_group_strategy
-# }
+resource "aws_launch_template" "ec2_instance_template" {
+  count = var.enable_autoscaling ? 1 : 0
 
-# resource "aws_autoscaling_group" "ec2_autoscaling_group" {
-#   count = (var.enable_auto_scaling && var.desired_count > 1) ? length(var.availability_zone_name_names) : 0
+  name_prefix   = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "it")
+  image_id      = var.ami
+  instance_type = var.instance_type
+}
+
+resource "aws_placement_group" "ec2_placement_group" {
+  count = var.enable_autoscaling ? 1 : 0
+
+  name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "pg")
+  strategy = var.placement_group_strategy
+}
+
+resource "aws_autoscaling_group" "ec2_autoscaling_group" {
+  count = var.enable_autoscaling ? 1 : 0
   
-#   name                      = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), var.environment, "asg", count.index)
-#   placement_group           = aws_placement_group.ec2_placement_group[count.index].id
-#   desired_capacity          = var.desired_count
-#   min_size                  = var.minimum_instance_count
-#   max_size                  = var.maximum_instance_count
-#   health_check_grace_period = 300
-#   health_check_type         = "ELB"
-#   force_delete              = true
+  name                      = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "asg")
+  placement_group           = aws_placement_group.ec2_placement_group[0].id
+  desired_capacity          = var.desired_count
+  min_size                  = var.minimum_instance_count
+  max_size                  = var.maximum_instance_count
+  health_check_grace_period = 300
+  health_check_type         = "ELB"
+  force_delete              = true
 
-#   vpc_zone_identifier       = (
-#     var.enable_public_subnet ?
-#     flatten([ for subnet in data.aws_subnet.public_subnet : subnet.availability_zone == element(var.availability_zone_name_names, count.index) ? [subnet.id] : [] ]) :
-#     flatten([ for subnet in data.aws_subnet.private_subnet : subnet.availability_zone == element(var.availability_zone_name_names, count.index) ? [subnet.id] : [] ])
-#   )
+  # List of policies to decide how the instances in the Auto Scaling Group should be terminated.
+  termination_policies = [
+    "OldestInstance",
+    "OldestLaunchConfiguration",
+  ]
 
-#   instance_maintenance_policy {
-#     min_healthy_percentage = var.min_healthy_percentage
-#     max_healthy_percentage = var.max_healthy_percentage
-#   }
+  # Specifies the subnets where the group can launch instances.
+  # These subnets can be private or public.
+  #
+  # When launched in a private subnet only outbound communication is
+  # allowed and you must use a NAT Gateway or NAT Instance.
+  vpc_zone_identifier       = (
+    var.enable_public_subnet ?
+    [ for subnet in var.public_subnets : subnet.id ] :
+    [ for subnet in var.private_subnets : subnet.id ]
+  )
 
-#   launch_template {
-#     id      = aws_launch_template.ec2_instance_template[0].id
-#     version = "$Latest"
-#   }
+  instance_maintenance_policy {
+    min_healthy_percentage = var.min_healthy_percentage
+    max_healthy_percentage = var.max_healthy_percentage
+  }
 
-#   initial_lifecycle_hook {
-#     name                 = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), var.environment, "lck", count.index)
-#     default_result       = "CONTINUE"
-#     heartbeat_timeout    = 2000
-#     lifecycle_transition = "autoscaling:EC2_INSTANCE_LAUNCHING"
+  launch_template {
+    id      = aws_launch_template.ec2_instance_template[0].id
+    version = "$Latest"
+  }
 
-#     notification_metadata = jsonencode({
-#       message = "EC2 Auto Scaling Test Message"
-#       payload = merge({
-#                   AvailabilityZone = var.availability_zone_name
-#                   Environment      = var.environment
-#                   Group            = provider::corefunc::str_snake(var.vpc_group)
-#                   InstanceGroup    = var.instance_group
-#                   Name             = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), var.environment, "asg", count.index)
-#                   Region           = var.region
-#                   Vendor           = "Self"
-#                   Type             = "Self Made"
-#                 }, var.tags)
-#     })
+  initial_lifecycle_hook {
+    name                 = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "lh")
+    default_result       = "CONTINUE"
+    heartbeat_timeout    = 2000
+    lifecycle_transition = "autoscaling:EC2_INSTANCE_LAUNCHING"
 
-#     notification_target_arn = aws_sqs_queue.ec2_sqs[0].arn
-#     role_arn = aws_iam_role.instance_role.arn
-#   }
+    notification_metadata = jsonencode({
+      message = "[autoscaling] - EC2 Instance Launching"
+      payload = merge({
+        Environment   = provider::corefunc::str_snake(var.environment)
+        Group         = provider::corefunc::str_snake(var.vpc_group)
+        InstanceGroup = provider::corefunc::str_snake(var.instance_group)
+        NetworkGroup  = provider::corefunc::str_snake(var.network_group)
+        Name          = provider::corefunc::str_kebab(var.name)
+        Region        = provider::corefunc::str_snake(var.region)
+      }, var.tags)
+    })
 
-#   timeouts {
-#     delete = "15m"
-#   }
+    notification_target_arn = aws_sqs_queue.ec2_sqs[0].arn
 
-#   dynamic "tag" {
-#     for_each = merge({
-#       AvailabilityZone = var.availability_zone_name
-#       Environment      = var.environment
-#       Group            = provider::corefunc::str_snake(var.vpc_group)
-#       InstanceGroup    = var.instance_group
-#       Name             = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), var.environment, "asg", count.index)
-#       Region           = var.region
-#       Vendor           = "Self"
-#       Type             = "Self Made"
-#     }, var.tags)
+    role_arn = var.iam_role_arn
+  }
 
-#     content {
-#       key                 = tag.key
-#       value               = tag.value
-#       propagate_at_launch = true
-#     }
-#   }
-# }
+  initial_lifecycle_hook {
+    name                 = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "lh")
+    default_result       = "CONTINUE"
+    heartbeat_timeout    = 2000
+    lifecycle_transition = "autoscaling:EC2_INSTANCE_TERMINATING"
+
+    notification_metadata = jsonencode({
+      message = "[autoscaling] - EC2 Instance Terminating"
+      payload = merge({
+        Environment   = provider::corefunc::str_snake(var.environment)
+        Group         = provider::corefunc::str_snake(var.vpc_group)
+        InstanceGroup = provider::corefunc::str_snake(var.instance_group)
+        NetworkGroup  = provider::corefunc::str_snake(var.network_group)
+        Name          = provider::corefunc::str_kebab(var.name)
+        Region        = provider::corefunc::str_snake(var.region)
+      }, var.tags)
+    })
+
+    notification_target_arn = aws_sqs_queue.ec2_sqs[0].arn
+
+    role_arn = var.iam_role_arn
+  }
+
+  timeouts {
+    delete = "15m"
+  }
+
+  dynamic "tag" {
+    for_each = merge({
+      Environment      = provider::corefunc::str_snake(var.environment)
+      Group            = provider::corefunc::str_snake(var.vpc_group)
+      InstanceGroup    = provider::corefunc::str_snake(var.instance_group)
+      Name             = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "asg")
+      NetworkGroup     = provider::corefunc::str_snake(var.network_group)
+      Region           = provider::corefunc::str_snake(var.region)
+      Vendor           = "Self"
+      Type             = "Self Made"
+    }, var.tags)
+
+    content {
+      key                 = tag.key
+      value               = tag.value
+      propagate_at_launch = true
+    }
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_autoscaling_attachment" "ec2_autoscaling_group_attachment" {
+  count = (var.enable_load_balancer && var.enable_target_group && var.enable_autoscaling) ? 1 : 0
+
+  autoscaling_group_name = aws_autoscaling_group.ec2_autoscaling_group[0].name
+  lb_target_group_arn    = aws_lb_target_group.ec2_lb_target_group[0].arn
+}

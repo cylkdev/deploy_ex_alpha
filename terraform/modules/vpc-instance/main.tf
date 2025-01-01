@@ -5,10 +5,10 @@ resource "aws_vpc" "vpc_instance" {
   enable_dns_hostnames = var.enable_dns_hostnames
 
   tags = merge({
-    Environment = var.environment
-    Region      = var.region
+    Environment = provider::corefunc::str_snake(var.environment)
     Group       = provider::corefunc::str_snake(var.vpc_group)
     Name        = format("%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), var.environment, "vpc")
+    Region      = provider::corefunc::str_snake(var.region)
     Vendor      = "Self"
     Type        = "Self Made"
   }, var.tags)
@@ -23,10 +23,10 @@ resource "aws_internet_gateway" "public_internet_gateway" {
   }
 
   tags = merge({
-    Environment = var.environment
+    Environment = provider::corefunc::str_snake(var.environment)
     Group       = provider::corefunc::str_snake(var.vpc_group)
     Name        = format("%s-%s-%s", provider::corefunc::str_kebab(var.vpc_name), var.environment, "igw")
-    Region      = var.region
+    Region      = provider::corefunc::str_snake(var.region)
     Vendor      = "Self"
     Type        = "Self Made"
   }, var.tags)

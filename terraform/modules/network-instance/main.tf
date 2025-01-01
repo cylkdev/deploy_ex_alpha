@@ -32,11 +32,11 @@ resource "aws_security_group" "allow_ssh" {
   vpc_id      = var.vpc_id
 
   tags = merge({
-    Environment  = var.environment
-    Region       = var.region
+    Environment  = provider::corefunc::str_snake(var.environment)
     Group        = provider::corefunc::str_snake(var.network_group)
     NetworkGroup = provider::corefunc::str_snake(var.network_group)
     Name         = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "allow_ssh")
+    Region       = provider::corefunc::str_snake(var.region)
     Vendor       = "Self"
     Type         = "Self Made"
   }, var.tags)
@@ -52,11 +52,11 @@ resource "aws_vpc_security_group_ingress_rule" "allow_ssh_ingress_rule_ipv4" {
   ip_protocol = "TCP"
 
   tags = merge({
-    Environment  = var.environment
-    Region       = var.region
+    Environment  = provider::corefunc::str_snake(var.environment)
     Group        = provider::corefunc::str_snake(var.network_group)
     NetworkGroup = provider::corefunc::str_snake(var.network_group)
     Name         = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "allow_ssh_ingress_rule_ipv4")
+    Region       = provider::corefunc::str_snake(var.region)
     Vendor       = "Self"
     Type         = "Self Made"
   }, var.tags)
@@ -69,11 +69,11 @@ resource "aws_security_group" "allow_tls" {
   vpc_id      = var.vpc_id
 
   tags = merge({
-    Environment  = var.environment
-    Region       = var.region
+    Environment  = provider::corefunc::str_snake(var.environment)
     Group        = provider::corefunc::str_snake(var.network_group)
     NetworkGroup = provider::corefunc::str_snake(var.network_group)
     Name         = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "allow_tls")
+    Region       = provider::corefunc::str_snake(var.region)
     Vendor       = "Self"
     Type         = "Self Made"
   }, var.tags)
@@ -89,11 +89,11 @@ resource "aws_vpc_security_group_ingress_rule" "allow_https_ingress_rule_ipv4" {
   ip_protocol = "TCP"
 
   tags = merge({
-    Environment  = var.environment
-    Region       = var.region
+    Environment  = provider::corefunc::str_snake(var.environment)
     Group        = provider::corefunc::str_snake(var.network_group)
     NetworkGroup = provider::corefunc::str_snake(var.network_group)
     Name         = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "allow_https_ingress_rule_ipv4")
+    Region       = provider::corefunc::str_snake(var.region)
     Vendor       = "Self"
     Type         = "Self Made"
   }, var.tags)
@@ -105,11 +105,11 @@ resource "aws_vpc_security_group_egress_rule" "allow_traffic_egress_rule_ipv4" {
   ip_protocol       = "-1"
 
   tags = merge({
-    Environment  = var.environment
-    Region       = var.region
+    Environment  = provider::corefunc::str_snake(var.environment)
     Group        = provider::corefunc::str_snake(var.network_group)
     NetworkGroup = provider::corefunc::str_snake(var.network_group)
     Name         = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "allow_traffic_egress_rule_ipv4")
+    Region       = provider::corefunc::str_snake(var.region)
     Vendor       = "Self"
     Type         = "Self Made"
   }, var.tags)
@@ -125,10 +125,11 @@ resource "aws_subnet" "private_subnet" {
 
   tags = merge({
     AvailabilityZone = data.aws_availability_zones.available.names[each.value % length(data.aws_availability_zones.available.names)]
-    Environment      = var.environment
+    Environment      = provider::corefunc::str_snake(var.environment)
     Group            = provider::corefunc::str_snake(var.network_group)
     NetworkGroup     = provider::corefunc::str_snake(var.network_group)
     Name             = format("%s-%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "private-sn", each.value)
+    Region           = provider::corefunc::str_snake(var.region)
     Vendor           = "Self"
     Type             = "Self Made"
   }, var.tags)
@@ -138,10 +139,11 @@ resource "aws_route_table" "private_route_table" {
   vpc_id = var.vpc_id
 
   tags = merge({
-    Environment  = var.environment
+    Environment  = provider::corefunc::str_snake(var.environment)
     Group        = provider::corefunc::str_snake(var.network_group)
     NetworkGroup = provider::corefunc::str_snake(var.network_group)
     Name         = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "private-rt")
+    Region       = provider::corefunc::str_snake(var.region)
     Vendor       = "Self"
     Type         = "Self Made"
   }, var.tags)
@@ -163,13 +165,13 @@ resource "aws_subnet" "public_subnet" {
 
   tags = merge({
     AvailabilityZone = data.aws_availability_zones.available.names[each.value % length(data.aws_availability_zones.available.names)]
-    Environment      = var.environment
-    Region           = var.region
+    Environment      = provider::corefunc::str_snake(var.environment)
     Group            = provider::corefunc::str_snake(var.network_group)
     NetworkGroup     = provider::corefunc::str_snake(var.network_group)
     Name             = format("%s-%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "public-sn", each.value)
-    Vendor           = "Self"
+    Region           = provider::corefunc::str_snake(var.region)
     Type             = "Self Made"
+    Vendor           = "Self"
   }, var.tags)
 }
 
@@ -188,11 +190,11 @@ resource "aws_route_table" "public_route_table" {
   }
 
   tags = merge({
-    Environment  = var.environment
+    Environment  = provider::corefunc::str_snake(var.environment)
     Group        = provider::corefunc::str_snake(var.vpc_group)
     Name         = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.vpc_group), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "public-rt")
     NetworkGroup = provider::corefunc::str_snake(var.network_group)
-    Region       = var.region
+    Region       = provider::corefunc::str_snake(var.region)
     Type         = "Self Made"
     Vendor       = "Self"
   }, var.tags)
@@ -210,7 +212,7 @@ module "ec2_iam_instance" {
 
   for_each = {
     for instance_group, instance in var.instances :
-      "${instance_group}-${var.network_group}" => {
+      "${var.vpc_group}-${var.network_group}-${instance_group}" => {
         instance_group = instance_group
         instance = instance
       }
@@ -218,8 +220,8 @@ module "ec2_iam_instance" {
 
   environment    = var.environment
   region         = var.region
-  vpc_group      = provider::corefunc::str_snake(var.vpc_group)
-  network_group  = provider::corefunc::str_snake(var.network_group)
+  vpc_group      = var.vpc_group
+  network_group  = var.network_group
 
   instance_group = each.value.instance_group
 
@@ -231,7 +233,7 @@ module "ec2_instance" {
 
   for_each = {
     for instance_group, instance in var.instances :
-      "${instance_group}-${var.network_group}" => {
+      "${var.vpc_group}-${var.network_group}-${instance_group}" => {
         instance_group = instance_group
         instance = instance
       }
@@ -239,8 +241,8 @@ module "ec2_instance" {
 
   environment   = var.environment
   region        = var.region
-  vpc_group     = provider::corefunc::str_snake(var.vpc_group)
-  network_group = provider::corefunc::str_snake(var.network_group)
+  vpc_group     = var.vpc_group
+  network_group = var.network_group
 
   vpc_id = var.vpc_id
   
@@ -269,25 +271,38 @@ module "ec2_instance" {
   name                        = each.value.instance.name
   ami                         = each.value.instance.ami
   instance_type               = each.value.instance.instance_type
-  instance_profile_name       = module.ec2_iam_instance[each.key].ec2_instance_profile.name
 
-  desired_count               = each.value.instance.desired_count
+  instance_profile_name       = module.ec2_iam_instance[each.key].ec2_instance_profile.name
+  iam_role_arn                = module.ec2_iam_instance[each.key].ec2_iam_role.arn
+
   cpu_core_count              = each.value.instance.cpu_core_count
   cpu_threads_per_core        = each.value.instance.cpu_threads_per_core
+  
+  desired_count               = each.value.instance.desired_count
+  placement_group_strategy    = each.value.instance.placement_group_strategy
+  minimum_instance_count      = each.value.instance.minimum_instance_count
+  maximum_instance_count      = each.value.instance.maximum_instance_count
 
   enable_public_subnet        = each.value.instance.enable_public_subnet
   associate_public_ip_address = each.value.instance.associate_public_ip_address
   enable_eip                  = each.value.instance.enable_eip
+
+  enable_load_balancer = each.value.instance.enable_load_balancer
+
+  enable_target_group  = each.value.instance.enable_target_group
+  attach_target_group  = each.value.instance.attach_target_group
+  target_group_port    = each.value.instance.target_group_port
+
+  enable_listener      = each.value.instance.enable_listener
+  listener_port        = each.value.instance.listener_port
+
+  enable_autoscaling   = each.value.instance.enable_autoscaling
 
   hostname_type                     = each.value.instance.hostname_type
   enable_resource_name_dns_a_record = each.value.instance.enable_resource_name_dns_a_record
   
   create_key_pair      = each.value.instance.create_key_pair
   key_pair_name        = each.value.instance.key_pair_name
-
-  enable_load_balancer = each.value.instance.enable_load_balancer
-  target_group_port    = each.value.instance.target_group_port
-  listener_port        = each.value.instance.listener_port
 
   enable_ebs           = each.value.instance.enable_ebs
   ebs_volume_size      = each.value.instance.ebs_volume_size
