@@ -1,12 +1,3 @@
-# -----------------------------------------------------------------------------
-# EC2 Instance Module
-#
-# Description: Provision AWS EC2 instances.
-# Author: Kurt Hogarth <kurt@learn-elixir.dev>, Mika Kalathil <mika@learn-elixir.dev>
-# Version: 0.1.0
-# Last Updated: <LAST_UPDATED>
-# -----------------------------------------------------------------------------
-
 ################################################################
 # EC2 Key Pair
 ################################################################
@@ -47,27 +38,63 @@ resource "local_file" "ssh_key" {
 # SUBNET
 ################################################################
 
+locals {
+  availability_zones_public_subnets = { for subnet in var.public_subnets : subnet.availability_zone => subnet... }
+  availability_zones_private_subnets = { for subnet in var.private_subnets : subnet.availability_zone => subnet... }
+}
+
+locals {
+  subnet_availability_zones = [ for i in range(var.desired_count) : var.availability_zones[i % length(var.availability_zones)] ]
+}
+
+locals {
+  instances = {
+    for i in range(var.desired_count) :
+    "${var.vpc_group}-${var.network_group}-${var.instance_group}-${i}" => {
+      index = i
+      availability_zone = local.subnet_availability_zones[i]
+
+      public_subnets = lookup(local.availability_zones_public_subnets, local.subnet_availability_zones[i])
+      public_subnet  = element(
+                        lookup(local.availability_zones_public_subnets, local.subnet_availability_zones[i]),
+                        i % length(lookup(local.availability_zones_public_subnets, local.subnet_availability_zones[i]))
+                      )
+
+      private_subnets = lookup(local.availability_zones_private_subnets, local.subnet_availability_zones[i])
+      private_subnet  = element(
+                        lookup(local.availability_zones_private_subnets, local.subnet_availability_zones[i]),
+                        i % length(lookup(local.availability_zones_private_subnets, local.subnet_availability_zones[i]))
+                      )
+    }
+  }
+}
+
 resource "aws_instance" "ec2_instance" {
-  for_each = { for index in range(var.desired_count) : "${var.vpc_group}-${var.network_group}-${var.instance_group}-${index}" => index }
+  for_each = local.instances
 
   ami               = var.ami
-  availability_zone = var.availability_zones[each.value % length(var.availability_zones)]
+  availability_zone = each.value.availability_zone
   instance_type     = var.instance_type
 
   # After attaching an Amazon EBS volume to an EC2 instance,
   # the disk needs to be prepared before it can be used. This is
   # done by the default `user_data.sh` file.
-  user_data = (
+  user_data_base64 = (
     var.enable_user_data ?
     (
       var.user_data == null ?
-      file("${path.module}/files/user_data.sh") :
+      filebase64("${path.module}/files/user_data.sh") :
       var.user_data
     ) :
     ""
   )
 
-  key_name = var.key_pair_name == null ? (var.create_key_pair ? aws_key_pair.key_pair[0].key_name : null) : var.key_pair_name
+  key_name = (
+    var.key_pair_name == null ?
+    (var.create_key_pair ? aws_key_pair.key_pair[0].key_name : null)
+    :
+    var.key_pair_name
+  )
 
   # The IAM instance profile is required to use the instance
   # metadata service. This profile is loaded at runtime with
@@ -77,23 +104,9 @@ resource "aws_instance" "ec2_instance" {
   # temporary credentials and changing this field may break
   # things.
   iam_instance_profile = var.instance_profile_name
-  
   vpc_security_group_ids = var.vpc_security_group_ids
-
   associate_public_ip_address = var.associate_public_ip_address
-
-  subnet_id = (
-    var.enable_public_subnet ?
-    element(
-      lookup({ for subnet in var.public_subnets : subnet.availability_zone_name => subnet... }, var.availability_zones[each.value % length(var.availability_zones)]),
-      each.value % length({ for subnet in var.public_subnets : subnet.availability_zone_name => subnet... })
-    ).id
-    :
-    element(
-      lookup({ for subnet in var.private_subnets : subnet.availability_zone_name => subnet... }, var.availability_zones[each.value % length(var.availability_zones)]),
-      each.value % length({ for subnet in var.private_subnets : subnet.availability_zone_name => subnet... })
-    ).id
-  )
+  subnet_id = ( var.enable_public_subnet ? each.value.public_subnet.id : each.value.private_subnet.id )
 
   cpu_options {
     core_count = var.cpu_core_count
@@ -106,49 +119,52 @@ resource "aws_instance" "ec2_instance" {
   }
 
   tags = merge({
-    AvailabilityZone = var.availability_zones[each.value % length(var.availability_zones)]
-    Environment      = var.environment
+    Environment      = provider::corefunc::str_snake(var.environment)
     Group            = provider::corefunc::str_snake(var.vpc_group)
-    InstanceGroup    = var.instance_group
-    Name             = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), each.value)
+    InstanceGroup    = provider::corefunc::str_snake(var.instance_group)
+    Name             = format(
+                        "%s-%s-%s-%s-%s",
+                        provider::corefunc::str_kebab(var.vpc_group),
+                        provider::corefunc::str_kebab(var.network_group),
+                        each.value.index,
+                        provider::corefunc::str_kebab(var.name),
+                        provider::corefunc::str_kebab(var.environment)
+                      )
     NetworkGroup     = provider::corefunc::str_snake(var.network_group)
-    Region           = var.region
+    Region           = provider::corefunc::str_snake(var.region)
     Type             = "Self Made"
     Vendor           = "Self"
   }, var.tags)
 }
 
 resource "aws_ebs_volume" "ec2_ebs" {
-  for_each = (
-    var.enable_ebs ?
-    { for index in range(var.desired_count) : "${var.vpc_group}-${var.network_group}-${var.instance_group}-${index}" => index }
-    :
-    {}
-  )
+  for_each = var.enable_ebs ? local.instances : {}
 
-  availability_zone  = var.availability_zones[each.value % length(var.availability_zones)]
+  availability_zone  = each.value.availability_zone
   size               = var.ebs_volume_size
 
   tags = merge({
-    AvailabilityZone = var.availability_zones[each.value % length(var.availability_zones)]
-    Environment      = var.environment
+    Environment      = provider::corefunc::str_snake(var.environment)
     Group            = provider::corefunc::str_snake(var.vpc_group)
-    InstanceGroup    = var.instance_group
-    Name             = format("%s-%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "ebs", each.value)
+    InstanceGroup    = provider::corefunc::str_snake(var.instance_group)
+    Name             = format(
+                        "%s-%s-%s-%s-%s-%s",
+                        provider::corefunc::str_kebab(var.vpc_group),
+                        provider::corefunc::str_kebab(var.network_group),
+                        provider::corefunc::str_kebab(var.name),
+                        each.value.index,
+                        provider::corefunc::str_kebab(var.environment),
+                        "ebs"
+                      )
     NetworkGroup     = provider::corefunc::str_snake(var.network_group)
-    Region           = var.region
+    Region           = provider::corefunc::str_snake(var.region)
     Type             = "Self Made"
     Vendor           = "Self"
   }, var.tags)
 }
 
 resource "aws_volume_attachment" "ec2_ebs_association" {
-  for_each = (
-    var.enable_ebs ?
-    { for index in range(var.desired_count) : "${var.vpc_group}-${var.network_group}-${var.instance_group}-${index}" => index }
-    :
-    {}
-  )
+  for_each = var.enable_ebs ? local.instances : {}
 
   device_name = "/dev/sdh"
   volume_id   = aws_ebs_volume.ec2_ebs[each.key].id
@@ -158,7 +174,7 @@ resource "aws_volume_attachment" "ec2_ebs_association" {
 ### ELASTIC IP
 
 resource "aws_eip" "ec2_eip" {
-  for_each = var.enable_eip ? { for index in range(var.desired_count) : "${var.vpc_group}-${var.network_group}-${var.instance_group}-${index}" => index } : {}
+  for_each = ( var.enable_eip ? local.instances : {} )
 
   domain = "vpc"
 
@@ -166,25 +182,56 @@ resource "aws_eip" "ec2_eip" {
     Environment   = provider::corefunc::str_snake(var.environment)
     Group         = provider::corefunc::str_snake(var.vpc_group)
     InstanceGroup = provider::corefunc::str_snake(var.instance_group)
-    Name          = format("%s-%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "eip", each.value)
+    Name          = format(
+                      "%s-%s-%s",
+                      provider::corefunc::str_snake(var.vpc_group),
+                      provider::corefunc::str_snake(var.network_group),
+                      provider::corefunc::str_snake(var.name),
+                      each.value.index,
+                      provider::corefunc::str_snake(var.environment),
+                      "eip"
+                    )
     NetworkGroup  = provider::corefunc::str_snake(var.network_group)
-    Region        = var.region
+    Region        = provider::corefunc::str_snake(var.region)
     Type          = "Self Made"
     Vendor        = "Self"
   }, var.tags)
 }
 
 resource "aws_eip_association" "ec2_eip_association" {
-  for_each = var.enable_eip ? { for index in range(var.desired_count) : "${var.vpc_group}-${var.network_group}-${var.instance_group}-${index}" => index } : {}
+  for_each = ( var.enable_eip ? local.instances : {} )
 
   instance_id = aws_instance.ec2_instance[each.key].id
   allocation_id = aws_eip.ec2_eip[each.key].id
 }
 
-resource "aws_lb_target_group" "ec2_lb_target_group" {
-  count = var.enable_target_group ? 1 : 0
+locals {
+  target_groups = (
+    var.enable_target_group ?
+    {
+      for i in range(length(var.availability_zones)) :
+        var.availability_zones[i] => {
+          index = i
+          availability_zone = var.availability_zones[i]
+          name = format(
+                  "%s-%s-%s-%s-%s",
+                  provider::corefunc::str_kebab(var.vpc_group),
+                  provider::corefunc::str_kebab(var.network_group),
+                  provider::corefunc::str_kebab(var.name),
+                  i,
+                  provider::corefunc::str_kebab(var.environment)
+                )
+        }
+    }
+    :
+    {}
+  )
+}
 
-  name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb-tg")
+resource "aws_lb_target_group" "ec2_lb_target_group" {
+  for_each = local.target_groups
+
+  name = format("%s-%s", substr(each.value.name, 0, 32 - 7), "alb-tg")
 
   vpc_id   = var.vpc_id
   protocol = "HTTP"
@@ -212,45 +259,101 @@ resource "aws_lb_target_group" "ec2_lb_target_group" {
     Environment   = provider::corefunc::str_snake(var.environment)
     InstanceGroup = provider::corefunc::str_snake(var.instance_group)
     Group         = provider::corefunc::str_snake(var.vpc_group)
-    Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb-tg")
+    Name          = format(
+                      "%s-%s-%s-%s-%s-%s",
+                      provider::corefunc::str_kebab(var.vpc_group),
+                      provider::corefunc::str_kebab(var.network_group),
+                      provider::corefunc::str_kebab(var.name),
+                      each.value.index,
+                      provider::corefunc::str_kebab(var.environment),
+                      "alb-tg"
+                    )
     NetworkGroup  = provider::corefunc::str_snake(var.network_group)
-    Region        = var.region
+    Region        = provider::corefunc::str_snake(var.region)
     Type          = "Self Made"
     Vendor        = "Self"
   }, var.tags)
 }
 
+locals {
+  load_balancers = (
+    var.enable_load_balancer ?
+    {
+      for i in range(length(var.availability_zones)) :
+        var.availability_zones[i] => {
+          index = i
+
+          name = format(
+                  "%s-%s-%s-%s-%s",
+                  provider::corefunc::str_kebab(var.vpc_group),
+                  provider::corefunc::str_kebab(var.network_group),
+                  provider::corefunc::str_kebab(var.name),
+                  i,
+                  provider::corefunc::str_kebab(var.environment)
+                )
+
+          availability_zone = var.availability_zones[i]
+
+          public_subnets = flatten([
+            for subnet in var.public_subnets :
+            subnet.availability_zone == var.availability_zones[i] ? [subnet] : []
+          ])
+        }
+    }
+    :
+    {}
+  )
+}
+
 resource "aws_lb" "load_balancer" {
-  count = var.enable_load_balancer ? 1 : 0
+  for_each = local.load_balancers
 
   load_balancer_type = "application"
-  
-  name            = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb")
-  subnets         = [ for subnet in var.public_subnets : subnet.id ]
+
+  name            = format("%s-%s", substr(each.value.name, 0, 32 - 4), "alb")
+  subnets         = [ for subnet in each.value.public_subnets : subnet.id ]
   security_groups = var.vpc_security_group_ids
 
   tags = merge({
     Environment   = provider::corefunc::str_snake(var.environment)
     Group         = provider::corefunc::str_kebab(var.vpc_group)
     InstanceGroup = provider::corefunc::str_snake(var.instance_group)
-    Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "alb")
+    Name          = format(
+                      "%s-%s-%s-%s-%s-%s",
+                      provider::corefunc::str_kebab(var.vpc_group),
+                      provider::corefunc::str_kebab(var.network_group),
+                      provider::corefunc::str_kebab(var.name),
+                      each.value.index,
+                      provider::corefunc::str_kebab(var.environment),
+                      "alb"
+                    )
     NetworkGroup  = provider::corefunc::str_snake(var.network_group)
-    Region        = var.region
+    Region        = provider::corefunc::str_snake(var.region)
     Type          = "Self Made"
     Vendor        = "Self"
   }, var.tags)
 }
 
-resource "aws_lb_target_group_attachment" "ec2_lb_target_group_attachment" {
-  for_each = (
-    (var.enable_target_group && var.attach_target_group) ?
-    { for index in range(var.desired_count) : "${var.vpc_group}-${var.network_group}-${var.instance_group}-${index}" => index }
+locals {
+  target_group_attachments = (
+    (var.enable_target_group && var.attach_target_group) ? 
+    {
+      for key, instance in local.instances :
+      key => {
+        instance = aws_instance.ec2_instance[key]
+        target_group = aws_lb_target_group.ec2_lb_target_group[instance.availability_zone]
+      }
+    }
     :
     {}
   )
+}
 
-  target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
-  target_id        = aws_instance.ec2_instance[each.key].id
+resource "aws_lb_target_group_attachment" "ec2_lb_target_group_attachment" {
+  for_each = local.target_group_attachments
+
+  target_group_arn = each.value.target_group.arn
+  target_id        = each.value.instance.id
   port             = var.target_group_port
 }
 
@@ -270,23 +373,44 @@ resource "aws_lb_target_group_attachment" "ec2_lb_target_group_attachment" {
 # logic. If the listener protocol is HTTPS, you must deploy at least one SSL
 # server certificate on the listener.
 resource "aws_lb_listener" "ec2_lb_listener" {
-  count = (var.enable_target_group && var.enable_listener) ? 1 : 0
+  for_each = (
+    (var.enable_target_group && var.enable_listener) ?
+    {
+      for i in range(length(var.availability_zones)) : 
+        var.availability_zones[i] => {
+          index = i
+          availability_zone = var.availability_zones[i]
+          load_balancer = aws_lb.load_balancer[var.availability_zones[i]]
+          target_group = aws_lb_target_group.ec2_lb_target_group[var.availability_zones[i]]
+        }
+    }
+    :
+    {}
+  )
 
-  load_balancer_arn = aws_lb.load_balancer[0].arn
+  load_balancer_arn = each.value.load_balancer.arn
   port              = var.listener_port
-  protocol          = aws_lb_target_group.ec2_lb_target_group[0].protocol
+  protocol          = each.value.target_group.protocol
 
   # AWS requires that listeners have a defined action to process incoming requests.
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.ec2_lb_target_group[0].arn
+    target_group_arn = each.value.target_group.arn
   }
 }
 
 resource "aws_sqs_queue" "ec2_sqs" {
   count = var.enable_autoscaling ? 1 : 0
 
-  name                      = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "sqs")
+  name = format(
+          "%s-%s-%s-%s-%s",
+          provider::corefunc::str_kebab(var.vpc_group),
+          provider::corefunc::str_kebab(var.network_group),
+          provider::corefunc::str_kebab(var.name),
+          provider::corefunc::str_kebab(var.environment),
+          "sqs"
+        )
+
   delay_seconds             = var.sqs_delay_seconds
   max_message_size          = var.sqs_max_message_size
   message_retention_seconds = var.sqs_message_retention_seconds
@@ -301,7 +425,14 @@ resource "aws_sqs_queue" "ec2_sqs" {
     Environment   = provider::corefunc::str_snake(var.environment)
     Group         = provider::corefunc::str_snake(var.vpc_group)
     InstanceGroup = provider::corefunc::str_snake(var.instance_group)
-    Name          = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "sqs")
+    Name          = format(
+                      "%s-%s-%s-%s-%s",
+                      provider::corefunc::str_kebab(var.vpc_group),
+                      provider::corefunc::str_kebab(var.network_group),
+                      provider::corefunc::str_kebab(var.name),
+                      provider::corefunc::str_kebab(var.environment),
+                      "sqs"
+                    )
     NetworkGroup  = provider::corefunc::str_snake(var.network_group)
     Type          = "Self Made"
     Vendor        = "Self"
@@ -313,11 +444,18 @@ resource "aws_sqs_queue" "ec2_sqs" {
 resource "aws_sqs_queue" "ec2_sqs_dlq" {
   count = var.enable_autoscaling ? 1 : 0
 
-  name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "sqs_dlq")
+  name = format(
+          "%s-%s-%s-%s-%s",
+          provider::corefunc::str_kebab(var.vpc_group),
+          provider::corefunc::str_kebab(var.network_group),
+          provider::corefunc::str_kebab(var.name),
+          provider::corefunc::str_kebab(var.environment),
+          "sqs_dlq"
+        )
 
   redrive_allow_policy = jsonencode({
-    redrivePermission  = "byQueue",
-    sourceQueueArns    = [ aws_sqs_queue.ec2_sqs[0].arn ]
+    redrivePermission = "byQueue",
+    sourceQueueArns = [ aws_sqs_queue.ec2_sqs[0].arn ]
   })
 }
 
@@ -332,26 +470,172 @@ resource "aws_sqs_queue_redrive_policy" "ec2_sqs_redrive" {
   })
 }
 
-resource "aws_launch_template" "ec2_instance_template" {
-  count = var.enable_autoscaling ? 1 : 0
-
-  name_prefix   = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "it")
-  image_id      = var.ami
-  instance_type = var.instance_type
-}
-
 resource "aws_placement_group" "ec2_placement_group" {
-  count = var.enable_autoscaling ? 1 : 0
+  # Each AZ has its own placement group, this ensures low-latency communication within the AZ.
+  for_each = (
+    var.enable_autoscaling ?
+    {
+      for i in range(length(var.availability_zones)) :
+        var.availability_zones[i] => {
+          index = i
+          availability_zone = var.availability_zones[i]
+        }
+    }
+    :
+    {}
+  )
 
-  name = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "pg")
+  name = format(
+    "%s-%s-%s-%s-%s-%s",
+    provider::corefunc::str_kebab(var.vpc_group),
+    provider::corefunc::str_kebab(var.network_group),
+    provider::corefunc::str_kebab(var.name),
+    each.value.index,
+    provider::corefunc::str_kebab(var.environment),
+    "pg"
+  )
+
   strategy = var.placement_group_strategy
 }
 
-resource "aws_autoscaling_group" "ec2_autoscaling_group" {
-  count = var.enable_autoscaling ? 1 : 0
+locals {
+  launch_templates = (
+    var.enable_autoscaling ?
+    {
+      for i in range(length(var.availability_zones)) :
+        var.availability_zones[i] => {
+          index = i
+          availability_zone = var.availability_zones[i]
+          placement_group = aws_placement_group.ec2_placement_group[var.availability_zones[i]]
+        }
+    }
+    :
+    {}
+  )
+}
+
+resource "aws_launch_template" "ec2_instance_template" {
+  for_each = local.launch_templates
+
+  name_prefix = format(
+    "%s-%s-%s-%s-%s-%s",
+    provider::corefunc::str_kebab(var.vpc_group),
+    provider::corefunc::str_kebab(var.network_group),
+    provider::corefunc::str_kebab(var.name),
+    each.value.index,
+    provider::corefunc::str_kebab(var.environment),
+    "tmpl"
+  )
+
+  image_id      = var.ami
+  instance_type = var.instance_type
+
+  ebs_optimized = true
+
+  user_data = (
+    var.enable_user_data ?
+    (
+      var.user_data == null ?
+      filebase64("${path.module}/files/user_data.sh") :
+      var.user_data
+    ) :
+    ""
+  )
+
+  vpc_security_group_ids = var.vpc_security_group_ids
   
-  name                      = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "asg")
-  placement_group           = aws_placement_group.ec2_placement_group[0].id
+  monitoring {
+    enabled = true
+  }
+
+  iam_instance_profile {
+    name = var.instance_profile_name
+  }
+
+  block_device_mappings {
+    device_name = "/dev/sdf"
+
+    ebs {
+      volume_size = var.ebs_volume_size
+    }
+  }
+
+  cpu_options {
+    core_count       = var.cpu_core_count
+    threads_per_core = var.cpu_threads_per_core
+  }
+
+  placement {
+    availability_zone = each.value.availability_zone
+    group_name = each.value.placement_group.name
+  }
+
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = merge({
+      Environment      = provider::corefunc::str_snake(var.environment)
+      Group            = provider::corefunc::str_snake(var.vpc_group)
+      InstanceGroup    = provider::corefunc::str_snake(var.instance_group)
+      Name             = format(
+                          "%s-%s-%s-%s-%s-%s",
+                          provider::corefunc::str_kebab(var.vpc_group),
+                          provider::corefunc::str_kebab(var.network_group),
+                          provider::corefunc::str_kebab(var.name),
+                          each.value.index,
+                          provider::corefunc::str_kebab(var.environment),
+                          "tmpl"
+                        )
+      NetworkGroup     = provider::corefunc::str_snake(var.network_group)
+      Region           = provider::corefunc::str_snake(var.region)
+      Type             = "Self Made"
+      Vendor           = "Self"
+    }, var.tags)
+  }
+}
+
+# - Each ASG scales independently within its AZ. This means if the desired
+# capacity of both ASGs is 1, each ASG will maintain 1 instance, resulting
+# in a total of 2 instances across both AZs.
+#
+# - If an ASG in us-west-1a scales up, only instances in that AZ are launched.
+#
+# - If an AZ becomes unavailable, the ASG in the other AZ will not automatically
+# scale to handle the traffic from the failed AZ unless configured with a
+# higher minimum or maximum size to compensate.
+locals {
+  autoscaling_groups = (
+    var.enable_autoscaling ?
+    {
+      for i in range(length(var.availability_zones)) :
+        var.availability_zones[i] => {
+          index = i
+          availability_zone = var.availability_zones[i]
+          placement_group = aws_placement_group.ec2_placement_group[var.availability_zones[i]]
+          launch_template = aws_launch_template.ec2_instance_template[var.availability_zones[i]]
+          public_subnets = lookup(local.availability_zones_public_subnets, var.availability_zones[i])
+          private_subnets = lookup(local.availability_zones_public_subnets, var.availability_zones[i])
+        }
+    }
+    :
+    {}
+  )
+}
+
+resource "aws_autoscaling_group" "ec2_autoscaling_group" {
+  for_each = local.autoscaling_groups
+  
+  name = format(
+    "%s-%s-%s-%s-%s-%s",
+    provider::corefunc::str_kebab(var.vpc_group),
+    provider::corefunc::str_kebab(var.network_group),
+    provider::corefunc::str_kebab(var.name),
+    each.value.index,
+    provider::corefunc::str_kebab(var.environment),
+    "asg"
+  )
+
+  placement_group           = each.value.placement_group.id
   desired_capacity          = var.desired_count
   min_size                  = var.minimum_instance_count
   max_size                  = var.maximum_instance_count
@@ -359,22 +643,22 @@ resource "aws_autoscaling_group" "ec2_autoscaling_group" {
   health_check_type         = "ELB"
   force_delete              = true
 
+  # Specifies the subnets where the group can launch instances.
+  # These subnets can be private or public. When launched in a
+  # private subnet only outbound communication is allowed and
+  # you must use a NAT Gateway or NAT Instance.
+  vpc_zone_identifier = (
+    var.enable_public_subnet ?
+    [ for subnet in each.value.public_subnets : subnet.id ]
+    :
+    []
+  )
+
   # List of policies to decide how the instances in the Auto Scaling Group should be terminated.
   termination_policies = [
     "OldestInstance",
     "OldestLaunchConfiguration",
   ]
-
-  # Specifies the subnets where the group can launch instances.
-  # These subnets can be private or public.
-  #
-  # When launched in a private subnet only outbound communication is
-  # allowed and you must use a NAT Gateway or NAT Instance.
-  vpc_zone_identifier       = (
-    var.enable_public_subnet ?
-    [ for subnet in var.public_subnets : subnet.id ] :
-    [ for subnet in var.private_subnets : subnet.id ]
-  )
 
   instance_maintenance_policy {
     min_healthy_percentage = var.min_healthy_percentage
@@ -382,12 +666,20 @@ resource "aws_autoscaling_group" "ec2_autoscaling_group" {
   }
 
   launch_template {
-    id      = aws_launch_template.ec2_instance_template[0].id
+    id      = each.value.launch_template.id
     version = "$Latest"
   }
 
   initial_lifecycle_hook {
-    name                 = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "lh")
+    name                 = format(
+                            "%s-%s-%s-%s-%s-%s",
+                            provider::corefunc::str_kebab(var.vpc_group),
+                            provider::corefunc::str_kebab(var.network_group),
+                            provider::corefunc::str_kebab(var.name),
+                            each.value.index,
+                            provider::corefunc::str_kebab(var.environment),
+                            "lh_launching"
+                          )
     default_result       = "CONTINUE"
     heartbeat_timeout    = 2000
     lifecycle_transition = "autoscaling:EC2_INSTANCE_LAUNCHING"
@@ -395,12 +687,13 @@ resource "aws_autoscaling_group" "ec2_autoscaling_group" {
     notification_metadata = jsonencode({
       message = "[autoscaling] - EC2 Instance Launching"
       payload = merge({
-        Environment   = provider::corefunc::str_snake(var.environment)
-        Group         = provider::corefunc::str_snake(var.vpc_group)
-        InstanceGroup = provider::corefunc::str_snake(var.instance_group)
-        NetworkGroup  = provider::corefunc::str_snake(var.network_group)
-        Name          = provider::corefunc::str_kebab(var.name)
-        Region        = provider::corefunc::str_snake(var.region)
+        AvailabilityZone = each.value.availability_zone
+        Environment      = provider::corefunc::str_snake(var.environment)
+        Group            = provider::corefunc::str_snake(var.vpc_group)
+        InstanceGroup    = provider::corefunc::str_snake(var.instance_group)
+        NetworkGroup     = provider::corefunc::str_snake(var.network_group)
+        Name             = provider::corefunc::str_kebab(var.name)
+        Region           = provider::corefunc::str_snake(var.region)
       }, var.tags)
     })
 
@@ -410,7 +703,15 @@ resource "aws_autoscaling_group" "ec2_autoscaling_group" {
   }
 
   initial_lifecycle_hook {
-    name                 = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "lh")
+    name                 = format(
+                            "%s-%s-%s-%s-%s-%s",
+                            provider::corefunc::str_kebab(var.vpc_group),
+                            provider::corefunc::str_kebab(var.network_group),
+                            provider::corefunc::str_kebab(var.name),
+                            each.value.index,
+                            provider::corefunc::str_kebab(var.environment),
+                            "lh_terminating"
+                          )
     default_result       = "CONTINUE"
     heartbeat_timeout    = 2000
     lifecycle_transition = "autoscaling:EC2_INSTANCE_TERMINATING"
@@ -418,12 +719,13 @@ resource "aws_autoscaling_group" "ec2_autoscaling_group" {
     notification_metadata = jsonencode({
       message = "[autoscaling] - EC2 Instance Terminating"
       payload = merge({
-        Environment   = provider::corefunc::str_snake(var.environment)
-        Group         = provider::corefunc::str_snake(var.vpc_group)
-        InstanceGroup = provider::corefunc::str_snake(var.instance_group)
-        NetworkGroup  = provider::corefunc::str_snake(var.network_group)
-        Name          = provider::corefunc::str_kebab(var.name)
-        Region        = provider::corefunc::str_snake(var.region)
+        AvailabilityZone = each.value.availability_zone
+        Environment      = provider::corefunc::str_snake(var.environment)
+        Group            = provider::corefunc::str_snake(var.vpc_group)
+        InstanceGroup    = provider::corefunc::str_snake(var.instance_group)
+        NetworkGroup     = provider::corefunc::str_snake(var.network_group)
+        Name             = provider::corefunc::str_kebab(var.name)
+        Region           = provider::corefunc::str_snake(var.region)
       }, var.tags)
     })
 
@@ -438,14 +740,22 @@ resource "aws_autoscaling_group" "ec2_autoscaling_group" {
 
   dynamic "tag" {
     for_each = merge({
-      Environment      = provider::corefunc::str_snake(var.environment)
-      Group            = provider::corefunc::str_snake(var.vpc_group)
-      InstanceGroup    = provider::corefunc::str_snake(var.instance_group)
-      Name             = format("%s-%s-%s-%s", provider::corefunc::str_kebab(var.name), provider::corefunc::str_kebab(var.network_group), provider::corefunc::str_kebab(var.environment), "asg")
-      NetworkGroup     = provider::corefunc::str_snake(var.network_group)
-      Region           = provider::corefunc::str_snake(var.region)
-      Vendor           = "Self"
-      Type             = "Self Made"
+      Environment   = provider::corefunc::str_snake(var.environment)
+      Group         = provider::corefunc::str_snake(var.vpc_group)
+      InstanceGroup = provider::corefunc::str_snake(var.instance_group)
+      Name          = format(
+                      "%s-%s-%s-%s-%s-%s",
+                      provider::corefunc::str_kebab(var.vpc_group),
+                      provider::corefunc::str_kebab(var.network_group),
+                      provider::corefunc::str_kebab(var.name),
+                      each.value.index,
+                      provider::corefunc::str_kebab(var.environment),
+                      "asg"
+                    )
+      NetworkGroup  = provider::corefunc::str_snake(var.network_group)
+      Region        = provider::corefunc::str_snake(var.region)
+      Vendor        = "Self"
+      Type          = "Self Made"
     }, var.tags)
 
     content {
@@ -460,9 +770,25 @@ resource "aws_autoscaling_group" "ec2_autoscaling_group" {
   }
 }
 
+locals {
+  autoscaling_group_attachments = (
+    (var.enable_load_balancer && var.enable_target_group && var.enable_autoscaling) ?
+    {
+      for i in range(length(var.availability_zones)) :
+      var.availability_zones[i] => {
+        index = i
+        availability_zone = var.availability_zones[i]
+        autoscaling_group = aws_autoscaling_group.ec2_autoscaling_group[var.availability_zones[i]]
+        target_group = aws_lb_target_group.ec2_lb_target_group[var.availability_zones[i]]
+      }
+    }
+    :
+    {}
+  )
+}
 resource "aws_autoscaling_attachment" "ec2_autoscaling_group_attachment" {
-  count = (var.enable_load_balancer && var.enable_target_group && var.enable_autoscaling) ? 1 : 0
+  for_each = local.autoscaling_group_attachments
 
-  autoscaling_group_name = aws_autoscaling_group.ec2_autoscaling_group[0].name
-  lb_target_group_arn    = aws_lb_target_group.ec2_lb_target_group[0].arn
+  autoscaling_group_name = each.value.autoscaling_group.name
+  lb_target_group_arn    = each.value.target_group.arn
 }

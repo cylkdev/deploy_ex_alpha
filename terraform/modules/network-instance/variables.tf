@@ -19,18 +19,28 @@ variable "vpc_group" {
   nullable = false
 }
 
-variable "network_group" {
-  type = string
-  nullable = false
-}
-
 variable "vpc_id" {
   type = string
   nullable = false
 }
 
-variable "vpc_name" {
+variable "internet_gateway_id" {
   type = string
+  nullable = false
+}
+
+variable "network_group" {
+  type = string
+  nullable = false
+}
+
+variable "subnet_count" {
+  type = number
+  nullable = false
+}
+
+variable "availability_zones" {
+  type = list(string)
   nullable = false
 }
 
@@ -39,54 +49,31 @@ variable "cidr_block" {
   nullable = false
 }
 
-variable "cidrsubnet_newbits" {
+variable "cidr_newbits" {
   type = number
   nullable = false
-  default = 4
+  default = 2
 }
 
-variable "cidrsubnet_netnum" {
+variable "cidr_netnum" {
   type = number
   nullable = false
   default = 0
 }
 
-variable "subnet_count" {
-  type = number
-  nullable = false
-  default = 2
-}
-
-# AVAILABILITY ZONES
-
-variable "availability_zone_names" {
+variable "vpc_security_group_ids" {
   type = list(string)
   nullable = false
-  default = []
 }
 
-variable "availability_zone_count" {
-  type = number
+variable "instance_profile_name" {
+  type = string
   nullable = false
-  default = 2
 }
 
-variable "all_availability_zones" {
-  type = bool
+variable "iam_role_arn" {
+  type = string
   nullable = false
-  default = true
-}
-
-variable "exclude_availability_zone_names" {
-  type = list(string)
-  nullable = false
-  default = []
-}
-
-variable "exclude_availability_zone_ids" {
-  type = list(string)
-  nullable = false
-  default = []
 }
 
 variable "instances" {
@@ -131,9 +118,4 @@ variable "instances" {
     enable_ebs = optional(bool)
     ebs_volume_size = optional(number)
   }))
-}
-
-variable "gateway_id" {
-  type = string
-  nullable = false
 }

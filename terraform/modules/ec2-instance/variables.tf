@@ -40,13 +40,13 @@ variable "name" {
 variable "ami" {
   type = string
   nullable = false
-  default = "ami-047d7c33f6e7b4bc4"
+  default = "ami-047d7c33f6e7b4bc4" # Amazon Linux 2023
 }
 
 variable "instance_type" {
   type = string
   nullable = false
-  default = "t2.micro"
+  default = "t3.micro"
 }
 
 variable "desired_count" {
@@ -73,7 +73,7 @@ variable "vpc_security_group_ids" {
 
 variable "private_subnets" {
   type = list(object({
-    availability_zone_name = string
+    availability_zone = string
     id = string
   }))
 
@@ -82,7 +82,7 @@ variable "private_subnets" {
 
 variable "public_subnets" {
   type = list(object({
-    availability_zone_name = string
+    availability_zone = string
     id = string
   }))
 

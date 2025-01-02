@@ -6,39 +6,68 @@ module "vpc_instance" {
   tags        = var.tags
 
   vpc_group   = var.vpc_group
-  cidr_block  = var.vpc_cidr
   vpc_name    = var.vpc_name
+
+  cidr_block  = var.cidr_block
+}
+
+module "ec2_iam_instance" {
+  source = "../ec2-iam-instance"
+
+  environment = var.environment
+  region      = var.region
+  vpc_group   = var.vpc_group
+}
+
+locals {
+ networks = [
+    for network_group, network in var.networks : {
+      network_group = network_group
+      network = network
+    }
+  ]
+}
+
+locals {
+  cidr_blocks = [
+    for i in range(length(local.networks)) :
+    cidrsubnet(var.cidr_block, var.cidr_newbits, var.cidr_netnum + i)
+  ]
 }
 
 module "network_instance" {
   source = "../network-instance"
 
   for_each = {
-    for network_group, network in var.networks :
-      "${var.vpc_group}-${network_group}" => {
-        index = index(keys(var.networks), network_group)
-        network_group = network_group
-        network = network
+    for i in range(length(local.networks)) :
+      "${var.vpc_group}-${local.networks[i].network_group}-${i}" => {
+        index = i
+        network_group = local.networks[i].network_group
+        network = local.networks[i].network
+        cidr_block = local.cidr_blocks[i]
       }
   }
 
   environment = var.environment
   region      = var.region
-  tags        = var.tags
 
-  vpc_group   = var.vpc_group
-  vpc_id      = module.vpc_instance.vpc_instance.id
-  vpc_name    = var.vpc_name
+  vpc_group           = var.vpc_group
+  vpc_id              = module.vpc_instance.vpc_instance.id
+  internet_gateway_id = module.vpc_instance.public_internet_gateway.id
 
-  gateway_id  = module.vpc_instance.public_internet_gateway.id
+  iam_role_arn          = module.ec2_iam_instance.ec2_iam_role.arn
+  instance_profile_name = module.ec2_iam_instance.ec2_instance_profile.name
+
+  cidr_block = each.value.cidr_block
+
+  vpc_security_group_ids = [
+    module.vpc_instance.security_group_allow_ssh.id,
+    module.vpc_instance.security_group_allow_tls.id
+  ]
   
-  network_group           = each.value.network_group
-  availability_zone_names = each.value.network.availability_zone_names
-  subnet_count            = each.value.network.subnet_count
+  availability_zones = module.vpc_instance.availability_zones.names
+  subnet_count = each.value.network.subnet_count
 
-  cidr_block         = cidrsubnet(var.vpc_cidr, var.vpc_cidr_newbits , var.vpc_cidr_netnum + each.value.index)
-  cidrsubnet_netnum  = each.value.network.cidrsubnet_netnum
-  cidrsubnet_newbits = each.value.network.cidrsubnet_newbits
-
+  network_group = each.value.network_group
   instances = each.value.network.instances
 }

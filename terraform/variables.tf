@@ -1,11 +1,13 @@
 variable "environment" {
   type = string
   nullable = false
+  default = "development"
 }
 
 variable "region" {
   type = string
   nullable = false
+  default = "us-west-1"
 }
 
 variable "tags" {
@@ -16,16 +18,14 @@ variable "tags" {
 
 variable "stack" {
   type = map(object({
-    vpc_name         = string
-    vpc_cidr         = string
-    vpc_cidr_netnum  = optional(number)
-    vpc_cidr_newbits = optional(number)
+    vpc_name     = string
+    cidr_block   = string
+    cidr_newbits = optional(number)
+    cidr_netnum  = optional(number)
 
     networks = map(object({
       availability_zone_names = optional(list(string))
-      subnet_count = optional(number)
-      cidrsubnet_netnum = optional(number)
-      cidrsubnet_newbits = optional(number)
+      subnet_count = number
 
       instances = map(object({
         name = string
@@ -70,5 +70,6 @@ variable "stack" {
       }))
     }))
   }))
+
   nullable = false
 }

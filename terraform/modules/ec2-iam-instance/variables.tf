@@ -18,18 +18,3 @@ variable "vpc_group" {
   type = string
   nullable = false
 }
-
-variable "network_group" {
-  type = string
-  nullable = false
-}
-
-variable "instance_group" {
-  type = string
-  nullable = false
-}
-
-variable "instance_name" {
-  type = string
-  nullable = false
-}

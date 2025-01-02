@@ -24,18 +24,18 @@ variable "vpc_name" {
   nullable = false
 }
 
-variable "vpc_cidr" {
+variable "cidr_block" {
   type = string
   nullable = false
 }
 
-variable "vpc_cidr_newbits" {
+variable "cidr_newbits" {
   type = number
   nullable = false
-  default = 4
+  default = 8
 }
 
-variable "vpc_cidr_netnum" {
+variable "cidr_netnum" {
   type = number
   nullable = false
   default = 0
@@ -45,9 +45,6 @@ variable "networks" {
   type = map(object({
     availability_zone_names = optional(list(string))
     subnet_count = number
-    cidrsubnet_newbits = number
-    cidrsubnet_netnum = number
-    enable_load_balancer = optional(bool)
 
     instances = map(object({
       name = string
@@ -93,11 +90,5 @@ variable "networks" {
   }))
   
   nullable = false
-
   default = {}
-
-  validation {
-    condition     = length(keys(var.networks)) == length(distinct(keys(var.networks)))
-    error_message = "The networks object must have unique keys."
-  }
 }
