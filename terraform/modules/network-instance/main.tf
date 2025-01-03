@@ -49,7 +49,22 @@ resource "aws_subnet" "private_subnet" {
   }, var.tags)
 }
 
+# Having one subnet per route table in AWS offers several benefits,
+# particularly around control, flexibility, and security.
+#
+# Granular Routing Control:
+#
+# Each subnet can have its own unique routing configuration,
+# enabling fine-tuned control over traffic flows.
+#
+# For example:
+#
+# One subnet's traffic can route to the internet through a NAT
+# Gateway, while another subnet can route to an on-premises
+# data center via a VPN or Direct Connect.
 resource "aws_route_table" "private_route_table" {
+  for_each = local.private_subnets
+
   vpc_id = var.vpc_id
 
   tags = merge({
@@ -57,8 +72,9 @@ resource "aws_route_table" "private_route_table" {
     Group        = provider::corefunc::str_snake(var.vpc_group)
     NetworkGroup = provider::corefunc::str_snake(var.network_group)
     Name         = format(
-                    "%s-%s-%s",
+                    "%s-%s-%s-%s",
                     provider::corefunc::str_kebab(var.network_group),
+                    each.value.availability_zone,
                     provider::corefunc::str_kebab(var.environment),
                     "private-rt"
                   )
@@ -72,7 +88,7 @@ resource "aws_route_table_association" "private_route_table_association" {
   for_each = local.private_subnets
 
   subnet_id      = aws_subnet.private_subnet[each.key].id
-  route_table_id = aws_route_table.private_route_table.id
+  route_table_id = aws_route_table.private_route_table[each.key].id
 }
 
 resource "aws_subnet" "public_subnet" {
@@ -100,6 +116,8 @@ resource "aws_subnet" "public_subnet" {
 }
 
 resource "aws_route_table" "public_route_table" {
+  for_each = local.public_subnets
+
   vpc_id = var.vpc_id
 
   # The cidr block must be "0.0.0.0/0" to allow instances within
@@ -113,8 +131,9 @@ resource "aws_route_table" "public_route_table" {
     Environment  = provider::corefunc::str_snake(var.environment)
     Group        = provider::corefunc::str_snake(var.vpc_group)
     Name         = format(
-                    "%s-%s-%s",
+                    "%s-%s-%s-%s",
                     provider::corefunc::str_kebab(var.network_group),
+                    each.value.availability_zone,
                     provider::corefunc::str_kebab(var.environment),
                     "public-rt"
                   )
@@ -129,7 +148,7 @@ resource "aws_route_table_association" "public_route_table_association" {
   for_each = local.public_subnets
 
   subnet_id      = aws_subnet.public_subnet[each.key].id
-  route_table_id = aws_route_table.public_route_table.id
+  route_table_id = aws_route_table.public_route_table[each.key].id
 }
 
 locals {
