@@ -52,7 +52,7 @@ variable "cidr_block" {
 variable "cidr_newbits" {
   type = number
   nullable = false
-  default = 2
+  default = 4
 }
 
 variable "cidr_netnum" {

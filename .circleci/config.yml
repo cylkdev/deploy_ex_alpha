@@ -1,231 +1,231 @@
-version: 2.1
-
-executors:
-  alpine:
-    docker:
-      - image: alpine:3.21.0
-
-jobs:
-  provision_and_configure:
-    executor: alpine
-    parameters:
-      environment:
-        type: string
-      aws_cli_version:
-        type: string
-      terraform_version:
-        type: string
-    steps:
-      - run:
-          name: Update Package Index
-          command: apk add --update --virtual .deps --no-cache gnupg
-
-      - run:
-          name: Install Terraform
-          command: |
-            cd /tmp && \
-            wget https://releases.hashicorp.com/terraform/<< parameters.terraform_version >>/terraform_<< parameters.terraform_version >>_linux_amd64.zip && \
-            wget https://releases.hashicorp.com/terraform/<< parameters.terraform_version >>/terraform_<< parameters.terraform_version >>_SHA256SUMS && \
-            wget https://releases.hashicorp.com/terraform/<< parameters.terraform_version >>/terraform_<< parameters.terraform_version >>_SHA256SUMS.sig && \
-            wget -qO- https://www.hashicorp.com/.well-known/pgp-key.txt | gpg --import && \
-            gpg --verify terraform_<< parameters.terraform_version >>_SHA256SUMS.sig terraform_<< parameters.terraform_version >>_SHA256SUMS && \
-            grep terraform_<< parameters.terraform_version >>_linux_amd64.zip terraform_<< parameters.terraform_version >>_SHA256SUMS | sha256sum -c && \
-            unzip /tmp/terraform_<< parameters.terraform_version >>_linux_amd64.zip -d /tmp && \
-            mv /tmp/terraform /usr/local/bin/terraform && \
-            rm -f /tmp/terraform_<< parameters.terraform_version >>_linux_amd64.zip terraform_<< parameters.terraform_version >>_SHA256SUMS << parameters.terraform_version >>/terraform_<< parameters.terraform_version >>_SHA256SUMS.sig && \
-            apk del .deps
-
-      - run:
-          name: Validate Terraform Installation
-          command: |
-            terraform --version
-
-      - run:
-          name: Install AWS CLI
-          command: |
-            cd /tmp && \
-            apk add --no-cache \
-            gcompat \
-            tar \
-            curl \
-            make \
-            cmake \
-            gcc \
-            libc-dev \
-            libffi-dev \
-            openssl-dev \
-            && curl -vvv "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.0.30.zip" -o "awscliv2.zip" \
-            && unzip awscliv2.zip \
-            && ./aws/install
-
-      - run:
-          name: Verify AWS CLI Installation
-          command: |
-            aws --version
-
-      - run:
-          name: Install Ansible
-          command: |
-            apk add ansible
-
-      - run:
-          name: Verify Ansible Installation
-          command: |
-            ansible --version
-
-
-
-      # - run:
-      #     name: Install boto3 and botocore
-      #     command: |
-      #       python3 -m pip install boto3 botocore --user ansible
-
-      # - run:
-      #     name: Terraform Init
-      #     working_directory: terraform
-      #     command: |
-      #       terraform init
-
-      # - run:
-      #     name: Terraform Plan
-      #     working_directory: terraform
-      #     command: |
-      #       terraform plan -var-file="vars/<< parameters.environment >>.tfvars" -out << parameters.environment >>.tfplan
-
-      # - run:
-      #     name: Terraform Apply
-      #     working_directory: terraform
-      #     command: |
-      #       terraform apply << parameters.environment >>.tfplan
-
-      # - run:
-      #     name: Save Ansible SSH Key
-      #     working_directory: ansible
-      #     command: |
-      #       echo "$AWS_INSTANCE_PRIVATE_KEY" | base64 -d > ansible-private-key.pem
-      #       chmod 400 ansible-private-key.pem
-
-      # - run:
-      #     name: List Ansible Inventory
-      #     working_directory: ansible
-      #     command: |
-      #       ansible-inventory -i ./inventory/aws_ec2.yaml --list
-
-      # - run:
-      #     name: Run Ansible Playbook
-      #     working_directory: ansible
-      #     command: |
-      #       ansible-playbook -i inventory/aws_ec2.yaml ./playbooks/health_check.yaml
-
-workflows:
-  deploy:
-    jobs:
-      - provision_and_configure:
-          context:
-            - aws_deploy
-          environment: development
-          aws_cli_version: "2.2.1"
-          terraform_version: "1.9.6"
-
-
 # version: 2.1
 
 # executors:
-#   terraform:
+#   alpine:
 #     docker:
-#       - image: hashicorp/terraform:1.9.6
-#         name: terraform
-#   ansible:
-#     docker:
-#       - image: alpine/ansible:2.17.0
-#         name: ansible
+#       - image: alpine:3.21.0
 
 # jobs:
-#   # This job only provisions AWS resources. When EC2 instances
-#   # are created they are in an unhealthy state and will be
-#   # configured by the `ansible_playbook` job.
-#   terraform_provision:
-#     executor: terraform
-#     working_directory: ~/project/terraform
+#   provision_and_configure:
+#     executor: alpine
 #     parameters:
 #       environment:
 #         type: string
+#       aws_cli_version:
+#         type: string
+#       terraform_version:
+#         type: string
 #     steps:
-#       - checkout:
-#           path: ~/project
 #       - run:
-#           name: Terraform Version
+#           name: Update Package Index
+#           command: apk add --update --virtual .deps --no-cache gnupg
+
+#       - run:
+#           name: Install Terraform
+#           command: |
+#             cd /tmp && \
+#             wget https://releases.hashicorp.com/terraform/<< parameters.terraform_version >>/terraform_<< parameters.terraform_version >>_linux_amd64.zip && \
+#             wget https://releases.hashicorp.com/terraform/<< parameters.terraform_version >>/terraform_<< parameters.terraform_version >>_SHA256SUMS && \
+#             wget https://releases.hashicorp.com/terraform/<< parameters.terraform_version >>/terraform_<< parameters.terraform_version >>_SHA256SUMS.sig && \
+#             wget -qO- https://www.hashicorp.com/.well-known/pgp-key.txt | gpg --import && \
+#             gpg --verify terraform_<< parameters.terraform_version >>_SHA256SUMS.sig terraform_<< parameters.terraform_version >>_SHA256SUMS && \
+#             grep terraform_<< parameters.terraform_version >>_linux_amd64.zip terraform_<< parameters.terraform_version >>_SHA256SUMS | sha256sum -c && \
+#             unzip /tmp/terraform_<< parameters.terraform_version >>_linux_amd64.zip -d /tmp && \
+#             mv /tmp/terraform /usr/local/bin/terraform && \
+#             rm -f /tmp/terraform_<< parameters.terraform_version >>_linux_amd64.zip terraform_<< parameters.terraform_version >>_SHA256SUMS << parameters.terraform_version >>/terraform_<< parameters.terraform_version >>_SHA256SUMS.sig && \
+#             apk del .deps
+
+#       - run:
+#           name: Validate Terraform Installation
 #           command: |
 #             terraform --version
-#       - run:
-#           name: Terraform Init
-#           command: |
-#             terraform init
-#       - run:
-#           name: Terraform Plan
-#           command: |
-#             terraform plan -var-file="vars/<< parameters.environment >>.tfvars" -out << parameters.environment >>.tfplan
-#       - run:
-#           name: Terraform Apply
-#           command: |
-#             terraform apply << parameters.environment >>.tfplan
-
-#   # This job spawns a Ansible controller to run a playbook.
-#   ansible_playbook:
-#     executor: ansible
-#     working_directory: ~/project/ansible
-#     parameters:
-#       inventory:
-#         type: string
-#       playbook:
-#         type: string
-#     steps:
-#       - checkout:
-#           path: ~/project
 
 #       - run:
-#           name: Ansible Playbook Version
+#           name: Install AWS CLI
 #           command: |
-#             ansible-playbook --version
+#             cd /tmp && \
+#             apk add --no-cache \
+#             gcompat \
+#             tar \
+#             curl \
+#             make \
+#             cmake \
+#             gcc \
+#             libc-dev \
+#             libffi-dev \
+#             openssl-dev \
+#             && curl -vvv "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.0.30.zip" -o "awscliv2.zip" \
+#             && unzip awscliv2.zip \
+#             && ./aws/install
 
 #       - run:
-#           name: Install boto3 and botocore
+#           name: Verify AWS CLI Installation
 #           command: |
-#             python3 -m pip install boto3 botocore --user ansible
-
-#       # The SSH key is not committed to the repository, instead it is encoded to
-#       # base64 and stored as an environment variable in the organization context.
-#       - run:
-#           name: Save Ansible SSH Key
-#           command: |
-#             echo "$AWS_INSTANCE_PRIVATE_KEY" | base64 -d > ansible-private-key.pem
-#             chmod 400 ansible-private-key.pem
-
-#       # Pre-check to ensure we can retrieve the inventory and it is correct.
-#       - run:
-#           name: List Ansible Inventory
-#           command: |
-#             ansible-inventory -i ./inventory/aws_ec2.yaml --list
+#             aws --version
 
 #       - run:
-#           name: Run Ansible Playbook
+#           name: Install Ansible
 #           command: |
-#             ansible-playbook -i inventory/aws_ec2.yaml ./playbooks/<< parameters.playbook >>.yaml
+#             apk add ansible
+
+#       - run:
+#           name: Verify Ansible Installation
+#           command: |
+#             ansible --version
+
+
+
+#       # - run:
+#       #     name: Install boto3 and botocore
+#       #     command: |
+#       #       python3 -m pip install boto3 botocore --user ansible
+
+#       # - run:
+#       #     name: Terraform Init
+#       #     working_directory: terraform
+#       #     command: |
+#       #       terraform init
+
+#       # - run:
+#       #     name: Terraform Plan
+#       #     working_directory: terraform
+#       #     command: |
+#       #       terraform plan -var-file="vars/<< parameters.environment >>.tfvars" -out << parameters.environment >>.tfplan
+
+#       # - run:
+#       #     name: Terraform Apply
+#       #     working_directory: terraform
+#       #     command: |
+#       #       terraform apply << parameters.environment >>.tfplan
+
+#       # - run:
+#       #     name: Save Ansible SSH Key
+#       #     working_directory: ansible
+#       #     command: |
+#       #       echo "$AWS_INSTANCE_PRIVATE_KEY" | base64 -d > ansible-private-key.pem
+#       #       chmod 400 ansible-private-key.pem
+
+#       # - run:
+#       #     name: List Ansible Inventory
+#       #     working_directory: ansible
+#       #     command: |
+#       #       ansible-inventory -i ./inventory/aws_ec2.yaml --list
+
+#       # - run:
+#       #     name: Run Ansible Playbook
+#       #     working_directory: ansible
+#       #     command: |
+#       #       ansible-playbook -i inventory/aws_ec2.yaml ./playbooks/health_check.yaml
 
 # workflows:
 #   deploy:
 #     jobs:
-#       # 1. Provision resources.
-#       - terraform_provision:
+#       - provision_and_configure:
 #           context:
 #             - aws_deploy
 #           environment: development
+#           aws_cli_version: "2.2.1"
+#           terraform_version: "1.9.6"
 
-#       # 2. Configure resources.
-#       - ansible_playbook:
-#           inventory: aws_ec2
-#           playbook: health_check
-#           context:
-#             - aws_deploy
-#           requires:
-#             - terraform_provision
+
+# # version: 2.1
+
+# # executors:
+# #   terraform:
+# #     docker:
+# #       - image: hashicorp/terraform:1.9.6
+# #         name: terraform
+# #   ansible:
+# #     docker:
+# #       - image: alpine/ansible:2.17.0
+# #         name: ansible
+
+# # jobs:
+# #   # This job only provisions AWS resources. When EC2 instances
+# #   # are created they are in an unhealthy state and will be
+# #   # configured by the `ansible_playbook` job.
+# #   terraform_provision:
+# #     executor: terraform
+# #     working_directory: ~/project/terraform
+# #     parameters:
+# #       environment:
+# #         type: string
+# #     steps:
+# #       - checkout:
+# #           path: ~/project
+# #       - run:
+# #           name: Terraform Version
+# #           command: |
+# #             terraform --version
+# #       - run:
+# #           name: Terraform Init
+# #           command: |
+# #             terraform init
+# #       - run:
+# #           name: Terraform Plan
+# #           command: |
+# #             terraform plan -var-file="vars/<< parameters.environment >>.tfvars" -out << parameters.environment >>.tfplan
+# #       - run:
+# #           name: Terraform Apply
+# #           command: |
+# #             terraform apply << parameters.environment >>.tfplan
+
+# #   # This job spawns a Ansible controller to run a playbook.
+# #   ansible_playbook:
+# #     executor: ansible
+# #     working_directory: ~/project/ansible
+# #     parameters:
+# #       inventory:
+# #         type: string
+# #       playbook:
+# #         type: string
+# #     steps:
+# #       - checkout:
+# #           path: ~/project
+
+# #       - run:
+# #           name: Ansible Playbook Version
+# #           command: |
+# #             ansible-playbook --version
+
+# #       - run:
+# #           name: Install boto3 and botocore
+# #           command: |
+# #             python3 -m pip install boto3 botocore --user ansible
+
+# #       # The SSH key is not committed to the repository, instead it is encoded to
+# #       # base64 and stored as an environment variable in the organization context.
+# #       - run:
+# #           name: Save Ansible SSH Key
+# #           command: |
+# #             echo "$AWS_INSTANCE_PRIVATE_KEY" | base64 -d > ansible-private-key.pem
+# #             chmod 400 ansible-private-key.pem
+
+# #       # Pre-check to ensure we can retrieve the inventory and it is correct.
+# #       - run:
+# #           name: List Ansible Inventory
+# #           command: |
+# #             ansible-inventory -i ./inventory/aws_ec2.yaml --list
+
+# #       - run:
+# #           name: Run Ansible Playbook
+# #           command: |
+# #             ansible-playbook -i inventory/aws_ec2.yaml ./playbooks/<< parameters.playbook >>.yaml
+
+# # workflows:
+# #   deploy:
+# #     jobs:
+# #       # 1. Provision resources.
+# #       - terraform_provision:
+# #           context:
+# #             - aws_deploy
+# #           environment: development
+
+# #       # 2. Configure resources.
+# #       - ansible_playbook:
+# #           inventory: aws_ec2
+# #           playbook: health_check
+# #           context:
+# #             - aws_deploy
+# #           requires:
+# #             - terraform_provision

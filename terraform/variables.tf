@@ -1,13 +1,11 @@
 variable "environment" {
   type = string
   nullable = false
-  default = "development"
 }
 
 variable "region" {
   type = string
   nullable = false
-  default = "us-west-1"
 }
 
 variable "tags" {
